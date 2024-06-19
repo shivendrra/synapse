@@ -1,0 +1,84 @@
+body {
+  font-family: 'Poppins', sans-serif;
+}
+
+*, ::after, ::before {
+  box-sizing: border-box;
+}
+
+/* width */
+::-webkit-scrollbar {
+  display: none;
+}
+
+.row {
+  margin: auto;
+  max-width: 100%;
+}
+
+.navbar-toggler, .navbar-toggler:focus {
+  border: none;
+  box-shadow: none;
+}
+
+.form-div {
+  position: absolute;
+  top: 20%;
+  right: 50%;
+  transform: translate(50%, 0);
+}
+
+form {
+  margin: auto;
+  max-width: 80%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.form-div .btn {
+  border-radius: 1px;
+  padding-inline: 30px;
+  padding-block: 10px;
+  margin-top: 15px;
+}
+
+.card {
+  box-shadow: 3px 3px 5px whitesmoke;
+}
+
+.search-result {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.nav-btm__wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  left: 0;
+  right: 0;
+  z-index: 2;
+}
+
+.nav-btm {
+  position: fixed;
+  bottom: -80px;
+}
+
+.bottom-nav {
+  position: relative;
+  box-shadow: 3px 3px 6px rgba(128, 128, 128, 0.537);
+  z-index: 9;
+}
+
+audio {
+  margin: auto none;
+  max-width: 100%;
+  color: transparent;
+  height: 50px;
+}
