@@ -1,7 +1,7 @@
 const fs = require('fs');
 
 // file path
-const jsonFilePath = './file/URLfile.json';
+const jsonFilePath = './output_urls.json';
 
 // read the json file
 fs.readFile(jsonFilePath, 'utf-8', (err, data) => {
