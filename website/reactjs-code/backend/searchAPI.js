@@ -1,10 +1,10 @@
 const express = require('express');
 const axios = require('axios');
 const router = express.Router();
-
+require('dotenv').config({path:'../../.env'});
 router.use(express.json());
 
-const API_KEY = 'xyz';
+const API_KEY = process.env.yt_key;
 
 router.post('/', async (req, res) => {
   try {

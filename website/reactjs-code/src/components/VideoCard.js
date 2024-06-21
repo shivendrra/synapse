@@ -39,8 +39,8 @@ export default function VideoCard(props) {
           onClick={handlePlay}
           style={{ maxWidth: '80%', cursor: 'pointer' }}
         >
-          <div className="row g-0">
-            <div className="col-md-4 col-xs-4">
+          <div className="row mx-0 px-0">
+            <div className="col-lg-4 col-xs-4 px-0">
               <img
                 src={props.imageUrl}
                 className="object-fit-cover img-fluid img-thumbnail"
@@ -48,12 +48,12 @@ export default function VideoCard(props) {
                 alt="..."
               />
             </div>
-            <div className="col-md-8 col-xs-8">
+            <div className="col-lg-8 col-xs-8 bg-white">
               <div className="card-body">
                 <h5 className="card-title">{props.title}</h5>
                 <p className="card-text">{props.channel}</p>
                 <p className="card-text">
-                  <small className="text-body-secondary">hello</small>
+                  <small className="text-body-secondary">Video description (to be added!)</small>
                 </p>
               </div>
             </div>
