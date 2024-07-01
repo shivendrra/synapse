@@ -74,10 +74,3 @@ form {
   box-shadow: 3px 3px 6px rgba(128, 128, 128, 0.537);
   z-index: 9;
 }
-
-audio {
-  margin: auto none;
-  max-width: 100%;
-  color: transparent;
-  height: 50px;
-}
