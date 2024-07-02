@@ -29,7 +29,8 @@ app.post('/search', async (req, res) => {
         videoId: item.id.videoId,
         title: item.snippet.title,
         channel: item.snippet.channelTitle,
-        thumbnailUrl: item.snippet.thumbnails.high.url,
+        thumbnailUrl: item.snippet.thumbnails.medium.url,
+        description: item.snippet.description,
       }));
 
       res.json(videos);
