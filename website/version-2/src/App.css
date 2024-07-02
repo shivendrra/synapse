@@ -1,5 +1,7 @@
 body {
   font-family: 'Poppins', sans-serif;
+  /* background-color: black; */
+  /* color: white; */
 }
 
 *, ::after, ::before {
@@ -15,7 +17,124 @@ body {
   max-width: 100%;
 }
 
-.navbar-toggler, .navbar-toggler:focus {
+/* .navbar-toggler, .navbar-toggler:focus {
   border: none;
   box-shadow: none;
+} */
+
+/* nav, .navbar-brand, .nav-item svg {
+  color: white;
+} */
+
+.mainHeader {
+  margin: auto;
+  padding: 10px;
+  position: absolute;
+  top: 8%;
+  width: 100%;
+  right: 50%;
+  transform: translate(50%, 0);
+}
+
+.search-bar {
+  width: 80%;
+  margin: auto;
+  border-radius: 100px;
+  padding: 0px;
+}
+
+.input-group-text{
+  background-color: white;
+  border: 1px solid black;
+  border-right: none;
+  border-radius: 100px;
+}
+
+.btn-search {
+  background-color: #A9C52F;
+  border: 1px solid black;
+  border-radius: 100px;
+}
+
+.btn-search:hover, :focus {
+  background-color: #A9C52F;
+  border: 1px solid black;
+  border-radius: 100px;
+}
+
+.search-bar input {
+  border: 1px solid black;
+  border-left: none;
+  border-right: none;
+  border-radius: 100px;
+}
+
+.search-bar input:focus {
+  box-shadow: none;
+  border-color: #A9C52F;
+}
+
+.search-bar:focus {
+  box-shadow: none;
+}
+
+.bottom-nav {
+  width: 100%;
+  background-color: #A9C52F;
+  padding: 9px 15px;
+  margin: auto;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+  z-index: 20;
+}
+
+.video-results {
+  position: absolute;
+  top: 12%;
+  right: 50%;
+  transform: translate(50%, 0%);
+}
+
+.player-slide {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+@media only screen and (max-width: 600px) {
+  .navbar {
+    padding: 5px 10px;
+  }
+  .mainHeader {
+    margin: auto;
+    padding: 10px;
+    position: absolute;
+    top: 10%;
+    width: 100%;
+    right: 50%;
+    transform: translate(50%, 0);
+  }
+  .search-bar {
+    width: 100%;
+    margin: auto;
+  }
+  .bottom-nav {
+    width: 95%;
+    padding: 5px 15px 0px 15px;
+    border-radius: 10px;
+    margin: auto;
+    position: absolute;
+    z-index: 20;
+    bottom: 6%;
+    right: 50%;
+    transform: translate(50%, 50%);
+  }
+  .video-results {
+    position: absolute;
+    top: 12%;
+    right: 50%;
+    transform: translate(50%, 0%);
+  }
+  
 }
