@@ -1,13 +1,15 @@
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
+const loginRouter = require('./login');
 const app = express();
 const port = 3001;
-require('dotenv').config({path:'../../.env'});
+require('dotenv').config({ path: '../../.env' });
 
 app.use(cors());
 app.use(express.json());
 
+app.use('/auth', loginRouter);
 app.post('/search', async (req, res) => {
   try {
     const API_KEY = process.env.yt_key;
