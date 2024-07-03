@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 export default function Navbar() {
   return (
     <>
-      <nav id="mainNavbar" className={`navbar navbar-expand-lg fixed-top bg-light`}>
+      <nav id="mainNavbar" className={`navbar navbar-expand-lg fixed-top`}>
         <div id="innerNav" className="container">
           <Link className='navbar-brand mx-3 ' to="/">
             Synapse
