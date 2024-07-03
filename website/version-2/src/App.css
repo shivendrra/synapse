@@ -151,6 +151,15 @@ body {
   justify-content: center;
 }
 
+.login-form {
+  width: 50%;
+  position: absolute;
+  margin: auto;
+  top: 25%;
+  right: 50%;
+  transform: translate(50%, 0%);
+}
+
 @media only screen and (max-width: 600px) {
   .navbar {
     padding: 5px 10px;
@@ -234,6 +243,15 @@ body {
   .video-results {
     position: absolute;
     top: 12%;
+    right: 50%;
+    transform: translate(50%, 0%);
+  }
+
+  .login-form {
+    width: 90%;
+    position: absolute;
+    margin: auto;
+    top: 20%;
     right: 50%;
     transform: translate(50%, 0%);
   }
