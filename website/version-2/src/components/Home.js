@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import VideoCard from './VideoCard';
 import BottomNav from './BottomNav';
 
@@ -14,7 +14,7 @@ export default function Home() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:3001/search', {
+      const response = await fetch('http://192.168.29.198:3001/search', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -85,7 +85,6 @@ export default function Home() {
       <div className="video-results">
         {videos.length > 0 && (
           <div className="search-result py-5">
-            <h3 className="pb-4">Search Results:</h3>
             <div className="container">
               {videos.map((video, index) => (
                 <div key={video.videoId}>

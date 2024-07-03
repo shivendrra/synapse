@@ -72,8 +72,8 @@ export default function BottomNav(props) {
         <div className="row">
           <div className="col-lg-12 pt-1 d-flex justify-content-between">
             <div className="col-lg-10 float-start">
-              <h5>{he.decode(audioTitle)}</h5>
-              <h6>{he.decode(channelName)}</h6>
+              <h5 className='audio-title'>{he.decode(audioTitle)}</h5>
+              <h6 className='audio-src'>{he.decode(channelName)}</h6>
             </div>
             <div className="col-lg-2">
               <button onClick={handlePlayPause} className="btn-play float-end">

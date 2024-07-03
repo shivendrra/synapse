@@ -28,6 +28,11 @@ body {
   color: white;
 } */
 
+.navbar-brand:focus, .nav-link:focus {
+  background-color: transparent;
+  border: none;
+}
+
 .mainHeader {
   margin: auto;
   padding: 10px;
@@ -101,6 +106,18 @@ body {
   z-index: -18;
 }
 
+.video-results .img-thumbnail {
+  border: none;
+  padding: 0px;
+  border-radius: 10px 0px 0px 10px;
+}
+
+.video-card .card {
+  border: 1px solid black;
+  border-radius: 10px;
+  margin: auto;
+}
+
 .bottom-nav input[type=range] {
   width: 95%;
   padding: 0px 10px;
@@ -109,6 +126,12 @@ body {
   background: transparent;
   cursor: pointer;
   width: 95%;
+  --thumb-height: 1.125em;
+	--track-height: 0.125em;
+	--track-color: rgba(0, 0, 0, 0.2);
+	--brightness-hover: 180%;
+	--brightness-down: 80%;
+	--clip-edges: 0.125em;
 }
 
 .bottom-nav input[type=range]:hover,
@@ -148,16 +171,64 @@ body {
     margin: auto;
   }
 
-  .bottom-nav {
-    width: 95%;
-    padding: 5px 15px 0px 15px;
-    border-radius: 10px;
+  .video-card .card-title, .video-card .card-text {
+    font-size: small ;
+  }
+
+  .video-card .card-body {
+    padding: 10px 0px;
+  }
+
+  .video-results .img-thumbnail {
+    border: none;
+    padding: 0px;
+    border-radius: 4px 4px 0px 0px;
+  }
+  
+  .video-card .card {
+    border: 1px solid black;
+    border-radius: 5px;
     margin: auto;
-    position: absolute;
+  }
+
+  .bottom-nav {
+    width: 100%;
+    background-color: #A9C52F;
+    padding: 10px 15px 0px 15px;
+    margin: auto;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
     z-index: 20;
-    bottom: 6%;
+  }
+
+  .video-results {
+    position: absolute;
+    top: 12%;
     right: 50%;
-    transform: translate(50%, 50%);
+    transform: translate(50%, 0%);
+    z-index: -18;
+  }
+
+  .bottom-nav .row .col-lg-12{
+    width: 100%;
+    margin: auto;
+    padding: 0px;
+  }
+
+  .bottom-nav .audio-title, .bottom-nav .audio-src {
+    font-size: smaller;
+  }
+
+  .bottom-nav input[type=range] {
+    width: 95%;
+    padding: 0px 10px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    cursor: pointer;
+    width: 95%;
   }
 
   .video-results {
@@ -166,5 +237,4 @@ body {
     right: 50%;
     transform: translate(50%, 0%);
   }
-
 }
