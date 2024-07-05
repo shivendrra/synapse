@@ -17,7 +17,7 @@ export default function Home() {
   useEffect(() => {
     const fetchRandomVideos = async () => {
       try {
-        const response = await fetch("http://192.168.29.198:3001/random-videos");
+        const response = await fetch("https://synapse-music.vercel.app/random-videos");
         if (!response.ok) {
           throw new Error("Error while fetching random videos");
         }
@@ -34,7 +34,7 @@ export default function Home() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://192.168.29.198:3001/search", {
+      const response = await fetch("https://synapse-music.vercel.app/search", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
