@@ -41,7 +41,7 @@ body {
   background-color: #0C0C0C;
 }
 
-.navbar-brand, .nav-item svg {
+.navbar-brand, .nav-item svg, .navbar-brand:hover {
   color: white;
 }
 
@@ -238,6 +238,12 @@ body {
 
   .video-card .card-body {
     padding: 10px 0px;
+  }
+
+  .video-results {
+    position: absolute;
+    top: 20%;
+    transform: translate(50%, 50%);
   }
 
   .video-results .img-thumbnail {

@@ -121,11 +121,11 @@ export default function Home() {
           </div>
         )}
         {videos.length > 0 && (
-          <div className="video-results py-5">
-            <div className="container">
-              <div className="row">
+          <div className="video-results mt-5">
+            <div className="container mt-5">
+              <div className="row mt-5">
                 {videos.map((video) => (
-                  <div key={video.videoId} className="col-lg-12">
+                  <div key={video.videoId} className="col-lg-12 col-xs-6">
                     <VideoCard
                       title={video.title}
                       channel={video.channel}
