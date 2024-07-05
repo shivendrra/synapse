@@ -1,45 +1,70 @@
-import React, { useEffect, useRef, useState } from 'react';
-import he from 'he';
+import React, { useEffect, useRef, useState } from "react";
+import he from "he";
 
 export default function BottomNav(props) {
   const { state, audioTitle, audioUrl, channelName } = props;
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
-  const [player, setPlayer] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const intervalRef = useRef(null);
+  const playerRef = useRef(null);
 
   useEffect(() => {
-    let newPlayer;
+    const loadYouTubeIframeAPI = () => {
+      if (!window.YT) {
+        console.log("Loading YouTube IFrame API script");
+        const tag = document.createElement("script");
+        tag.src = "https://www.youtube.com/iframe_api";
+        const firstScriptTag = document.getElementsByTagName("script")[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-    if (audioUrl) {
-      newPlayer = new window.YT.Player('ytplayer', {
-        height: '0',
-        width: '0',
-        videoId: audioUrl,
+        tag.onload = () => {
+          console.log("YouTube IFrame API script loaded");
+          createPlayer(audioUrl);
+        };
+      } else {
+        createPlayer(audioUrl);
+      }
+    };
+
+    const createPlayer = (url) => {
+      if (!url) return;
+      console.log("Creating YouTube player with videoId:", url);
+
+      playerRef.current = new window.YT.Player("ytplayer", {
+        height: "0",
+        width: "0",
+        videoId: url,
         events: {
-          'onReady': (event) => {
+          "onReady": (event) => {
+            console.log("Player is ready");
             event.target.playVideo();
             setDuration(event.target.getDuration());
             setIsPlaying(true);
           },
-          'onStateChange': (event) => {
+          "onStateChange": (event) => {
             if (event.data === window.YT.PlayerState.PLAYING) {
+              console.log("Video is playing");
               startProgressUpdate(event.target);
               setIsPlaying(true);
             } else if (event.data === window.YT.PlayerState.PAUSED || event.data === window.YT.PlayerState.ENDED) {
+              console.log("Video is paused or ended");
               clearInterval(intervalRef.current);
               setIsPlaying(false);
             }
-          }
-        }
+          },
+        },
       });
-      setPlayer(newPlayer);
+    };
+
+    if (audioUrl) {
+      loadYouTubeIframeAPI();
     }
 
     return () => {
-      if (newPlayer) {
-        newPlayer.destroy();
+      if (playerRef.current) {
+        playerRef.current.destroy();
+        playerRef.current = null;
       }
       clearInterval(intervalRef.current);
     };
@@ -55,25 +80,25 @@ export default function BottomNav(props) {
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
     const sec = Math.floor(seconds % 60);
-    return `${minutes}:${sec < 10 ? '0' : ''}${sec}`;
+    return `${minutes}:${sec < 10 ? "0" : ""}${sec}`;
   };
 
   const handlePlayPause = () => {
     if (isPlaying) {
-      player.pauseVideo();
+      playerRef.current.pauseVideo();
     } else {
-      player.playVideo();
+      playerRef.current.playVideo();
     }
   };
 
   return (
     <>
-      <div className={`bottom-nav ${!state && 'd-none'}`}>
+      <div className={`bottom-nav ${!state && "d-none"}`}>
         <div className="row">
           <div className="col-lg-12 pt-1 d-flex justify-content-between">
             <div className="col-lg-10 float-start">
-              <h5 className='audio-title'>{he.decode(audioTitle)}</h5>
-              <h6 className='audio-src'>{he.decode(channelName)}</h6>
+              <h5 className="audio-title">{he.decode(audioTitle)}</h5>
+              <h6 className="audio-src">{he.decode(channelName)}</h6>
             </div>
             <div className="col-lg-2">
               <button onClick={handlePlayPause} className="btn-play float-end">
@@ -102,12 +127,12 @@ export default function BottomNav(props) {
               onChange={(e) => {
                 const newTime = e.target.value;
                 setCurrentTime(newTime);
-                player && player.seekTo(newTime);
+                playerRef.current && playerRef.current.seekTo(newTime);
               }}
             />
             <p>{formatTime(duration)}</p>
           </div>
-          <div id="ytplayer" className='d-none'></div>
+          <div id="ytplayer" className="d-none"></div>
         </div>
       </div>
     </>

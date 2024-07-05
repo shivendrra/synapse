@@ -1,5 +1,6 @@
 const express = require('express');
 const { google } = require('googleapis');
+const { MongoClient } = require('mongodb');
 const router = express.Router();
 require('dotenv').config({ path: '../../.env' });
 
@@ -8,6 +9,10 @@ const oauth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_CLIENT_SECRET,
   `${process.env.SERVER_ROOT_URI}/oauth2callback`
 );
+
+// MongoDB connection URI and database name
+const uri = process.env.MONGODB_URI;
+const dbName = process.env.MONGODB_DB_NAME;
 
 router.get('/login', (req, res) => {
   const scopes = [
@@ -46,11 +51,28 @@ router.get('/oauth2callback', async (req, res) => {
       mine: true,
       part: 'snippet,contentDetails,statistics'
     });
-    
-    res.json({
+
+    const userData = {
       user: userInfo.data,
       channel: response.data.items[0]
-    });
+    };
+
+    // Connect to MongoDB and save the user data
+    const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+    await client.connect();
+    const database = client.db(dbName);
+    const usersCollection = database.collection('users');
+
+    // Upsert the user data (insert if new, update if existing)
+    await usersCollection.updateOne(
+      { 'user.id': userData.user.id },
+      { $set: userData },
+      { upsert: true }
+    );
+
+    await client.close();
+
+    res.json(userData);
   } catch (error) {
     console.error(error);
     res.status(500).send('Authentication failed');

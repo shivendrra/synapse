@@ -1,32 +1,53 @@
-import React, { useState } from 'react';
-import VideoCard from './VideoCard';
-import BottomNav from './BottomNav';
+import React, { useState, useEffect } from "react";
+import VideoCard from "./VideoCard";
+import BottomNav from "./BottomNav";
+import DisplayCards from "./DisplayCards";
+import Footer from "./Footer";
 
 export default function Home() {
-  const [searchText, setSearchText] = useState('');
+  const [searchText, setSearchText] = useState("");
   const [videos, setVideos] = useState([]);
+  const [randomVideos, setRandomVideos] = useState([]);
   const [error, setError] = useState(null);
   const [audioUrl, setAudioUrl] = useState(null);
   const [bottomNav, setBottomNav] = useState(false);
-  const [audioTitle, setAudioTitle] = useState('');
-  const [channelName, setChannelName] = useState('');
+  const [audioTitle, setAudioTitle] = useState("");
+  const [channelName, setChannelName] = useState("");
+
+  useEffect(() => {
+    const fetchRandomVideos = async () => {
+      try {
+        const response = await fetch("http://192.168.29.198:3001/random-videos");
+        if (!response.ok) {
+          throw new Error("Error while fetching random videos");
+        }
+        const data = await response.json();
+        setRandomVideos(data);
+      } catch (error) {
+        setError(error.message);
+      }
+    };
+
+    fetchRandomVideos();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://192.168.29.198:3001/search', {
-        method: 'POST',
+      const response = await fetch("http://192.168.29.198:3001/search", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ query: searchText }),
       });
 
       if (!response.ok) {
-        throw new Error('Error while fetching videos');
+        throw new Error("Error while fetching videos");
       }
       const data = await response.json();
       setVideos(data);
+      setRandomVideos([]);
     } catch (error) {
       setError(error.message);
     }
@@ -82,22 +103,40 @@ export default function Home() {
           </div>
         </form>
       </div>
-      <div className="video-results">
+      <div className="random-videos">
+        {videos.length === 0 && randomVideos.length > 0 && (
+          <div className="row">
+            {randomVideos.map((video) => (
+              <div key={video.videoId} className="col-md-3 col-sm-6 col-xs-6 g-3">
+                <DisplayCards
+                  title={video.title}
+                  channel={video.channel}
+                  imageUrl={video.thumbnailUrl}
+                  videoUrl={video.videoId}
+                  onPlay={handlePlay}
+                  description={video.description}
+                />
+              </div>
+            ))}
+          </div>
+        )}
         {videos.length > 0 && (
-          <div className="search-result py-5">
+          <div className="video-results py-5">
             <div className="container">
-              {videos.map((video, index) => (
-                <div key={video.videoId}>
-                  <VideoCard
-                    title={video.title}
-                    channel={video.channel}
-                    imageUrl={video.thumbnailUrl}
-                    videoUrl={video.videoId}
-                    onPlay={handlePlay}
-                    description={video.description}
-                  />
-                </div>
-              ))}
+              <div className="row">
+                {videos.map((video) => (
+                  <div key={video.videoId} className="col-lg-12">
+                    <VideoCard
+                      title={video.title}
+                      channel={video.channel}
+                      imageUrl={video.thumbnailUrl}
+                      videoUrl={video.videoId}
+                      onPlay={handlePlay}
+                      description={video.description}
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         )}
@@ -111,6 +150,7 @@ export default function Home() {
           channelName={channelName}
         />
       )}
+      <Footer />
     </>
   );
 }
