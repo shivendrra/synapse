@@ -81,9 +81,24 @@ const loginRouter = require('./login');
 const { MongoClient } = require('mongodb');
 const app = express();
 const port = 3001;
-require('dotenv').config({ path: '../../.env' });
+require('dotenv').config({ path: '.env' });
 
-app.use(cors());
+const allowedOrigins = ['https://synapse-music.vercel.app'];
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true,
+  optionsSuccessStatus: 204
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
 app.use('/auth', loginRouter);
