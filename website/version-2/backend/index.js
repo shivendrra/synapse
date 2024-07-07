@@ -6,7 +6,11 @@ const { MongoClient } = require('mongodb');
 const app = express();
 require('dotenv').config({ path: '.env' });
 
-const allowedOrigins = ['http://localhost:3000', 'https://synapse-music.vercel.app'];
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://synapse-music.vercel.app',
+  'https://synapse-895tnh21s-shivendras-projects-27ed6466.vercel.app'
+];
 
 const corsOptions = {
   origin: function (origin, callback) {
@@ -20,7 +24,6 @@ const corsOptions = {
   credentials: true,
   optionsSuccessStatus: 204,
 };
-
 
 app.use(cors(corsOptions));
 app.use(express.json());
@@ -95,7 +98,6 @@ app.post('/save-user', async (req, res) => {
 
 app.post('/search', async (req, res) => {
   try {
-    const API_KEY = process.env.yt_key;
     const { query } = req.body;
     const maxResults = 10;
 
@@ -129,5 +131,5 @@ app.post('/search', async (req, res) => {
 });
 
 app.listen(process.env.PORT || 3001, () => {
-  console.log(`Server is running`);
+  console.log('Server is running');
 });

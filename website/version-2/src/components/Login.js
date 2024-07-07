@@ -78,13 +78,13 @@ export default function Login(props) {
               <label htmlFor="inputPassword4" className="form-label">Password</label>
               <input
                 type="password"
-                className="form-control"
+                class="form-control"
                 id="inputPassword4"
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
                 required
-              />
+                autocomplete="current-password" />
             </div>
             <div className="col-12">
               <div className="form-check">
@@ -95,7 +95,7 @@ export default function Login(props) {
                   required
                 />
                 <label className="form-check-label" htmlFor="gridCheck">
-                  I"ve read the terms & conditions and I agree!
+                  I've read the terms & conditions and I agree!
                 </label>
               </div>
             </div>
