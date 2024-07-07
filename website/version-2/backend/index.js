@@ -28,15 +28,16 @@ app.use('/auth', loginRouter);
 
 const uri = process.env.MONGODB_URI;
 const dbName = process.env.MONGODB_DB_NAME;
+const API_KEY = process.env.yt_key;
 
+console.log("hello from the backend!");
+console.log(API_KEY);
+console.log(uri);
 
 app.get('/random-videos', async (req, res) => {
   try {
-    const API_KEY = process.env.yt_key;
     const maxResults = 20;
     
-    console.log(API_KEY);
-    console.log(uri);
     const response = await axios.get('https://www.googleapis.com/youtube/v3/videos', {
       params: {
         key: API_KEY,
