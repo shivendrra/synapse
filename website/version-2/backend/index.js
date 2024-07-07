@@ -6,7 +6,7 @@ const { MongoClient } = require('mongodb');
 const app = express();
 require('dotenv').config({ path: '.env' });
 
-const allowedOrigins = ['https://synapse-music.vercel.app'];
+const allowedOrigins = ['http://localhost:3000', 'https://synapse-music.vercel.app'];
 
 const corsOptions = {
   origin: function (origin, callback) {
@@ -18,21 +18,22 @@ const corsOptions = {
   },
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true,
-  optionsSuccessStatus: 204
+  optionsSuccessStatus: 204,
 };
+
 
 app.use(cors(corsOptions));
 app.use(express.json());
 
 app.use('/auth', loginRouter);
 
+app.get('/test', (req, res) => {
+  res.send('Backend is working');
+});
+
 const uri = process.env.MONGODB_URI;
 const dbName = process.env.MONGODB_DB_NAME;
 const API_KEY = process.env.yt_key;
-
-console.log("hello from the backend!");
-console.log(API_KEY);
-console.log(uri);
 
 app.get('/random-videos', async (req, res) => {
   try {

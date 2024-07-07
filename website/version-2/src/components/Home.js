@@ -3,6 +3,7 @@ import VideoCard from "./VideoCard";
 import BottomNav from "./BottomNav";
 import DisplayCards from "./DisplayCards";
 import Footer from "./Footer";
+require('dotenv').config({path: '.env'});
 
 export default function Home() {
   const [searchText, setSearchText] = useState("");
@@ -13,11 +14,12 @@ export default function Home() {
   const [bottomNav, setBottomNav] = useState(false);
   const [audioTitle, setAudioTitle] = useState("");
   const [channelName, setChannelName] = useState("");
+  const apiUrl = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     const fetchRandomVideos = async () => {
       try {
-        const response = await fetch("https://synapse-music.vercel.app/random-videos");
+        const response = await fetch(`${apiUrl}/random-videos`);
         if (!response.ok) {
           throw new Error("Error while fetching random videos");
         }
@@ -27,21 +29,21 @@ export default function Home() {
         setError(error.message);
       }
     };
-
+  
     fetchRandomVideos();
-  }, []);
-
+  }, [apiUrl]);
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("https://synapse-music.vercel.app/search", {
+      const response = await fetch(`${apiUrl}/search`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ query: searchText }),
       });
-
+  
       if (!response.ok) {
         throw new Error("Error while fetching videos");
       }
