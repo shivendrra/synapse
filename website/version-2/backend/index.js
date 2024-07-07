@@ -31,6 +31,10 @@ app.get('/test', (req, res) => {
   res.send('Backend is working');
 });
 
+app.get('/health', (req, res) => {
+  res.status(200).send('Server is healthy');
+});
+
 const uri = process.env.MONGODB_URI;
 const dbName = process.env.MONGODB_DB_NAME;
 const API_KEY = process.env.yt_key;
