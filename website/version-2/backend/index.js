@@ -7,6 +7,7 @@ const app = express();
 require('dotenv').config({ path: '.env' });
 
 const allowedOrigins = [
+  'http://192.168.29.198:3000',
   'http://localhost:3000',
   'https://synapse-music.vercel.app',
   'https://synapse-895tnh21s-shivendras-projects-27ed6466.vercel.app'
@@ -45,7 +46,8 @@ const API_KEY = process.env.yt_key;
 app.get('/random-videos', async (req, res) => {
   try {
     const maxResults = 20;
-    
+    const videoCategoryId = req.query.category || '10'; // Default to Music category
+
     const response = await axios.get('https://www.googleapis.com/youtube/v3/videos', {
       params: {
         key: API_KEY,
@@ -53,7 +55,7 @@ app.get('/random-videos', async (req, res) => {
         chart: 'mostPopular',
         maxResults: maxResults,
         regionCode: 'IN',
-        videoCategoryId: 10,
+        videoCategoryId: videoCategoryId,
       },
     });
 

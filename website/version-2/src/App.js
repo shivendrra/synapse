@@ -2,19 +2,29 @@ import './App.css';
 import Home from './components/Home';
 import Navbar from './components/Navbar';
 import Login from './components/Login';
+import Footer from './components/Footer';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { useState } from 'react';
 
-function App(){
+function App() {
+  const [category, setCategory] = useState("10");
+
+  const handleCategoryChange = (categoryId) => {
+    setCategory(categoryId);
+  };
+
   return (
     <>
       <Router>
-        <Navbar />
+        <Navbar onCategoryChange={handleCategoryChange} />
         <Routes>
-          <Route exact path='/' Component={() => (<Home/>)}/>
-          <Route exact path='/login' Component={() => (<Login/>)}/>
+          <Route exact path='/' element={<Home category={category} />} />
+          <Route exact path='/login' element={<Login />} />
         </Routes>
+        <Footer />
       </Router>
     </>
   );
 }
+
 export default App;

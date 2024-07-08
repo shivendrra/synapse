@@ -2,9 +2,8 @@ import React, { useState, useEffect } from "react";
 import VideoCard from "./VideoCard";
 import BottomNav from "./BottomNav";
 import DisplayCards from "./DisplayCards";
-import Footer from "./Footer";
 
-export default function Home() {
+export default function Home({ category }) {
   const [searchText, setSearchText] = useState("");
   const [videos, setVideos] = useState([]);
   const [randomVideos, setRandomVideos] = useState([]);
@@ -18,7 +17,9 @@ export default function Home() {
   useEffect(() => {
     const fetchRandomVideos = async () => {
       try {
-        const response = await fetch('https://synapse-music.vercel.app/random-videos');
+        const response = await fetch(`https://synapse-music.vercel.app/random-videos?category=${category}`);
+        // const response = await fetch(`http://localhost:3001/random-videos?category=${category}`);
+        // const response = await fetch(` http://192.168.29.198:3001/random-videos?category=${category}`);
         if (!response.ok) {
           throw new Error("Error while fetching random videos");
         }
@@ -30,12 +31,14 @@ export default function Home() {
     };
   
     fetchRandomVideos();
-  }, []);
+  }, [category]);
   
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('https://synapse-music.vercel.app/search', {
+      // const response = await fetch(' http://192.168.29.198:3001/search', {
+      // const response = await fetch(' http://localhost:3001/search', {
+      const response = await fetch(' https://synapse-music.vercel.app/search', {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -151,7 +154,6 @@ export default function Home() {
           channelName={channelName}
         />
       )}
-      <Footer />
     </>
   );
 }
