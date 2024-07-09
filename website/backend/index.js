@@ -34,6 +34,10 @@ const uri = process.env.MONGODB_URI;
 const dbName = process.env.MONGODB_DB_NAME;
 const API_KEY = process.env.yt_key;
 
+app.get('/', (req, res) => {
+  res.send('Welcome to the Synapse Music API');
+});
+
 app.get('/random-videos', async (req, res) => {
   try {
     const maxResults = 20;
