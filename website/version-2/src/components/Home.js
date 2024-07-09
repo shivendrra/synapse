@@ -20,7 +20,7 @@ export default function Home({ category }) {
     const fetchRandomVideos = async () => {
       try {
         // const response = await fetch(`http://localhost:3001/random-videos?category=${category}`);
-        const response = await fetch(`https://synapse-music.vercel.app/random-videos?category=${category}`);
+        const response = await fetch(`https://synapse-backend.vercel.app/random-videos?category=${category}`);
         if (!response.ok) {
           throw new Error("Error while fetching random videos");
         }
@@ -37,7 +37,7 @@ export default function Home({ category }) {
     e.preventDefault();
     try {
       // const response = await fetch('http://localhost:3001/search', {
-      const response = await fetch('https://synapse-music.vercel.app/search', {
+      const response = await fetch('https://synapse-backend.vercel.app/search', {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
