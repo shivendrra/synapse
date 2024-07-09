@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import VideoCard from "./VideoCard";
 import BottomNav from "./BottomNav";
 import DisplayCards from "./DisplayCards";
+// import SearchResults from "./SearchResults";
 
 export default function Home({ category }) {
   const [searchText, setSearchText] = useState("");
@@ -12,14 +13,13 @@ export default function Home({ category }) {
   const [bottomNav, setBottomNav] = useState(false);
   const [audioTitle, setAudioTitle] = useState("");
   const [channelName, setChannelName] = useState("");
-
+  const [imsSrc, setImsSrc] = useState("");
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
     const fetchRandomVideos = async () => {
       try {
-        const response = await fetch(`https://synapse-music.vercel.app/random-videos?category=${category}`);
-        // const response = await fetch(`http://localhost:3001/random-videos?category=${category}`);
-        // const response = await fetch(` http://192.168.29.198:3001/random-videos?category=${category}`);
+        const response = await fetch(`http://localhost:3001/random-videos?category=${category}`);
         if (!response.ok) {
           throw new Error("Error while fetching random videos");
         }
@@ -29,23 +29,20 @@ export default function Home({ category }) {
         setError(error.message);
       }
     };
-  
     fetchRandomVideos();
   }, [category]);
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // const response = await fetch(' http://192.168.29.198:3001/search', {
-      // const response = await fetch(' http://localhost:3001/search', {
-      const response = await fetch(' https://synapse-music.vercel.app/search', {
+      const response = await fetch('http://localhost:3001/search', {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ query: searchText }),
       });
-  
+
       if (!response.ok) {
         throw new Error("Error while fetching videos");
       }
@@ -57,11 +54,25 @@ export default function Home({ category }) {
     }
   };
 
-  const handlePlay = (videoUrl, title, channel) => {
+  const handlePlay = (videoUrl, title, channel, imageUrl, index) => {
     setAudioUrl(videoUrl);
     setAudioTitle(title);
     setChannelName(channel);
+    setImsSrc(imageUrl);
+    setCurrentIndex(index);
     setBottomNav(true);
+  };
+
+  const handleNext = () => {
+    const nextIndex = (currentIndex + 1) % videos.length;
+    const nextVideo = videos[nextIndex];
+    handlePlay(nextVideo.videoId, nextVideo.title, nextVideo.channel, nextVideo.thumbnailUrl, nextIndex);
+  };
+
+  const handlePrevious = () => {
+    const prevIndex = (currentIndex - 1 + videos.length) % videos.length;
+    const prevVideo = videos[prevIndex];
+    handlePlay(prevVideo.videoId, prevVideo.title, prevVideo.channel, prevVideo.thumbnailUrl, prevIndex);
   };
 
   return (
@@ -110,32 +121,36 @@ export default function Home({ category }) {
       <div className="random-videos">
         {videos.length === 0 && randomVideos.length > 0 && (
           <div className="row">
-            {randomVideos.map((video) => (
+            {randomVideos.map((video, index) => (
               <div key={video.videoId} className="col-md-3 col-sm-6 col-xs-6 g-3">
                 <DisplayCards
                   title={video.title}
                   channel={video.channel}
                   imageUrl={video.thumbnailUrl}
                   videoUrl={video.videoId}
-                  onPlay={handlePlay}
+                  onPlay={() => handlePlay(video.videoId, video.title, video.channel, video.thumbnailUrl, index)}
                   description={video.description}
                 />
               </div>
             ))}
           </div>
         )}
+        {/* {videos.length > 0 && (
+          <SearchResults videos={videos} error={error}/>
+        )}
+        {error && <p>Error: {error}</p>} */}
         {videos.length > 0 && (
           <div className="video-results mt-5">
             <div className="container mt-5">
               <div className="row mt-5">
-                {videos.map((video) => (
+                {videos.map((video, index) => (
                   <div key={video.videoId} className="col-lg-12 col-xs-6">
                     <VideoCard
                       title={video.title}
                       channel={video.channel}
                       imageUrl={video.thumbnailUrl}
                       videoUrl={video.videoId}
-                      onPlay={handlePlay}
+                      onPlay={() => handlePlay(video.videoId, video.title, video.channel, video.thumbnailUrl, index)}
                       description={video.description}
                     />
                   </div>
@@ -152,6 +167,9 @@ export default function Home({ category }) {
           audioTitle={audioTitle}
           state={bottomNav}
           channelName={channelName}
+          imsSrc={imsSrc}
+          onNext={handleNext}
+          onPrevious={handlePrevious}
         />
       )}
     </>
