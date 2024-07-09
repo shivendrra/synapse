@@ -20,8 +20,8 @@ export default function Login(props) {
     e.preventDefault();
 
     try {
-      // const response = await axios.post("http://localhost:3001/save-user", formData);
-      const response = await axios.post("https://synapse-backend.vercel.app/save-user", formData);
+      const response = await axios.post("http://localhost:3001/save-user", formData);
+      // const response = await axios.post("https://synapse-backend.vercel.app/save-user", formData);
       console.log(response.data);
       alert("User data saved successfully");
     } catch (error) {
@@ -31,8 +31,8 @@ export default function Login(props) {
   };
 
   const handleLogin = () => {
-    // window.location.href = "http://localhost:3001/auth/login";
-    window.location.href = "https://synapse-backend.vercel.app/auth/login";
+    window.location.href = "http://localhost:3001/auth/login";
+    // window.location.href = "https://synapse-backend.vercel.app/auth/login";
   };
 
   return (
