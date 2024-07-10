@@ -1,10 +1,11 @@
 import React, { useState } from "react";
+import { useLocation } from "react-router-dom";
 import VideoCard from './VideoCard';
 import BottomNav from './BottomNav';
 
-export default function SearchResults(props) {
-  const videos = props.videos;
-  const error = props.error;
+export default function SearchResults() {
+  const location = useLocation();
+  const { videos, error } = location.state || { videos: [], error: null };
   const [audioUrl, setAudioUrl] = useState(null);
   const [bottomNav, setBottomNav] = useState(false);
   const [audioTitle, setAudioTitle] = useState("");
@@ -33,11 +34,10 @@ export default function SearchResults(props) {
     handlePlay(prevVideo.videoId, prevVideo.title, prevVideo.channel, prevVideo.thumbnailUrl, prevIndex);
   };
 
-
   return (
     <>
-    <div className="vid-sec">
-      {videos.length > 0 && (
+      <div className="vid-sec">
+        {videos.length > 0 && (
           <div className="video-results mt-5">
             <div className="container mt-5">
               <div className="row mt-5">
@@ -58,8 +58,8 @@ export default function SearchResults(props) {
           </div>
         )}
         {error && <p>Error: {error}</p>}
-    </div>
-    {bottomNav && (
+      </div>
+      {bottomNav && (
         <BottomNav
           audioUrl={audioUrl}
           audioTitle={audioTitle}

@@ -1,6 +1,6 @@
 body {
   font-family: 'Poppins', sans-serif;
-  background-color: #0C0C0C;
+  background-color: black;
   color: white;
 }
 
@@ -35,7 +35,7 @@ body {
 }
 
 .navbar {
-  background-color: #0C0C0C;
+  background-color: black;
 }
 
 .navbar-brand,
@@ -60,16 +60,6 @@ body {
   float: left;
 }
 
-.mainHeader {
-  margin: auto;
-  padding: 10px;
-  position: absolute;
-  top: 8%;
-  width: 100%;
-  right: 50%;
-  transform: translate(50%, 0);
-}
-
 .search-bar {
   width: 80%;
   margin: auto;
@@ -78,7 +68,7 @@ body {
 }
 
 .input-group-text {
-  background-color: #222831;
+  background-color: #181818;
   color: white;
   border: 1px solid black;
   border-right: none;
@@ -86,7 +76,7 @@ body {
 }
 
 .btn-search {
-  background-color: #222831;
+  background-color: #181818;
   border: 1px solid black;
   color: white;
   border-left: none;
@@ -104,7 +94,7 @@ body {
 
 .search-bar input {
   border: 1px solid black;
-  background-color: #222831;
+  background-color: #181818;
   color: white;
   border-left: none;
   border-right: none;
@@ -113,7 +103,7 @@ body {
 
 .search-bar input:focus {
   box-shadow: none;
-  background-color: #222831;
+  background-color: #181818;
   border: 1px solid black;
   border-right: none;
   border-left: none;
@@ -122,14 +112,16 @@ body {
 
 .random-videos {
   position: absolute;
-  top: 12%;
+  top: 5%;
   right: 50%;
   transform: translate(50%, 0%);
-  z-index: -18;
+  width: 100%;
+  margin: auto;
+  padding: 0px 30px;
 }
 
 .display-cards .card {
-  background-color: #222831;
+  background-color: #0C0C0C;
   color: white;
 }
 
@@ -151,10 +143,10 @@ body {
 
 .footer {
   position: absolute;
-  bottom: -170%;
+  bottom: -75%;
   right: 50%;
-  padding-bottom: 20px;
   transform: translate(50%, 0%);
+  padding-bottom: 20px;
 }
 
 /* #76ABAE */
@@ -169,7 +161,7 @@ body {
 
 .bottom-nav {
   width: 100%;
-  background-color: #161717;
+  background-color: black;
   color: white;
   padding: 0px;
   margin: auto;

@@ -40,7 +40,7 @@ app.get('/', (req, res) => {
 
 app.get('/random-videos', async (req, res) => {
   try {
-    const maxResults = 20;
+    const maxResults = 24;
     const videoCategoryId = req.query.category || '10'; // Default to Music category
 
     const response = await axios.get('https://www.googleapis.com/youtube/v3/videos', {

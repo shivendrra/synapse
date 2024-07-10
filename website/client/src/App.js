@@ -20,7 +20,7 @@ function App() {
         <Navbar onCategoryChange={handleCategoryChange} />
         <Routes>
           <Route exact path='/' element={<Home category={category} />} />
-          <Route path="/search" component={SearchResults} />
+          <Route path="/search" element={<SearchResults/>}/>
           <Route exact path='/login' element={<Login />} />
         </Routes>
         <Footer />

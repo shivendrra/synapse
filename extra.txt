@@ -37,3 +37,6 @@
             <p>{formatTime(duration)}</p>
           </div>
           <div id="ytplayer" className="d-none"></div> */}
+
+// const response = await fetch(`https://synapse-backend.vercel.app/random-videos?category=${category}`);
+// const response = await fetch('https://synapse-backend.vercel.app/search', {
