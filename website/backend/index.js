@@ -5,6 +5,8 @@ const loginRouter = require('./login');
 const { MongoClient } = require('mongodb');
 const app = express();
 require('dotenv').config({ path: '.env' });
+const AuthRouter = require('./routes/AuthRoutes');
+require('./models/db');
 
 const allowedOrigins = [
   'http://192.168.29.198:3000',
