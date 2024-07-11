@@ -1,12 +1,12 @@
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
-const loginRouter = require('./login');
+const authRouter = require('./Routes/AuthRouter');
+const prodRouter = require('./Routes/ProductRouter');
 const { MongoClient } = require('mongodb');
 const app = express();
 require('dotenv').config({ path: '.env' });
-const AuthRouter = require('./routes/AuthRoutes');
-require('./models/db');
+require('./Models/db');
 
 const allowedOrigins = [
   'http://192.168.29.198:3000',
@@ -30,7 +30,8 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
-app.use('/auth', loginRouter);
+app.use('/auth', authRouter);
+app.use('/products', prodRouter);
 
 const uri = process.env.MONGODB_URI;
 const dbName = process.env.MONGODB_DB_NAME;
