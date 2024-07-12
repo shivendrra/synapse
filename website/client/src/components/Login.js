@@ -25,7 +25,8 @@ export default function Login() {
       return handleError('All fields are required!');
     }
     try {
-      const url = 'http://localhost:3001/auth/login';
+      // const url = 'http://localhost:3001/auth/login';
+      const url = 'https://synapse-backend.vercel.app/auth/login';
       const response = await fetch(url, {
         method: 'POST',
         headers: {

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import VideoCard from './VideoCard';
 import BottomNav from './BottomNav';
 import { handleError } from '../utils';
+import { ToastContainer } from 'react-toastify';
 
 export default function SearchResults() {
   const [videos, setVideos] = useState([]);
@@ -25,7 +26,8 @@ export default function SearchResults() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:3001/search', {
+      // const response = await fetch('http://localhost:3001/search', {
+      const response = await fetch('https://synapse-backend.vercel.app/search', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -107,6 +109,7 @@ export default function SearchResults() {
           onPrevious={handlePrevious}
         />
       )}
+      <ToastContainer/>
     </>
   );
 }

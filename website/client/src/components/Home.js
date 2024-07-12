@@ -1,15 +1,15 @@
-import React, { useState, useEffect, useCallback } from "react";
-import BottomNav from "./BottomNav";
-import DisplayCards from "./DisplayCards";
-import { handleError } from "../utils";
+import React, { useState, useEffect, useCallback } from 'react';
+import BottomNav from './BottomNav';
+import DisplayCards from './DisplayCards';
+import { handleError } from '../utils';
 
 export default function Home({ category }) {
   const [randomVideos, setRandomVideos] = useState([]);
   const [audioUrl, setAudioUrl] = useState(null);
   const [bottomNav, setBottomNav] = useState(false);
-  const [audioTitle, setAudioTitle] = useState("");
-  const [channelName, setChannelName] = useState("");
-  const [imsSrc, setImsSrc] = useState("");
+  const [audioTitle, setAudioTitle] = useState('');
+  const [channelName, setChannelName] = useState('');
+  const [imsSrc, setImsSrc] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loggedInUser, setLoggedInUser] = useState(false);
 
@@ -19,10 +19,11 @@ export default function Home({ category }) {
 
   const fetchRandomVideos = useCallback(async () => {
     try {
-      const url = `http://localhost:3001/content/random-videos?category=${category}`;
+      // const url = `http://localhost:3001/content/random-videos?category=${category}`;
+      const url = `https://synapse-backend.vercel.app/content/random-videos?category=${category}`;
       const response = await fetch(url);
       if (!response.ok) {
-        throw new Error("Error while fetching random videos");
+        throw new Error('Error while fetching random videos');
       }
       const results = await response.json();
       setRandomVideos(results);
@@ -65,11 +66,11 @@ export default function Home({ category }) {
   return (
     <>
       <h4>Welcome, {loggedInUser}</h4>
-      <div className="random-videos">
+      <div className='random-videos'>
         {randomVideos.length > 0 && (
-          <div className="row">
+          <div className='row'>
             {randomVideos.map((video, index) => (
-              <div key={video.videoId} className="col-lg-2 col-sm-6 p-2">
+              <div key={video.videoId} className='col-lg-2 col-sm-6 p-2'>
                 <DisplayCards
                   title={video.title}
                   channel={video.channel}
