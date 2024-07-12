@@ -1,13 +1,14 @@
-require('dotenv').config({path: '.env'});
+require('dotenv').config({ path: '.env' });
 const axios = require('axios');
 
 const videoResults = async (req, res) => {
   try {
     const maxResults = 24;
     const videoCategoryId = req.query.category || '10';
+    const api_key = process.env.yt_key
     const response = await axios.get('https://www.googleapis.com/youtube/v3/videos', {
       params: {
-        key: process.env.API_KEY,
+        key: api_key,
         part: 'snippet',
         chart: 'mostPopular',
         maxResults: maxResults,
@@ -25,12 +26,10 @@ const videoResults = async (req, res) => {
       }));
 
       res.json(videos);
-      console.log("videos: \n"+videos);
     } else {
       res.status(response.status).send('Error fetching random videos');
     }
-  }
-  catch (error) {
+  } catch (error) {
     console.error(error);
     res.status(500).send('Error fetching random videos');
   }

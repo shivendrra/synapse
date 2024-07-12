@@ -11,20 +11,16 @@ export default function Home({ category }) {
   const [channelName, setChannelName] = useState("");
   const [imsSrc, setImsSrc] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [loggedInUser, setLoggedInUser] = useState('');
+  const [loggedInUser, setLoggedInUser] = useState(false);
 
   useEffect(() => {
-    setLoggedInUser(localStorage.getItem('loggedInUser'));
+    setLoggedInUser(true);
   }, []);
 
   const fetchRandomVideos = useCallback(async () => {
     try {
-      const url = `http://localhost:3001/random-videos?category=${category}`;
-      const headers = {
-        'Authorization': localStorage.getItem('token'),
-        'Content-Type': 'application/json'
-      };
-      const response = await fetch(url, { headers });
+      const url = `http://localhost:3001/content/random-videos?category=${category}`;
+      const response = await fetch(url);
       if (!response.ok) {
         throw new Error("Error while fetching random videos");
       }

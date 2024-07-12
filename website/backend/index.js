@@ -30,7 +30,7 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 app.use('/auth', authRouter);
-app.use('/random-videos', videoRouter);
+app.use('/content', videoRouter);
 
 const API_KEY = process.env.yt_key;
 

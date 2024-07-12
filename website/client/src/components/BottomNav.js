@@ -9,7 +9,7 @@ export default function BottomNav(props) {
   const intervalRef = useRef(null);
   const playerRef = useRef(null);
   const [isRepeating, setIsRepeating] = useState(false);
-  const [volume, setVolume] = useState(8);
+  const [volume, setVolume] = useState('100');
 
   useEffect(() => {
     const loadYouTubeIframeAPI = () => {
@@ -193,7 +193,7 @@ export default function BottomNav(props) {
                   <path d='M5 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 5 8m0-2.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m0 5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m-1-5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0M4 8a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0m0 2.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0' />
                 </svg>
               </button>
-              <button className='option-btn px-3 d-flex align-items-center' title='Volume'>
+              <span className='option-btn px-3 d-flex align-items-center' title='Volume'>
                 <svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='currentColor' className='bi bi-volume-up' viewBox='0 0 16 16'>
                   <path d='M11.536 14.01A8.47 8.47 0 0 0 14.026 8a8.47 8.47 0 0 0-2.49-6.01l-.708.707A7.48 7.48 0 0 1 13.025 8c0 2.071-.84 3.946-2.197 5.303z' />
                   <path d='M10.121 12.596A6.48 6.48 0 0 0 12.025 8a6.48 6.48 0 0 0-1.904-4.596l-.707.707A5.48 5.48 0 0 1 11.025 8a5.48 5.48 0 0 1-1.61 3.89z' />
@@ -205,10 +205,11 @@ export default function BottomNav(props) {
                   min='0'
                   max='1'
                   step='0.1'
+                  disabled
                   value={volume}
                   onChange={handleVolumeChange}
                 />
-              </button>
+              </span>
             </div>
           </div>
         </div>

@@ -39,6 +39,5 @@ DisplayCards.propTypes = {
   channel: PropTypes.string.isRequired,
   imageUrl: PropTypes.string.isRequired,
   videoUrl: PropTypes.string.isRequired,
-  description: PropTypes.string.isRequired,
   onPlay: PropTypes.func.isRequired,
 };
