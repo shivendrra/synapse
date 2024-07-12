@@ -25,7 +25,7 @@ export default function Login() {
       return handleError('All fields are required!');
     }
     try {
-      const url = "http://localhost:3001/auth/login";
+      const url = 'http://localhost:3001/auth/login';
       const response = await fetch(url, {
         method: 'POST',
         headers: {
@@ -79,18 +79,18 @@ export default function Login() {
               </span>
               <input className='form-control' type='password' name='password' value={loginInfo.password} autoFocus placeholder='Password' onChange={handleChange} aria-label='Password' aria-describedby='basic-addon4' />
             </div>
-            <div className="col-md-12 text-center">
+            <div className='col-md-12 text-center'>
               <button className='btn btn-outline-danger' type='submit'>
                 Login
               </button>
             </div>
-            <div className="col-md-12 text-center">
+            <div className='col-md-12 text-center'>
               <span>Don't have an account? <Link to='/signup'>Signup</Link></span>
             </div>
           </form>
         </div>
-        <ToastContainer />
       </div>
+      <ToastContainer />
     </>
   )
 }

@@ -5,11 +5,11 @@ export default function DisplayResults() {
   return (
     <>
       {videos.length > 0 && (
-        <div className="video-results py-5">
-          <div className="container">
-            <div className="row">
+        <div className='video-results py-5'>
+          <div className='container'>
+            <div className='row'>
               {videos.map((video) => (
-                <div key={video.videoId} className="col-lg-12">
+                <div key={video.videoId} className='col-lg-12'>
                   <VideoCard
                     title={video.title}
                     channel={video.channel}

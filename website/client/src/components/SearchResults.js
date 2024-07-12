@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useLocation } from "react-router-dom";
+import React, { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import VideoCard from './VideoCard';
 import BottomNav from './BottomNav';
 
@@ -8,9 +8,9 @@ export default function SearchResults() {
   const { videos, error } = location.state || { videos: [], error: null };
   const [audioUrl, setAudioUrl] = useState(null);
   const [bottomNav, setBottomNav] = useState(false);
-  const [audioTitle, setAudioTitle] = useState("");
-  const [channelName, setChannelName] = useState("");
-  const [imsSrc, setImsSrc] = useState("");
+  const [audioTitle, setAudioTitle] = useState('');
+  const [channelName, setChannelName] = useState('');
+  const [imsSrc, setImsSrc] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const handlePlay = (videoUrl, title, channel, imageUrl, index) => {
@@ -36,13 +36,13 @@ export default function SearchResults() {
 
   return (
     <>
-      <div className="vid-sec">
+      <div className='vid-sec'>
         {videos.length > 0 && (
-          <div className="video-results mt-5">
-            <div className="container mt-5">
-              <div className="row mt-5">
+          <div className='video-results mt-5'>
+            <div className='container mt-5'>
+              <div className='row mt-5'>
                 {videos.map((video, index) => (
-                  <div key={video.videoId} className="col-lg-12 col-xs-6">
+                  <div key={video.videoId} className='col-lg-12 col-xs-6'>
                     <VideoCard
                       title={video.title}
                       channel={video.channel}
