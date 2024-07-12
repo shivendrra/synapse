@@ -19,6 +19,12 @@ body {
   max-width: 100%;
 }
 
+.dropdown-menu {
+  min-width: 150px !important;
+  font-size: 0.875rem;
+  line-height: 1.2rem;
+}
+
 .maker-url a,
 .maker-url a:focus,
 .maker-url a:active {
@@ -60,8 +66,29 @@ body {
   float: left;
 }
 
-.search-bar {
+.vid-sec {
+  width: 70%;
+  position: absolute;
+  top: 10%;
+  right: 50%;
+  transform: translate(50%, -0%);
+}
+
+.video-results {
   width: 80%;
+  margin: auto;
+}
+
+.video-results .img-thumbnail {
+  border: none;
+  padding: 0px;
+  border-radius: 4px 4px 0px 0px;
+}
+
+.search-bar,
+.search-bar:hover,
+.search-bar:focus {
+  width: 100%;
   margin: auto;
   border-radius: 100px;
   padding: 0px;
@@ -180,10 +207,14 @@ body {
 }
 
 .title-sec .img-thumbnail {
+  width: 100%;
+  height: 100%;
   border: none;
   padding: 0px;
   margin: 0px;
   border-radius: 0px;
+  background-size: cover;
+  background-position: center;
 }
 
 .play-center {
@@ -200,12 +231,6 @@ body {
   background: transparent;
   cursor: pointer;
   width: 80%;
-  /* --thumb-height: 1em;
-  --track-height: 0.025em;
-  --track-color: rgba(0, 0, 0, 0.2);
-  --brightness-hover: 180%;
-  --brightness-down: 80%;
-  --clip-edges: 0.125em; */
 }
 
 input[type=range]::-webkit-slider-runnable-track {
@@ -240,13 +265,39 @@ input[type=range]::-webkit-slider-thumb {
   justify-content: center;
 }
 
-.login-form {
-  width: 50%;
+.login,
+.signup {
+  width: 40%;
   position: absolute;
   margin: auto;
-  top: 25%;
+  top: 50%;
   right: 50%;
-  transform: translate(50%, 0%);
+  transform: translate(50%, -50%);
+  background-color: white;
+  padding: 80px 50px;
+  border-radius: 20px;
+  color: black;
+}
+
+.login .form-control,
+.signup .form-control {
+  border: none;
+  border-bottom: 1px solid #0C0C0C;
+  border-radius: 0px;
+}
+
+.login .input-group-text,
+.signup .input-group-text {
+  background-color: transparent;
+  border-radius: 0px;
+  color: black;
+  border-color: #A9C52F;
+}
+
+.login .btn,
+.signup .btn {
+  border-radius: 0px;
+  width: 100%;
 }
 
 @media only screen and (max-width: 600px) {
@@ -264,8 +315,10 @@ input[type=range]::-webkit-slider-thumb {
     transform: translate(50%, 0);
   }
 
-  .search-bar {
-    width: 100%;
+  .search-bar,
+  .search-bar:hover,
+  .search-bar:focus {
+    width: 90%;
     margin: auto;
   }
 
@@ -278,18 +331,6 @@ input[type=range]::-webkit-slider-thumb {
     padding: 10px 0px;
   }
 
-  .video-results {
-    position: absolute;
-    top: 20%;
-    transform: translate(50%, 50%);
-  }
-
-  .video-results .img-thumbnail {
-    border: none;
-    padding: 0px;
-    border-radius: 4px 4px 0px 0px;
-  }
-
   .video-card .card {
     border: 1px solid black;
     border-radius: 5px;
@@ -298,8 +339,9 @@ input[type=range]::-webkit-slider-thumb {
 
   .bottom-nav {
     width: 100%;
-    background-color: #A9C52F;
-    padding: 10px 15px 0px 15px;
+    background-color: black;
+    color: white;
+    padding: 0px;
     margin: auto;
     position: fixed;
     bottom: 0;
@@ -308,12 +350,17 @@ input[type=range]::-webkit-slider-thumb {
     z-index: 20;
   }
 
-  .video-results {
-    position: absolute;
-    top: 12%;
-    right: 50%;
-    transform: translate(50%, 0%);
-    z-index: -18;
+  .bottom-nav .options {
+    display: none;
+  }
+
+  .bottom-nav .title-sec .img-thumbnail {
+    height: 100px;
+    max-width: max-content;
+    object-fit: cover;
+    background-size: cover;
+    border: none;
+    background-position: center;
   }
 
   .bottom-nav .row .col-lg-12 {
@@ -337,20 +384,38 @@ input[type=range]::-webkit-slider-thumb {
     width: 95%;
   }
 
-  .video-results {
+  .vid-sec {
+    width: 90%;
     position: absolute;
     top: 12%;
     right: 50%;
     transform: translate(50%, 0%);
   }
 
-  .login-form {
-    width: 90%;
+  .video-results {
+    width: 100%;
+    padding: 0px;
+    margin: none;
+  }
+
+  .video-results .img-thumbnail {
+    border: none;
+    padding: 0px;
+    border-radius: 4px 4px 0px 0px;
+  }
+
+  .login,
+  .signup {
+    width: 50%;
     position: absolute;
     margin: auto;
-    top: 15%;
+    top: 50%;
     right: 50%;
-    transform: translate(50%, 0%);
+    transform: translate(50%, -50%);
+    background-color: white;
+    padding: 80px 50px;
+    border-radius: 20px;
+    color: black;
   }
 
   .footer {

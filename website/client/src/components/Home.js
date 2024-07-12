@@ -1,34 +1,42 @@
-import React, { useState, useEffect } from "react";
-import BottomNav from "./BottomNav";
-import DisplayCards from "./DisplayCards";
+import React, { useState, useEffect, useCallback } from 'react';
+import BottomNav from './BottomNav';
+import DisplayCards from './DisplayCards';
+import { handleError } from '../utils';
 
 export default function Home({ category }) {
   const [randomVideos, setRandomVideos] = useState([]);
-  const [error, setError] = useState(null);
   const [audioUrl, setAudioUrl] = useState(null);
   const [bottomNav, setBottomNav] = useState(false);
-  const [audioTitle, setAudioTitle] = useState("");
-  const [channelName, setChannelName] = useState("");
-  const [imsSrc, setImsSrc] = useState("");
+  const [audioTitle, setAudioTitle] = useState('');
+  const [channelName, setChannelName] = useState('');
+  const [imsSrc, setImsSrc] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [loggedInUser, setLoggedInUser] = useState(false);
 
-  console.log(error);
   useEffect(() => {
-    const fetchRandomVideos = async () => {
-      try {
-        // const response = await fetch(`http://localhost:3001/random-videos?category=${category}`);
-        const response = await fetch(`https://synapse-backend.vercel.app/random-videos?category=${category}`);
-        if (!response.ok) {
-          throw new Error("Error while fetching random videos");
-        }
-        const data = await response.json();
-        setRandomVideos(data);
-      } catch (error) {
-        setError(error.message);
+    setLoggedInUser(true);
+  }, []);
+
+  const fetchRandomVideos = useCallback(async () => {
+    try {
+      // const url = `http://localhost:3001/content/random-videos?category=${category}`;
+      const url = `https://synapse-backend.vercel.app/content/random-videos?category=${category}`;
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error('Error while fetching random videos');
       }
-    };
-    fetchRandomVideos();
+      const results = await response.json();
+      setRandomVideos(results);
+    } catch (err) {
+      handleError(err);
+    }
   }, [category]);
+
+  useEffect(() => {
+    if (loggedInUser) {
+      fetchRandomVideos();
+    }
+  }, [category, loggedInUser, fetchRandomVideos]);
 
   const handlePlay = (videoUrl, title, channel, imageUrl, index) => {
     setAudioUrl(videoUrl);
@@ -51,13 +59,18 @@ export default function Home({ category }) {
     handlePlay(prevVideo.videoId, prevVideo.title, prevVideo.channel, prevVideo.thumbnailUrl, prevIndex);
   };
 
+  if (!loggedInUser) {
+    return <h4>Please log in to see content</h4>;
+  }
+
   return (
     <>
-      <div className="random-videos">
+      <h4>Welcome, {loggedInUser}</h4>
+      <div className='random-videos'>
         {randomVideos.length > 0 && (
-          <div className="row">
+          <div className='row'>
             {randomVideos.map((video, index) => (
-              <div key={video.videoId} className="col-lg-2 col-sm-6 p-2">
+              <div key={video.videoId} className='col-lg-2 col-sm-6 p-2'>
                 <DisplayCards
                   title={video.title}
                   channel={video.channel}
