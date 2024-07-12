@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import BottomNav from "./BottomNav";
 import DisplayCards from "./DisplayCards";
+import { handleError } from "../utils";
 
 export default function Home({ category }) {
   const [randomVideos, setRandomVideos] = useState([]);
@@ -11,13 +12,37 @@ export default function Home({ category }) {
   const [channelName, setChannelName] = useState("");
   const [imsSrc, setImsSrc] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [loggedInUser, setLoggedInUser] = useState('');
+  const [products, setProducts] = useState('');
 
   console.log(error);
   useEffect(() => {
+    setLoggedInUser(localStorage.getItem('loggedInUser'))
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      const url = 'http://localhost:3001/products';
+      const headers = {
+        headers: {
+          'Authorization': localStorage.getItem('token')
+        }
+      }
+      const response = await fetch(url, headers);
+      const results = response.json();
+      setProducts(results);
+    } catch (err) {
+      handleError(err);
+    }
+  }
+  useEffect(() => {
+    fetchProducts();
+  })
+
+  useEffect(() => {
     const fetchRandomVideos = async () => {
       try {
-        // const response = await fetch(`http://localhost:3001/random-videos?category=${category}`);
-        const response = await fetch(`https://synapse-backend.vercel.app/random-videos?category=${category}`);
+        const response = await fetch(`http://localhost:3001/random-videos?category=${category}`);
         if (!response.ok) {
           throw new Error("Error while fetching random videos");
         }
@@ -53,6 +78,7 @@ export default function Home({ category }) {
 
   return (
     <>
+      <h4>Welcome, {loggedInUser}</h4>
       <div className="random-videos">
         {randomVideos.length > 0 && (
           <div className="row">

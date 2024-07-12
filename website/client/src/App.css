@@ -240,13 +240,39 @@ input[type=range]::-webkit-slider-thumb {
   justify-content: center;
 }
 
-.login-form {
-  width: 50%;
+.login,
+.signup {
+  width: 40%;
   position: absolute;
   margin: auto;
-  top: 25%;
+  top: 50%;
   right: 50%;
-  transform: translate(50%, 0%);
+  transform: translate(50%, -50%);
+  background-color: white;
+  padding: 80px 50px;
+  border-radius: 20px;
+  color: black;
+}
+
+.login .form-control,
+.signup .form-control {
+  border: none;
+  border-bottom: 1px solid #0C0C0C;
+  border-radius: 0px;
+}
+
+.login .input-group-text,
+.signup .input-group-text {
+  background-color: transparent;
+  border-radius: 0px;
+  color: black;
+  border-color: #A9C52F;
+}
+
+.login .btn,
+.signup .btn {
+  border-radius: 0px;
+  width: 100%;
 }
 
 @media only screen and (max-width: 600px) {
@@ -344,13 +370,18 @@ input[type=range]::-webkit-slider-thumb {
     transform: translate(50%, 0%);
   }
 
-  .login-form {
-    width: 90%;
+  .login,
+  .signup {
+    width: 50%;
     position: absolute;
     margin: auto;
-    top: 15%;
+    top: 50%;
     right: 50%;
-    transform: translate(50%, 0%);
+    transform: translate(50%, -50%);
+    background-color: white;
+    padding: 80px 50px;
+    border-radius: 20px;
+    color: black;
   }
 
   .footer {
