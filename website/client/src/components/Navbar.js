@@ -1,23 +1,45 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { handleSuccess } from '../utils';
 
 export default function Navbar({ onCategoryChange }) {
   const [searchText, setSearchText] = useState('');
   const [loggedInUser, setLoggedInUser] = useState('');
+  const [username, setUsername] = useState('');
+  const [showNav, setShowNav] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleCategorySelect = (categoryId) => {
     onCategoryChange(categoryId);
   };
 
   useEffect(() => {
-    setLoggedInUser(localStorage.getItem('loggedInUser'));
+    if (location.pathname === '/login' || location.pathname === '/signup') {
+      setShowNav(false);
+    } else {
+      setShowNav(true);
+    }
+  }, [location.pathname]);
+  
+  useEffect(() => {
+    setLoggedInUser(true);
+    setUsername(localStorage.getItem('name'));
   }, []);
+  
+  useEffect(() => {
+    if (loggedInUser) {
+      setUsername(localStorage.getItem('name'));
+    }
+    else {
+      setUsername('');
+    }
+  }, [loggedInUser, username]);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('loggedInUser');
+    setUsername('');
     handleSuccess('User logged out Successfully!');
     setTimeout(() => {
       navigate('/login');
@@ -45,9 +67,13 @@ export default function Navbar({ onCategoryChange }) {
     }
   };
 
+  if (!showNav) {
+    return null;
+  }
+
   return (
     <>
-      <nav id='mainNavbar' className={`navbar navbar-expand fixed-top`}>
+      <nav id='mainNavbar' className={`navbar navbar-expand fixed-top d-${showNav}`} style={{display: `${showNav}`}}>
         <div id='innerNav' className='container-fluid'>
           <Link className='navbar-brand mx-3' to='/'>
             Synapse
@@ -62,7 +88,7 @@ export default function Navbar({ onCategoryChange }) {
                         <path d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0' />
                       </svg>
                     </span>
-                    <input className='form-control' type='search' placeholder='What do you want to listen to?' aria-label='Search' value={searchText} onChange={(e) => setSearchText(e.target.value)} />
+                    <input className='form-control' name='search' type='search' placeholder='What do you want to listen to?' aria-label='Search' value={searchText} onChange={(e) => setSearchText(e.target.value)} />
                     <button className='btn btn-search' type='submit'>
                       <svg xmlns='http://www.w3.org/2000/svg' width='18' height='18' fill='currentColor' className='bi bi-arrow-right m-0 p-0' viewBox='0 0 16 16'>
                         <path fillRule='evenodd' d='M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8' />
@@ -96,7 +122,7 @@ export default function Navbar({ onCategoryChange }) {
               {loggedInUser ? (
                 <li className='nav-item ms-3'>
                   <span className='nav-link' onClick={handleLogout}>
-                    {loggedInUser}
+                    {username}
                   </span>
                 </li>
               ) : (

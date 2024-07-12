@@ -22,7 +22,6 @@ export default function Signup() {
   const handleSignup = async (e) => {
     e.preventDefault();
     const { name, username, email, password } = signupInfo;
-    console.log(signupInfo);
     if (!name || !username || !email || !password) {
       return handleError('All fields are required!');
     }

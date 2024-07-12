@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import BottomNav from "./BottomNav";
 import DisplayCards from "./DisplayCards";
 import { handleError } from "../utils";
 
 export default function Home({ category }) {
   const [randomVideos, setRandomVideos] = useState([]);
-  const [error, setError] = useState(null);
   const [audioUrl, setAudioUrl] = useState(null);
   const [bottomNav, setBottomNav] = useState(false);
   const [audioTitle, setAudioTitle] = useState("");
@@ -13,47 +12,34 @@ export default function Home({ category }) {
   const [imsSrc, setImsSrc] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loggedInUser, setLoggedInUser] = useState('');
-  const [products, setProducts] = useState('');
 
-  console.log(error);
   useEffect(() => {
-    setLoggedInUser(localStorage.getItem('loggedInUser'))
+    setLoggedInUser(localStorage.getItem('loggedInUser'));
   }, []);
 
-  const fetchProducts = async () => {
+  const fetchRandomVideos = useCallback(async () => {
     try {
-      const url = 'http://localhost:3001/products';
+      const url = `http://localhost:3001/random-videos?category=${category}`;
       const headers = {
-        headers: {
-          'Authorization': localStorage.getItem('token')
-        }
+        'Authorization': localStorage.getItem('token'),
+        'Content-Type': 'application/json'
+      };
+      const response = await fetch(url, { headers });
+      if (!response.ok) {
+        throw new Error("Error while fetching random videos");
       }
-      const response = await fetch(url, headers);
-      const results = response.json();
-      setProducts(results);
+      const results = await response.json();
+      setRandomVideos(results);
     } catch (err) {
       handleError(err);
     }
-  }
-  useEffect(() => {
-    fetchProducts();
-  })
+  }, [category]);
 
   useEffect(() => {
-    const fetchRandomVideos = async () => {
-      try {
-        const response = await fetch(`http://localhost:3001/random-videos?category=${category}`);
-        if (!response.ok) {
-          throw new Error("Error while fetching random videos");
-        }
-        const data = await response.json();
-        setRandomVideos(data);
-      } catch (error) {
-        setError(error.message);
-      }
-    };
-    fetchRandomVideos();
-  }, [category]);
+    if (loggedInUser) {
+      fetchRandomVideos();
+    }
+  }, [category, loggedInUser, fetchRandomVideos]);
 
   const handlePlay = (videoUrl, title, channel, imageUrl, index) => {
     setAudioUrl(videoUrl);
@@ -75,6 +61,10 @@ export default function Home({ category }) {
     const prevVideo = randomVideos[prevIndex];
     handlePlay(prevVideo.videoId, prevVideo.title, prevVideo.channel, prevVideo.thumbnailUrl, prevIndex);
   };
+
+  if (!loggedInUser) {
+    return <h4>Please log in to see content</h4>;
+  }
 
   return (
     <>

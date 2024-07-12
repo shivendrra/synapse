@@ -38,7 +38,9 @@ export default function Login() {
       if (success) {
         handleSuccess(message);
         localStorage.setItem('token', jwtToken);
+        console.log(jwtToken);
         localStorage.setItem('name', name);
+        console.log(name);
         setTimeout(() => {
           navigate('/home');
         }, 1000);

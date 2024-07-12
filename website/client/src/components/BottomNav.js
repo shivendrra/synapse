@@ -111,11 +111,11 @@ export default function BottomNav(props) {
     <>
       <div className={`bottom-nav ${!state && 'd-none'} p-1`}>
         <div className='row gx-0'>
-          <div className='col-lg-4 title-sec'>
+          <div className='col-lg-4 col-sm-4 title-sec'>
             <div className='col-lg-4 m-auto'>
               <img src={imsSrc} alt='...' className='img-thumbnail' />
             </div>
-            <div className='col-lg-8 p-2'>
+            <div className='col-lg-8 col-sm-8 p-2'>
               <h5 className='audio-title' style={{fontSize: 'smaller'}}>{he.decode(audioTitle)}</h5>
               <h6 className='audio-src' style={{fontSize: 'smaller'}}>{he.decode(channelName)}</h6>
             </div>
@@ -180,8 +180,8 @@ export default function BottomNav(props) {
               <div id='ytplayer' className='d-none'></div>
             </div>
           </div>
-          <div className='col-lg-4 m-auto ps-5'>
-            <div className='options float-end d-flex align-items-center'>
+          <div className='col-lg-4 options m-auto ps-5'>
+            <div className='float-end d-flex align-items-center'>
               <button className='option-btn px-3' title='Queue'>
                 <svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='currentColor' className='bi bi-view-list' viewBox='0 0 16 16'>
                   <path d='M3 4.5h10a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2m0 1a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1zM1 2a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13A.5.5 0 0 1 1 2m0 12a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13A.5.5 0 0 1 1 14' />
