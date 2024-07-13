@@ -75,3 +75,7 @@ app.post('/search', async (req, res) => {
 app.listen(3001, () => {
   console.log('Server is running on port 3001');
 });
+
+module.exports = (req, res) => {
+  res.status(200).json({ message: "Hello, world!" });
+};
