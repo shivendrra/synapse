@@ -8,3 +8,5 @@ mongoose.connect(mongo_url)
   }).catch( (err) => {
     console.log("Database has some error: " + err);
   })
+
+module.exports = mongoose;

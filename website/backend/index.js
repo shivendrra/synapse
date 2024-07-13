@@ -1,3 +1,8 @@
+const fs = require('fs');
+const path = require('path');
+console.log('Current directory:', __dirname);
+console.log('Files:', fs.readdirSync(path.join(__dirname, 'Models')));
+
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
