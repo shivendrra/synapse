@@ -3,7 +3,7 @@ const cors = require('cors');
 const axios = require('axios');
 const app = express();
 require('dotenv').config({ path: '.env' });
-require('./Models/db');
+require('../backend/Models/db');
 
 const authRouter = require('./Routes/AuthRouter');
 const videoRouter = require('./Routes/VideoRouter');
