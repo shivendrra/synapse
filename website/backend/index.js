@@ -1,9 +1,15 @@
+const fs = require('fs');
+const path = require('path');
+
+console.log('Current directory:', __dirname);
+console.log('Files in Models directory:', fs.readdirSync(path.join(__dirname, 'Models')));
+
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
 const app = express();
 require('dotenv').config({ path: '.env' });
-require('../backend/Models/db');
+require('./models/db');
 
 const authRouter = require('./Routes/AuthRouter');
 const videoRouter = require('./Routes/VideoRouter');

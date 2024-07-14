@@ -406,7 +406,7 @@ input[type=range]::-webkit-slider-thumb {
 
   .login,
   .signup {
-    width: 50%;
+    width: 90%;
     position: absolute;
     margin: auto;
     top: 50%;
