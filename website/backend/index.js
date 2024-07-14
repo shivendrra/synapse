@@ -9,8 +9,17 @@ const cors = require('cors');
 const axios = require('axios');
 const app = express();
 require('dotenv').config({ path: '.env' });
-console.log(process.env.MONGODB_URL);
-require('./Models/db');
+
+const mongoose = require('mongoose');
+const mongo_url = process.env.MONGODB_URL;
+console.log("in db.js");
+
+mongoose.connect(mongo_url)
+  .then( ()=> {
+    console.log("Database connected...");
+  }).catch( (err) => {
+    console.log("Database has some error: " + err);
+  })
 
 const authRouter = require('./Routes/AuthRouter');
 const videoRouter = require('./Routes/VideoRouter');
