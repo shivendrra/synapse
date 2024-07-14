@@ -57,7 +57,7 @@ export default function Navbar({ onCategoryChange }) {
             Synapse
           </Link>
           <div className='navbar-items'>
-            <ul className='navbar-nav mx-3'>
+            <ul className='navbar-nav ms-3'>
               <li className='nav-item m-auto px-2'>
                 <Link to='/search' className='option-btn'>
                   <svg xmlns='http://www.w3.org/2000/svg' width='30' height='30' fill='currentColor' className='bi bi-search' viewBox='0 0 16 16'>

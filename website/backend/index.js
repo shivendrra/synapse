@@ -15,6 +15,7 @@ const authRouter = require('./Routes/AuthRouter');
 const videoRouter = require('./Routes/VideoRouter');
 
 const allowedOrigins = [
+  'http://192.168.29.198:3000',
   'http://localhost:3000',
   'https://synapse-music.vercel.app',
 ];
