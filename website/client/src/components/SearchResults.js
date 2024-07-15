@@ -1,27 +1,10 @@
 import React, { useState } from 'react';
 import VideoCard from './VideoCard';
-import BottomNav from './BottomNav';
 import { handleError } from '../utils';
 import { ToastContainer } from 'react-toastify';
 
-export default function SearchResults() {
-  const [videos, setVideos] = useState([]);
-  const [audioUrl, setAudioUrl] = useState(null);
-  const [bottomNav, setBottomNav] = useState(false);
-  const [audioTitle, setAudioTitle] = useState('');
-  const [channelName, setChannelName] = useState('');
-  const [imsSrc, setImsSrc] = useState('');
-  const [currentIndex, setCurrentIndex] = useState(0);
+export default function SearchResults({ onPlay, videos, setVideos }) {
   const [searchText, setSearchText] = useState('');
-
-  const handlePlay = (videoUrl, title, channel, imageUrl, index) => {
-    setAudioUrl(videoUrl);
-    setAudioTitle(title);
-    setChannelName(channel);
-    setImsSrc(imageUrl);
-    setCurrentIndex(index);
-    setBottomNav(true);
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -43,18 +26,6 @@ export default function SearchResults() {
     } catch (err) {
       handleError(err);
     }
-  };
-
-  const handleNext = () => {
-    const nextIndex = (currentIndex + 1) % videos.length;
-    const nextVideo = videos[nextIndex];
-    handlePlay(nextVideo.videoId, nextVideo.title, nextVideo.channel, nextVideo.thumbnailUrl, nextIndex);
-  };
-
-  const handlePrevious = () => {
-    const prevIndex = (currentIndex - 1 + videos.length) % videos.length;
-    const prevVideo = videos[prevIndex];
-    handlePlay(prevVideo.videoId, prevVideo.title, prevVideo.channel, prevVideo.thumbnailUrl, prevIndex);
   };
 
   return (
@@ -88,7 +59,7 @@ export default function SearchResults() {
                       channel={video.channel}
                       imageUrl={video.thumbnailUrl}
                       videoUrl={video.videoId}
-                      onPlay={() => handlePlay(video.videoId, video.title, video.channel, video.thumbnailUrl, index)}
+                      onPlay={() => onPlay(video.videoId, video.title, video.channel, video.thumbnailUrl, index)}
                       description={video.description}
                     />
                   </div>
@@ -98,18 +69,7 @@ export default function SearchResults() {
           </div>
         )}
       </div>
-      {bottomNav && (
-        <BottomNav
-          audioUrl={audioUrl}
-          audioTitle={audioTitle}
-          state={bottomNav}
-          channelName={channelName}
-          imsSrc={imsSrc}
-          onNext={handleNext}
-          onPrevious={handlePrevious}
-        />
-      )}
-      <ToastContainer/>
+      <ToastContainer />
     </>
   );
 }

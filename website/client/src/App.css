@@ -309,9 +309,11 @@ input[type=range]::-webkit-slider-thumb {
     font-size: 20px;
   }
 
-  .navbar svg {
-    height: 25px;
-    width: 25px;
+  .navbar svg .sp {
+    height: 35px;
+    width: 35px;
+    padding: 0px;
+    margin: 2px;
   }
 
   .mainHeader {
@@ -334,6 +336,7 @@ input[type=range]::-webkit-slider-thumb {
 
   .random-videos .col-sm-6 {
     width: 50%;
+    margin-bottom: none;
   }
 
   .search-bar,
