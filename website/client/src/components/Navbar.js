@@ -4,7 +4,7 @@ import { handleSuccess } from '../utils';
 
 export default function Navbar({ onCategoryChange }) {
   const [loggedInUser, setLoggedInUser] = useState('');
-  const [username, setUsername] = useState('');
+  const [username, setUsername] = useState(null);
   const [showNav, setShowNav] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
@@ -23,7 +23,6 @@ export default function Navbar({ onCategoryChange }) {
 
   useEffect(() => {
     setLoggedInUser(true);
-    setUsername(localStorage.getItem('name'));
   }, []);
 
   useEffect(() => {
@@ -54,21 +53,24 @@ export default function Navbar({ onCategoryChange }) {
       <nav id='mainNavbar' className={`navbar navbar-expand fixed-top d-${showNav}`} style={{ display: `${showNav}` }}>
         <div id='innerNav' className='container-fluid'>
           <Link className='navbar-brand mx-3' to='/'>
-            Synapse
+            {username ? <span className='welcome-msg'><span style={{ fontSize: 'smaller', color: '#A9C52F' }}>Welcome,</span><br /> {username}</ span> : 'Synapse'}
           </Link>
           <div className='navbar-items'>
             <ul className='navbar-nav ms-3'>
               <li className='nav-item m-auto px-2'>
-                <Link to='/search' className='option-btn'>
-                  <svg xmlns='http://www.w3.org/2000/svg' width='30' height='30' fill='currentColor' className='bi bi-search' viewBox='0 0 16 16'>
-                    <path d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0' />
+                <Link to='/search' className='option-btn nav-link'>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" className="bi bi-search" viewBox="0 0 16 16">
+                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
                   </svg>
                 </Link>
               </li>
               <li className='nav-item dropdown m-auto px-2'>
                 <a className='nav-link dropdown-toggle' href='/' role='button' data-bs-toggle='dropdown' aria-expanded='false'>
-                  <svg xmlns='http://www.w3.org/2000/svg' width='38' height='38' fill='currentColor' className='bi bi-list-ul' viewBox='0 0 16 16'>
-                    <path fill-rule='evenodd' d='M5 11.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m-3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2m0 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2m0 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2' />
+                  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" className="bi bi-music-note-list sp" viewBox="0 0 16 16">
+                    <path d="M12 13c0 1.105-1.12 2-2.5 2S7 14.105 7 13s1.12-2 2.5-2 2.5.895 2.5 2" />
+                    <path fill-rule="evenodd" d="M12 3v10h-1V3z" />
+                    <path d="M11 2.82a1 1 0 0 1 .804-.98l3-.6A1 1 0 0 1 16 2.22V4l-5 1z" />
+                    <path fill-rule="evenodd" d="M0 11.5a.5.5 0 0 1 .5-.5H4a.5.5 0 0 1 0 1H.5a.5.5 0 0 1-.5-.5m0-4A.5.5 0 0 1 .5 7H8a.5.5 0 0 1 0 1H.5a.5.5 0 0 1-.5-.5m0-4A.5.5 0 0 1 .5 3H8a.5.5 0 0 1 0 1H.5a.5.5 0 0 1-.5-.5" />
                   </svg>
                 </a>
                 <ul className='dropdown-menu dropdown-menu-end'>
@@ -88,9 +90,8 @@ export default function Navbar({ onCategoryChange }) {
               </li>
               <li className='nav-item dropdown m-auto px-2'>
                 <a className='nav-link dropdown-toggle' href='/' role='button' data-bs-toggle='dropdown' aria-expanded='false'>
-                  <svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' fill='currentColor' className='bi bi-person-circle text-center' viewBox='0 0 16 16'>
-                    <path d='M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0' />
-                    <path fillRule='evenodd' d='M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1' />
+                  <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" fill="currentColor" className="bi bi-list sp" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5" />
                   </svg>
                 </a>
                 <ul className='dropdown-menu dropdown-menu-end dropdown-menu-sm'>
