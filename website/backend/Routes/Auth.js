@@ -1,13 +1,5 @@
-
-const { login, signup } = require('../controllers/AuthController');
-const { signupValidation, loginValidation } = require('../Middlewares/AuthValidation');
-
-const express = require('express');
-const router = express.Router();
+const router = require('express').Router();
 const passport = require('passport');
-
-router.post('/login', loginValidation, login);
-router.post('/signup', signupValidation, signup);
 
 router.get('/login/success', (req, res) => {
   if (req.user) {

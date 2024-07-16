@@ -66,6 +66,12 @@ body {
   float: left;
 }
 
+.dropdown-item .drop-link:focus{
+  text-decoration: none;
+  background-color: transparent;
+  border: none;
+}
+
 .vid-sec {
   width: 70%;
   position: absolute;
@@ -137,6 +143,24 @@ body {
   color: white;
 }
 
+.profile-page {
+  position: absolute;
+  top: 20%;
+  right: 50%;
+  transform: translate(50%, 0%);
+}
+
+.profile-page .prof-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.prof-head .username {
+  color: #BDC3C7;
+}
+
 .random-videos {
   position: absolute;
   top: 5%;
@@ -159,6 +183,21 @@ body {
 .display-cards .card h5,
 .display-cards .card p {
   font-size: smaller;
+}
+
+.display-cards .dropdown-menu {
+  background-color: #181818;
+  border-color: #181818;
+  color: white;
+}
+
+.display-cards .dropdown-menu .dropdown-item {
+  color: white;
+}
+
+.display-cards .dropdown-menu .dropdown-item:hover {
+  color: #161717;
+  background-color: #A9C52F;
 }
 
 .video-card .img-thumbnail {
@@ -445,7 +484,7 @@ input[type=range]::-webkit-slider-thumb {
 
   .footer {
     position: absolute;
-    bottom: -830%;
+    bottom: -210%;
     right: 50%;
     padding-bottom: 20px;
     transform: translate(50%, 600%);

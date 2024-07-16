@@ -25,8 +25,8 @@ export default function Login() {
       return handleError('All fields are required!');
     }
     try {
-      // const url = 'http://localhost:3001/auth/login';
-      const url = 'https://synapse-backend.vercel.app/auth/login';
+      const url = 'http://localhost:3001/auth/login';
+      // const url = 'https://synapse-backend.vercel.app/auth/login';
       const response = await fetch(url, {
         method: 'POST',
         headers: {
@@ -35,11 +35,13 @@ export default function Login() {
         body: JSON.stringify(loginInfo)
       });
       const results = await response.json();
-      const { success, message, jwtToken, name, error } = results;
+      const { success, message, jwtToken, username, name, email, error } = results;
       if (success) {
         handleSuccess(message);
         localStorage.setItem('token', jwtToken);
         localStorage.setItem('name', name);
+        localStorage.setItem('email', email);
+        localStorage.setItem('username', username);
         setTimeout(() => {
           navigate('/home');
         }, 1000);

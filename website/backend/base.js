@@ -1,12 +1,18 @@
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
+const ytdl = require('ytdl-core');
+const fs = require('fs');
+const path = require('path');
 const app = express();
 require('dotenv').config({ path: '.env' });
 require('./Models/db');
 
 const authRouter = require('./Routes/AuthRouter');
 const videoRouter = require('./Routes/VideoRouter');
+const cookieSession = require('cookie-session');
+const passport = require('passport');
+const passportSetup = require('./passport');
 
 const allowedOrigins = [
   'http://localhost:3000',
@@ -25,6 +31,17 @@ const corsOptions = {
   credentials: true,
   optionsSuccessStatus: 204,
 };
+
+app.use(
+  cookieSession({
+    name: "session",
+    keys: ['cyberwolve'],
+    maxAge: 24*60*60*100,
+  })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use(cors(corsOptions));
 app.use(express.json());
@@ -69,6 +86,47 @@ app.post('/search', async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send('Error fetching videos');
+  }
+});
+
+app.get('/download', async (req, res) => {
+  try {
+    const videoId = req.query.id;
+    const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
+    if (!ytdl.validateURL(videoUrl)) {
+      console.log('invalid url');
+      return res.status(400).json({ error: 'Invalid URL' });
+    }
+
+    const videoInfo = await ytdl.getInfo(videoUrl);
+    const videoTitle = videoInfo.videoDetails.title;
+    const sanitizedTitle = videoTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+    const downloadDir = path.resolve(__dirname, 'downloads');
+    if (!fs.existsSync(downloadDir)) {
+      fs.mkdirSync(downloadDir);
+    }
+    const filePath = path.resolve(__dirname, 'downloads', `${sanitizedTitle}.mp3`);
+    
+    const output = fs.createWriteStream(filePath);
+    ytdl(videoUrl, { format: 'mp3', filter: 'audioonly' })
+      .pipe(output)
+      .on('finish', () => {
+        console.log('Download completed!');
+        res.download(filePath, `${sanitizedTitle}.mp3`, (err) => {
+          if (err) {
+            console.error('Error sending file:', err);
+            res.status(500).send('Error sending file');
+          }
+          fs.unlinkSync(filePath);
+        });
+      })
+      .on('error', (err) => {
+        console.error('Error downloading video:', err);
+        res.status(500).send('Error downloading video');
+      });
+  } catch (error) {
+    console.error('Error:', error.message);
+    res.status(500).send('Internal Server Error');
   }
 });
 

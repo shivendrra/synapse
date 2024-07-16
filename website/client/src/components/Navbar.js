@@ -27,7 +27,7 @@ export default function Navbar({ onCategoryChange }) {
 
   useEffect(() => {
     if (loggedInUser) {
-      setUsername(localStorage.getItem('name'));
+      setUsername(localStorage.getItem('username'));
     }
     else {
       setUsername('');
@@ -53,7 +53,7 @@ export default function Navbar({ onCategoryChange }) {
       <nav id='mainNavbar' className={`navbar navbar-expand fixed-top d-${showNav}`} style={{ display: `${showNav}` }}>
         <div id='innerNav' className='container-fluid'>
           <Link className='navbar-brand mx-3' to='/'>
-            {username ? <span className='welcome-msg'><span style={{ fontSize: 'smaller', color: '#A9C52F' }}>Welcome,</span><br /> {username}</ span> : 'Synapse'}
+            {username ? <span className='welcome-msg'><span style={{ fontSize: 'smaller', color: '#A9C52F' }}>Welcome,</span><br />@{username}</ span> : 'Synapse'}
           </Link>
           <div className='navbar-items'>
             <ul className='navbar-nav ms-3'>
@@ -68,9 +68,9 @@ export default function Navbar({ onCategoryChange }) {
                 <a className='nav-link dropdown-toggle' href='/' role='button' data-bs-toggle='dropdown' aria-expanded='false'>
                   <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" className="bi bi-music-note-list sp" viewBox="0 0 16 16">
                     <path d="M12 13c0 1.105-1.12 2-2.5 2S7 14.105 7 13s1.12-2 2.5-2 2.5.895 2.5 2" />
-                    <path fill-rule="evenodd" d="M12 3v10h-1V3z" />
+                    <path fillRule="evenodd" d="M12 3v10h-1V3z" />
                     <path d="M11 2.82a1 1 0 0 1 .804-.98l3-.6A1 1 0 0 1 16 2.22V4l-5 1z" />
-                    <path fill-rule="evenodd" d="M0 11.5a.5.5 0 0 1 .5-.5H4a.5.5 0 0 1 0 1H.5a.5.5 0 0 1-.5-.5m0-4A.5.5 0 0 1 .5 7H8a.5.5 0 0 1 0 1H.5a.5.5 0 0 1-.5-.5m0-4A.5.5 0 0 1 .5 3H8a.5.5 0 0 1 0 1H.5a.5.5 0 0 1-.5-.5" />
+                    <path fillRule="evenodd" d="M0 11.5a.5.5 0 0 1 .5-.5H4a.5.5 0 0 1 0 1H.5a.5.5 0 0 1-.5-.5m0-4A.5.5 0 0 1 .5 7H8a.5.5 0 0 1 0 1H.5a.5.5 0 0 1-.5-.5m0-4A.5.5 0 0 1 .5 3H8a.5.5 0 0 1 0 1H.5a.5.5 0 0 1-.5-.5" />
                   </svg>
                 </a>
                 <ul className='dropdown-menu dropdown-menu-end'>
@@ -91,13 +91,25 @@ export default function Navbar({ onCategoryChange }) {
               <li className='nav-item dropdown m-auto px-2'>
                 <a className='nav-link dropdown-toggle' href='/' role='button' data-bs-toggle='dropdown' aria-expanded='false'>
                   <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" fill="currentColor" className="bi bi-list sp" viewBox="0 0 16 16">
-                    <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5" />
+                    <path fillRule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5" />
                   </svg>
                 </a>
                 <ul className='dropdown-menu dropdown-menu-end dropdown-menu-sm'>
-                  <li className='dropdown-item'>Account</li>
-                  <li className='dropdown-item'>Help</li>
-                  <li className='dropdown-item' disable>Manage</li>
+                  <li className='dropdown-item'>
+                    <Link to="/profile" className='drop-link' style={{ textDecoration: 'none', color: 'black' }}>
+                      Account
+                    </Link>
+                  </li>
+                  <li className='dropdown-item'>
+                    <Link to="/" className='drop-link' style={{ textDecoration: 'none', color: 'black' }}>
+                      Help
+                    </Link>
+                  </li>
+                  <li className='dropdown-item disabled'>
+                    <Link to="/" className='drop-link' style={{ textDecoration: 'none', color: 'black' }}>
+                      Manage
+                    </Link>
+                  </li>
                   <li><hr className='dropdown-divider' /></li>
                   <li className='dropdown-item' onClick={handleLogout}>Logout</li>
                 </ul>

@@ -26,8 +26,8 @@ export default function Signup() {
       return handleError('All fields are required!');
     }
     try {
-      // const url = 'http://localhost:3001/auth/signup';
-      const url = 'https://synapse-backend.vercel.app/auth/signup';
+      const url = 'http://localhost:3001/auth/signup';
+      // const url = 'https://synapse-backend.vercel.app/auth/signup';
       const response = await fetch(url, {
         method: 'POST',
         headers: {
