@@ -16,8 +16,8 @@ export default function Home({ category, onPlay }) {
 
   const fetchRandomVideos = useCallback(async () => {
     try {
-      const url = `http://localhost:3001/content/random-videos?category=${category}`;
-      // const url = `https://synapse-backend.vercel.app/content/random-videos?category=${category}`;
+      // const url = `http://localhost:3001/content/random-videos?category=${category}`;
+      const url = `https://synapse-backend.vercel.app/content/random-videos?category=${category}`;
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error('Error while fetching random videos');
