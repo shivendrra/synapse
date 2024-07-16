@@ -305,6 +305,17 @@ input[type=range]::-webkit-slider-thumb {
     padding: 5px 10px;
   }
 
+  .navbar-brand {
+    font-size: 20px;
+  }
+
+  .navbar svg .sp {
+    height: 35px;
+    width: 35px;
+    padding: 0px;
+    margin: 2px;
+  }
+
   .mainHeader {
     margin: auto;
     padding: 10px;
@@ -313,6 +324,19 @@ input[type=range]::-webkit-slider-thumb {
     width: 100%;
     right: 50%;
     transform: translate(50%, 0);
+  }
+
+  .random-videos {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .random-videos .col-sm-6 {
+    width: 50%;
+    margin-bottom: none;
   }
 
   .search-bar,
@@ -356,7 +380,8 @@ input[type=range]::-webkit-slider-thumb {
 
   .bottom-nav .title-sec .img-thumbnail {
     height: 100px;
-    max-width: max-content;
+    width: 150px;
+    max-width: 150px;
     object-fit: cover;
     background-size: cover;
     border: none;
@@ -366,7 +391,7 @@ input[type=range]::-webkit-slider-thumb {
   .bottom-nav .row .col-lg-12 {
     width: 100%;
     margin: auto;
-    padding: 0px;
+    padding: 0px 10px;
   }
 
   .bottom-nav .audio-title,
@@ -406,14 +431,14 @@ input[type=range]::-webkit-slider-thumb {
 
   .login,
   .signup {
-    width: 50%;
+    width: 90%;
     position: absolute;
     margin: auto;
     top: 50%;
     right: 50%;
     transform: translate(50%, -50%);
     background-color: white;
-    padding: 80px 50px;
+    padding: 60px 20px;
     border-radius: 20px;
     color: black;
   }
