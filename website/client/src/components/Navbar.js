@@ -1,13 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { handleSuccess } from '../utils';
+import Avatar, { genConfig } from 'react-nice-avatar';
 
 export default function Navbar({ onCategoryChange }) {
   const [loggedInUser, setLoggedInUser] = useState('');
   const [username, setUsername] = useState(null);
+  const [avatarConfig, setAvatarConfig] = useState(null);
   const [showNav, setShowNav] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
+
+  const generateAvatarConfig = useCallback((username) => {
+    return genConfig(username);
+  }, []);
+
 
   const handleCategorySelect = (categoryId) => {
     onCategoryChange(categoryId);
@@ -27,12 +34,22 @@ export default function Navbar({ onCategoryChange }) {
 
   useEffect(() => {
     if (loggedInUser) {
+      const avatar = localStorage.getItem('avatar');
       setUsername(localStorage.getItem('username'));
+      if (avatar) {
+        setAvatarConfig(JSON.parse(avatar));
+      }
+      else {
+        const storedUsername = localStorage.getItem('username');
+        const newConfig = generateAvatarConfig(storedUsername);
+        setAvatarConfig(newConfig);
+        localStorage.setItem('avatar', JSON.stringify(newConfig));
+      }
     }
     else {
       setUsername('');
     }
-  }, [loggedInUser, username]);
+  }, [loggedInUser, username, setAvatarConfig, generateAvatarConfig]);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -53,7 +70,17 @@ export default function Navbar({ onCategoryChange }) {
       <nav id='mainNavbar' className={`navbar navbar-expand fixed-top d-${showNav}`} style={{ display: `${showNav}` }}>
         <div id='innerNav' className='container-fluid'>
           <Link className='navbar-brand mx-3' to='/'>
-            {username ? <span className='welcome-msg'><span style={{ fontSize: 'smaller', color: '#A9C52F' }}>Welcome,</span><br />@{username}</ span> : 'Synapse'}
+            {username ? <span className='user-display'>
+              <Avatar style={{ width: '3rem', height: '3rem' }} {...avatarConfig} />
+              <span className='welcome-msg ms-3'>
+                <span style={{ fontSize: 'smaller', color: '#A9C52F' }}>
+                  Welcome,
+                </span>
+                <br />
+                @{username}
+              </ span>
+            </span> :
+              'Synapse'}
           </Link>
           <div className='navbar-items'>
             <ul className='navbar-nav ms-3'>

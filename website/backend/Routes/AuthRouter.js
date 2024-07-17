@@ -1,5 +1,5 @@
 
-const { login, signup } = require('../controllers/AuthController');
+const { login, signup, googleSignup, googleLogin } = require('../controllers/AuthController');
 const { signupValidation, loginValidation } = require('../Middlewares/AuthValidation');
 
 const express = require('express');
@@ -8,6 +8,8 @@ const passport = require('passport');
 
 router.post('/login', loginValidation, login);
 router.post('/signup', signupValidation, signup);
+router.post('/googleSignup', googleSignup);
+router.post('/googleLogin', googleLogin);
 
 router.get('/login/success', (req, res) => {
   if (req.user) {

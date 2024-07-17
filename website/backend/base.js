@@ -1,18 +1,19 @@
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
-const ytdl = require('ytdl-core');
 const fs = require('fs');
 const path = require('path');
+const ytdl = require('@distube/ytdl-core');
 const app = express();
 require('dotenv').config({ path: '.env' });
 require('./Models/db');
 
 const authRouter = require('./Routes/AuthRouter');
 const videoRouter = require('./Routes/VideoRouter');
+const updateAvatarRouter = require('./Routes/UpdateAvatarRouter');
 const cookieSession = require('cookie-session');
 const passport = require('passport');
-const passportSetup = require('./passport');
+require('./passport');
 
 const allowedOrigins = [
   'http://localhost:3000',
@@ -36,20 +37,19 @@ app.use(
   cookieSession({
     name: "session",
     keys: ['cyberwolve'],
-    maxAge: 24*60*60*100,
+    maxAge: 24 * 60 * 60 * 1000,
   })
 );
 
 app.use(passport.initialize());
 app.use(passport.session());
-
 app.use(cors(corsOptions));
 app.use(express.json());
 
 app.use('/auth', authRouter);
 app.use('/content', videoRouter);
-
-const API_KEY = process.env.yt_key;
+app.use('/api', updateAvatarRouter); 
+const API_KEY = process.env.YT_KEY;
 
 app.get('/', (req, res) => {
   res.send('Welcome to the Synapse Music API');
@@ -94,7 +94,6 @@ app.get('/download', async (req, res) => {
     const videoId = req.query.id;
     const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
     if (!ytdl.validateURL(videoUrl)) {
-      console.log('invalid url');
       return res.status(400).json({ error: 'Invalid URL' });
     }
 
@@ -105,25 +104,43 @@ app.get('/download', async (req, res) => {
     if (!fs.existsSync(downloadDir)) {
       fs.mkdirSync(downloadDir);
     }
-    const filePath = path.resolve(__dirname, 'downloads', `${sanitizedTitle}.mp3`);
-    
+    const filePath = path.resolve(downloadDir, `${sanitizedTitle}.mp3`);
+
+    const audioStream = ytdl(videoUrl, {
+      filter: 'audioonly',
+      requestOptions: {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+        },
+      },
+    });
     const output = fs.createWriteStream(filePath);
-    ytdl(videoUrl, { format: 'mp3', filter: 'audioonly' })
-      .pipe(output)
-      .on('finish', () => {
-        console.log('Download completed!');
-        res.download(filePath, `${sanitizedTitle}.mp3`, (err) => {
-          if (err) {
-            console.error('Error sending file:', err);
-            res.status(500).send('Error sending file');
-          }
+
+    audioStream.pipe(output);
+
+    output.on('finish', () => {
+      res.download(filePath, `${sanitizedTitle}.mp3`, (err) => {
+        if (err) {
+          console.error('Error sending file:', err);
+          res.status(500).send('Error sending file');
+        } else {
           fs.unlinkSync(filePath);
-        });
-      })
-      .on('error', (err) => {
-        console.error('Error downloading video:', err);
-        res.status(500).send('Error downloading video');
+        }
       });
+    });
+
+    req.on('close', () => {
+      if (!res.headersSent) {
+        res.status(499).send('Client closed request');
+      }
+      audioStream.destroy();
+      output.end();
+    });
+
+    audioStream.on('error', (err) => {
+      console.error('Error downloading video:', err);
+      res.status(500).send('Error downloading video');
+    });
   } catch (error) {
     console.error('Error:', error.message);
     res.status(500).send('Internal Server Error');

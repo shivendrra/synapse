@@ -25,6 +25,11 @@ body {
   line-height: 1.2rem;
 }
 
+.normal-link:focus {
+  background-color: transparent;
+  border: none;
+}
+
 .maker-url a,
 .maker-url a:focus,
 .maker-url a:active {
@@ -58,6 +63,14 @@ body {
   color: white;
 }
 
+.navbar-brand .user-display {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: flex-start;
+}
+
 .dropdown-toggle::after {
   display: none;
 }
@@ -66,7 +79,7 @@ body {
   float: left;
 }
 
-.dropdown-item .drop-link:focus{
+.dropdown-item .drop-link:focus {
   text-decoration: none;
   background-color: transparent;
   border: none;
@@ -155,6 +168,12 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+}
+
+.prof-head img {
+  width: 120px;
+  margin: auto;
+  padding: 10px;
 }
 
 .prof-head .username {
@@ -339,6 +358,13 @@ input[type=range]::-webkit-slider-thumb {
   width: 100%;
 }
 
+.other-options {
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
 @media only screen and (max-width: 600px) {
   .navbar {
     padding: 5px 10px;
@@ -346,6 +372,15 @@ input[type=range]::-webkit-slider-thumb {
 
   .navbar-brand {
     font-size: 20px;
+  }
+
+  .navbar-brand .user-display {
+    margin: auto;
+    padding: 10px;
+  }
+
+  .navbar-brand .user-display .welcome-msg {
+    display: none;
   }
 
   .navbar svg .sp {

@@ -16,8 +16,10 @@ const UserSchema = new Schema({
   },
   password: {
     type: String,
-    required: true,
-  }
+  },
+  avatar: {
+    type: String,
+  },
 });
 
 const UserModel = mongoose.model('user', UserSchema);
