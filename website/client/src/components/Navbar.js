@@ -4,7 +4,7 @@ import { handleSuccess } from '../utils';
 import Avatar, { genConfig } from 'react-nice-avatar';
 
 export default function Navbar({ onCategoryChange }) {
-  const [loggedInUser, setLoggedInUser] = useState('');
+  const [loggedInUser, setLoggedInUser] = useState(false);
   const [username, setUsername] = useState(null);
   const [avatarConfig, setAvatarConfig] = useState(null);
   const [showNav, setShowNav] = useState(true);
@@ -29,7 +29,12 @@ export default function Navbar({ onCategoryChange }) {
   }, [location.pathname]);
 
   useEffect(() => {
-    setLoggedInUser(true);
+    const checkUserLoggedIn = () => {
+      const token = localStorage.getItem('token');
+      setUsername(localStorage.getItem('username'));
+      setLoggedInUser(!!token);
+    };
+    checkUserLoggedIn();
   }, []);
 
   useEffect(() => {
