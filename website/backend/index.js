@@ -36,23 +36,7 @@ const UserSchema = new Schema({
   }
 });
 
-const playlistSchema = new mongoose.Schema({
-  username: { type: String, required: true, unique: true },
-  avatarConfig: String,
-  playlists: [{
-    name: String,
-    songs: [{
-      videoId: String,
-      title: String,
-      channel: String,
-      thumbnailUrl: String,
-      description: String,
-    }],
-  }],
-});
-
 const UserModel = mongoose.model('user', UserSchema);
-const playlistModel = mongoose.model('Playlist', playlistSchema);
 
 const app = express();
 const mongo_url = process.env.MONGODB_URL;
