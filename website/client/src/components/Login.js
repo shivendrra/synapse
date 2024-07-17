@@ -132,7 +132,7 @@ export default function Login() {
                   <path d='M4 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0' />
                 </svg>
               </span>
-              <input className='form-control' type='password' name='password' value={loginInfo.password} autoFocus placeholder='Password' onChange={handleChange} aria-label='Password' aria-describedby='basic-addon4' />
+              <input className='form-control' type='password' name='password' value={loginInfo.password} autoFocus placeholder='Password' onChange={handleChange} aria-label='Password' aria-describedby='basic-addon4' autoComplete='on'/>
             </div>
             <div className='col-md-12 text-center'>
               <button className='btn btn-outline-secondary' type='submit'>
