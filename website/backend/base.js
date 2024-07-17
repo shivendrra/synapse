@@ -1,14 +1,20 @@
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
+const fs = require('fs');
+const path = require('path');
+const ytdl = require('@distube/ytdl-core');
 const app = express();
 require('dotenv').config({ path: '.env' });
 require('./Models/db');
 
 const authRouter = require('./Routes/AuthRouter');
 const videoRouter = require('./Routes/VideoRouter');
+const updateAvatarRouter = require('./Routes/UpdateAvatarRouter');
+const playlistRouter = require('./Routes/PlaylistRouter');
 
 const allowedOrigins = [
+  'https://synapse-backend.vercel.app',
   'http://localhost:3000',
   'https://synapse-music.vercel.app',
 ];
@@ -31,8 +37,10 @@ app.use(express.json());
 
 app.use('/auth', authRouter);
 app.use('/content', videoRouter);
+app.use('/api', updateAvatarRouter);
+app.use('/playlists', playlistRouter);
 
-const API_KEY = process.env.yt_key;
+const API_KEY = process.env.YT_KEY;
 
 app.get('/', (req, res) => {
   res.send('Welcome to the Synapse Music API');
@@ -69,6 +77,64 @@ app.post('/search', async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send('Error fetching videos');
+  }
+});
+
+app.get('/download', async (req, res) => {
+  try {
+    const videoId = req.query.id;
+    const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
+    if (!ytdl.validateURL(videoUrl)) {
+      return res.status(400).json({ error: 'Invalid URL' });
+    }
+
+    const videoInfo = await ytdl.getInfo(videoUrl);
+    const videoTitle = videoInfo.videoDetails.title;
+    const sanitizedTitle = videoTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+    const downloadDir = path.resolve(__dirname, 'downloads');
+    if (!fs.existsSync(downloadDir)) {
+      fs.mkdirSync(downloadDir);
+    }
+    const filePath = path.resolve(downloadDir, `${sanitizedTitle}.mp3`);
+
+    const audioStream = ytdl(videoUrl, {
+      filter: 'audioonly',
+      requestOptions: {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+        },
+      },
+    });
+    const output = fs.createWriteStream(filePath);
+
+    audioStream.pipe(output);
+
+    output.on('finish', () => {
+      res.download(filePath, `${sanitizedTitle}.mp3`, (err) => {
+        if (err) {
+          console.error('Error sending file:', err);
+          res.status(500).send('Error sending file');
+        } else {
+          fs.unlinkSync(filePath);
+        }
+      });
+    });
+
+    req.on('close', () => {
+      if (!res.headersSent) {
+        res.status(499).send('Client closed request');
+      }
+      audioStream.destroy();
+      output.end();
+    });
+
+    audioStream.on('error', (err) => {
+      console.error('Error downloading video:', err);
+      res.status(500).send('Error downloading video');
+    });
+  } catch (error) {
+    console.error('Error:', error.message);
+    res.status(500).send('Internal Server Error');
   }
 });
 

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import he from 'he';
+import axios from 'axios';
 
 export default function BottomNav(props) {
   const { state, audioTitle, audioUrl, channelName, imsSrc, onNext, onPrevious } = props;
@@ -107,6 +108,25 @@ export default function BottomNav(props) {
     setIsRepeating(!isRepeating);
   };
 
+  const handleDownload = async () => {
+    try {
+      console.log(audioUrl);
+      const response = await axios.get('http://localhost:3001/download', {
+        params: { id: audioUrl },
+        responseType: 'blob',
+      });
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'audio.mp3');
+      document.body.appendChild(link);
+      link.click();
+    } catch (error) {
+      console.error('Error downloading the video', error);
+    }
+  };
+
   return (
     <>
       <div className={`bottom-nav ${!state && 'd-none'} p-1`}>
@@ -116,8 +136,8 @@ export default function BottomNav(props) {
               <img src={imsSrc} alt='...' className='img-thumbnail' />
             </div>
             <div className='col-lg-8 col-sm-8 p-2'>
-              <h5 className='audio-title' style={{fontSize: 'smaller'}}>{he.decode(audioTitle)}</h5>
-              <h6 className='audio-src' style={{fontSize: 'smaller'}}>{he.decode(channelName)}</h6>
+              <h5 className='audio-title' style={{ fontSize: 'smaller' }}>{he.decode(audioTitle)}</h5>
+              <h6 className='audio-src' style={{ fontSize: 'smaller' }}>{he.decode(channelName)}</h6>
             </div>
           </div>
           <div className='col-lg-4 play-center'>
@@ -193,6 +213,12 @@ export default function BottomNav(props) {
                   <path d='M5 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 5 8m0-2.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m0 5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m-1-5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0M4 8a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0m0 2.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0' />
                 </svg>
               </button>
+              <span className='option-btn px-3 d-flex align-items-center' onClick={handleDownload}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-download" viewBox="0 0 16 16">
+                  <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5" />
+                  <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708z" />
+                </svg>
+              </span>
               <span className='option-btn px-3 d-flex align-items-center' title='Volume'>
                 <svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='currentColor' className='bi bi-volume-up' viewBox='0 0 16 16'>
                   <path d='M11.536 14.01A8.47 8.47 0 0 0 14.026 8a8.47 8.47 0 0 0-2.49-6.01l-.708.707A7.48 7.48 0 0 1 13.025 8c0 2.071-.84 3.946-2.197 5.303z' />
