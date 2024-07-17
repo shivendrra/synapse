@@ -143,7 +143,7 @@ export default function Signup() {
                     <path d='M4 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0' />
                   </svg>
                 </span>
-                <input className='form-control' type='password' name='password' value={signupInfo.password} autoFocus placeholder='Password' onChange={handleChange} aria-label='Password' aria-describedby='basic-addon4' />
+                <input className='form-control' type='password' name='password' value={signupInfo.password} autoFocus placeholder='Password' onChange={handleChange} aria-label='Password' aria-describedby='basic-addon4' autoCapitalize='on' />
               </div>
             </div>
             <div className="col-md-12 text-center">

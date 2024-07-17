@@ -1,14 +1,12 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import { handleError, handleSuccess } from '../utils';
 import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { app } from '../firebase';
 import { genConfig } from 'react-nice-avatar';
-import axios from 'axios';
 
 export default function Login() {
-  const [username, setUsername] = useState('');
   const [loginInfo, setLoginInfo] = useState({
     email: '',
     password: ''
@@ -22,18 +20,6 @@ export default function Login() {
     copyloginInfo[name] = value;
     setLoginInfo(copyloginInfo);
   }
-
-  const updateAvatarInDatabase = useCallback(async (config) => {
-    try {
-      await axios.post('https://synapse-backend.vercel.app/api/update-avatar', {
-      // await axios.post('http://localhost:3001/api/update-avatar', {
-        username,
-        avatarConfig: config,
-      });
-    } catch (error) {
-      console.error('Error updating avatar in database:', error);
-    }
-  }, [username]);  
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -56,13 +42,11 @@ export default function Login() {
       if (success) {
         const avatarConfig = genConfig(username);
         handleSuccess(message);
-        setUsername(username);
         localStorage.setItem('token', jwtToken);
         localStorage.setItem('name', name);
         localStorage.setItem('email', email);
         localStorage.setItem('username', username);
         localStorage.setItem('avatar', JSON.stringify(avatarConfig));
-        updateAvatarInDatabase(avatarConfig);
 
         setTimeout(() => {
           navigate('/home');
@@ -102,13 +86,11 @@ export default function Login() {
       if (success) {
         const avatarConfig = genConfig(username);
         handleSuccess(message);
-        setUsername(username);
         localStorage.setItem('token', jwtToken);
         localStorage.setItem('name', name);
         localStorage.setItem('email', email);
         localStorage.setItem('username', username);
         localStorage.setItem('avatar', JSON.stringify(avatarConfig));
-        updateAvatarInDatabase(avatarConfig);
 
         setTimeout(() => {
           navigate('/home');
@@ -150,7 +132,7 @@ export default function Login() {
                   <path d='M4 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0' />
                 </svg>
               </span>
-              <input className='form-control' type='password' name='password' value={loginInfo.password} autoFocus placeholder='Password' onChange={handleChange} aria-label='Password' aria-describedby='basic-addon4' />
+              <input className='form-control' type='password' name='password' value={loginInfo.password} autoFocus placeholder='Password' onChange={handleChange} aria-label='Password' aria-describedby='basic-addon4' autoComplete='on'/>
             </div>
             <div className='col-md-12 text-center'>
               <button className='btn btn-outline-secondary' type='submit'>

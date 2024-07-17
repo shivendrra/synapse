@@ -1,8 +1,5 @@
 import { initializeApp } from "firebase/app";
 
-const api_key = process.env.FIREBASE_KEY;
-console.log(api_key);
-
 const firebaseConfig = {
   apiKey: "AIzaSyAmuu-jYAh6CyO4SjKYwIyYGf8Tju1e90A",
   authDomain: "synapse-e0a52.firebaseapp.com",
