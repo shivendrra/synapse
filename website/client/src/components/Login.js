@@ -25,7 +25,7 @@ export default function Login() {
 
   const updateAvatarInDatabase = useCallback(async (config) => {
     try {
-      await axios.post('/api/update-avatar', {
+      await axios.post('http://localhost:3001/api/update-avatar', {
         username,
         avatarConfig: config,
       });

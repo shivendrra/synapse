@@ -75,6 +75,7 @@ export default function Signup() {
         }),
       });
       const { success, message, error } = res;
+      console.log(message);
       if (success) {
         handleSuccess(message);
         setTimeout(() => {

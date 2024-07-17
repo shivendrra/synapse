@@ -1,12 +1,16 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import PlaylistShow from './PlaylistShow';
 import Avatar, { genConfig } from 'react-nice-avatar';
 import axios from 'axios';
+
+import pic1 from './img/1.jpg';
 
 export default function Profile() {
   const [username, setUsername] = useState('');
   const [name, setName] = useState('');
   const [avatarConfig, setAvatarConfig] = useState(null);
   const [loggedInUser, setLoggedInUser] = useState(false);
+  const email = localStorage.getItem('email');
 
   const generateAvatarConfig = useCallback((username) => {
     return genConfig(username);
@@ -57,7 +61,7 @@ export default function Profile() {
     localStorage.setItem('avatarConfig', JSON.stringify(newConfig));
     updateAvatarInDatabase(newConfig);
   };
-  
+
 
   return (
     <div className="profile-page">
@@ -69,9 +73,39 @@ export default function Profile() {
           <h3 className="name">{name}</h3>
           <p className="username">@{username}</p>
         </div>
-        <hr />
-        <div className="col-lg-12 prof-body"></div>
-        <div className="col-lg-12 prof-setting"></div>
+        <div className="col-lg-12">
+          <hr className='mx-auto' style={{ width: '50%' }} />
+        </div>
+        <div className="col-lg-12 prof-body">
+          <div className="col-lg-4 feat-playlist">
+            <PlaylistShow imgSrc={pic1} title={'My Playlist 1'} username={username}/>
+          </div>
+          <div className="col-lg-4 feat-playlist">
+            <PlaylistShow imgSrc={pic1} title={'My Playlist 1'} username={username}/>
+          </div>
+          <div className="col-lg-4 feat-playlist">
+            <PlaylistShow imgSrc={pic1} title={'My Playlist 1'} username={username}/>
+          </div>
+        </div>
+        <div className="col-lg-12">
+          <hr className='mx-auto' style={{ width: '50%' }} />
+        </div>
+        <div className="col-lg-12 prof-setting">
+          <span className='email-de'>
+            <h6 className='headers'>email: </h6>
+            <h6 className='key'>{email}</h6>
+          </span>
+          <span className='pass-de'>
+            <h6 className='headers'>password: </h6>
+            <h6 className='key'>************</h6>
+          </span>
+          <span className='recent-de'>
+            <h6 className='headers'>recent listen: </h6>
+            <div className="form-check form-switch">
+              <input className="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" />
+            </div>
+          </span>
+        </div>
       </div>
     </div>
   );
