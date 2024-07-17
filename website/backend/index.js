@@ -11,6 +11,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const ytdl = require('@distube/ytdl-core');
+const passport = require('passport');
 const Joi = require('joi');
 const updateAvatarRouter = express.Router();
 require('events').EventEmitter.defaultMaxListeners = 15;
@@ -71,7 +72,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
-router.post('/update-avatar', async (req, res) => {
+updateAvatarRouter.post('/update-avatar', async (req, res) => {
   const { username, avatarConfig } = req.body;
 
   try {
