@@ -14,6 +14,7 @@ export default function Signup() {
   });
 
   const navigate = useNavigate();
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     const copySignupInfo = { ...signupInfo };
@@ -28,8 +29,8 @@ export default function Signup() {
       return handleError('All fields are required!');
     }
     try {
-      const url = 'http://localhost:3001/auth/signup';
-      // const url = 'https://synapse-backend.vercel.app/auth/signup';
+      const url = 'https://synapse-backend.vercel.app/auth/signup';
+      // const url = 'http://localhost:3001/auth/signup';
       const response = await fetch(url, {
         method: 'POST',
         headers: {
@@ -44,16 +45,14 @@ export default function Signup() {
         setTimeout(() => {
           navigate('/login');
         }, 1000);
-      }
-      else if (!error) {
-        const details = error?.details[0].message;
-        handleError(details);
-      }
-      else if (!success) {
+      } else if (error) {
+        handleError(error.details[0].message || message);
+      } else {
         handleError(message);
       }
     } catch (err) {
-      handleError(err);
+      handleError(err.message);
+      console.error("Error in handleSignup:", err);
     }
   }
 
@@ -64,7 +63,8 @@ export default function Signup() {
     provider.setCustomParameters({ prompt: "select_account" });
     try {
       const resultsFromGoogle = await signInWithPopup(auth, provider);
-      const res = await fetch("http://localhost:3001/auth/googleSignup", {
+      const res = await fetch("https://synapse-backend.vercel.app/auth/googleSignup", {
+      // const res = await fetch("http://localhost:3001/auth/googleSignup", {
         method: 'POST',
         headers: {
           "Content-Type": "application/json",
@@ -74,23 +74,21 @@ export default function Signup() {
           email: resultsFromGoogle.user.email,
         }),
       });
-      const { success, message, error } = res;
-      console.log(message);
+      const data = await res.json();
+      const { success, message, error } = data;
       if (success) {
         handleSuccess(message);
         setTimeout(() => {
           navigate('/login');
         }, 1000);
-      }
-      else if (!error) {
-        const details = error?.details[0].message;
-        handleError(details);
-      }
-      else if (!success) {
+      } else if (error) {
+        handleError(error.details[0].message || message);
+      } else {
         handleError(message);
       }
-    } catch (error) {      
-      console.error("last error:", error);
+    } catch (error) {
+      console.error("Error in handleGoogleAuth:", error);
+      handleError(error.message);
     }
   }
 

@@ -11,11 +11,10 @@ require('./Models/db');
 const authRouter = require('./Routes/AuthRouter');
 const videoRouter = require('./Routes/VideoRouter');
 const updateAvatarRouter = require('./Routes/UpdateAvatarRouter');
-const cookieSession = require('cookie-session');
-const passport = require('passport');
-require('./passport');
+const playlistRouter = require('./Routes/PlaylistRouter');
 
 const allowedOrigins = [
+  'https://synapse-backend.vercel.app',
   'http://localhost:3000',
   'https://synapse-music.vercel.app',
 ];
@@ -33,22 +32,14 @@ const corsOptions = {
   optionsSuccessStatus: 204,
 };
 
-app.use(
-  cookieSession({
-    name: "session",
-    keys: ['cyberwolve'],
-    maxAge: 24 * 60 * 60 * 1000,
-  })
-);
-
-app.use(passport.initialize());
-app.use(passport.session());
 app.use(cors(corsOptions));
 app.use(express.json());
 
 app.use('/auth', authRouter);
 app.use('/content', videoRouter);
-app.use('/api', updateAvatarRouter); 
+app.use('/api', updateAvatarRouter);
+app.use('/playlists', playlistRouter);
+
 const API_KEY = process.env.YT_KEY;
 
 app.get('/', (req, res) => {

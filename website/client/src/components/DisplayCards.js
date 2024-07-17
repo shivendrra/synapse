@@ -1,10 +1,63 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import he from 'he';
 import axios from 'axios';
 
+const addPlaylist = async (username, playlistName, song) => {
+  try {
+    // const response = await axios.post('http://localhost:3001/playlists/add-playlist', {
+    const response = await axios.post('https://synapse-backend.vercel.app/playlists/add-playlist', {
+      username,
+      playlistName,
+      song,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error adding playlist:', error);
+    throw error;
+  }
+};
+
+const getPlaylists = async (username) => {
+  try {
+    const response = await axios.get(`https://synapse-backend.vercel.app/playlists/get-playlists/${username}`);
+    // const response = await axios.get(`http://localhost:3001/playlists/get-playlists/${username}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error getting playlists:', error);
+    throw error;
+  }
+};
+
 export default function DisplayCards(props) {
-  const { title, channel, imageUrl, videoUrl, onPlay } = props;
+  const { title, channel, imageUrl, videoUrl, onPlay, username } = props;
+  const [playlists, setPlaylists] = useState([]);
+  const [newPlaylistName, setNewPlaylistName] = useState('');
+  const [showPlaylistModal, setShowPlaylistModal] = useState(false);
+
+  const newSong = {
+    videoId: videoUrl,
+    title,
+    channel,
+    thumbnailUrl: imageUrl,
+  };
+
+  useEffect(() => {
+    const fetchPlaylists = async () => {
+      try {
+        if (username) {
+          const data = await getPlaylists(username);
+          setPlaylists(data.playlists);
+        } else {
+          console.error('Username is not defined');
+        }
+      } catch (error) {
+        console.error('Error fetching playlists:', error);
+      }
+    };
+
+    fetchPlaylists();
+  }, [username]);
 
   const handlePlay = () => {
     if (onPlay) {
@@ -18,7 +71,8 @@ export default function DisplayCards(props) {
 
   const handleDownload = async () => {
     try {
-      const response = await axios.get('http://localhost:3001/download', {
+      // const response = await axios.get('http://localhost:3001/download', {
+      const response = await axios.get('https://synapse-backend.vercel.app/download', {
         params: { id: videoUrl },
         responseType: 'blob',
       });
@@ -34,8 +88,43 @@ export default function DisplayCards(props) {
     }
   };
 
-  const handleAddPlaylist = () => {
-    console.log("added to playlist");
+  useEffect(() => {
+    const fetchPlaylists = async () => {
+      try {
+        const data = await getPlaylists(username);
+        setPlaylists(data.playlists);
+      } catch (error) {
+        console.error('Error fetching playlists:', error);
+      }
+    };
+
+    fetchPlaylists();
+  }, [username]);
+
+  const handleAddPlaylist = async (playlistName) => {
+    try {
+      await addPlaylist(username, playlistName, newSong);
+      const data = await getPlaylists(username);
+      setPlaylists(data.playlists);
+    } catch (error) {
+      console.error('Error adding playlist:', error);
+    }
+  };
+
+  const handleAddToPlaylist = async (playlistName) => {
+    if (!playlistName) {
+      setShowPlaylistModal(true);
+    } else {
+      await handleAddPlaylist(playlistName);
+    }
+  };
+
+  const handleCreatePlaylist = async () => {
+    if (newPlaylistName) {
+      await handleAddPlaylist(newPlaylistName);
+      setShowPlaylistModal(false);
+      setNewPlaylistName('');
+    }
   };
 
   return (
@@ -58,13 +147,50 @@ export default function DisplayCards(props) {
                 <ul className="dropdown-menu">
                   <li><a className="dropdown-item" href="/" onClick={handleAddQueue}>Add to Queue</a></li>
                   <li><a className="dropdown-item" href="/" onClick={handleDownload}>Download</a></li>
-                  <li><a className="dropdown-item" href="/" onClick={handleAddPlaylist}>Add to Playlist</a></li>
+                  <li>
+                    <a className="dropdown-item" href="/" onClick={() => handleAddToPlaylist('')}>
+                      Add to Playlist
+                    </a>
+                  </li>
+                  {playlists.length > 0 && playlists.map((playlist) => (
+                    <li key={playlist.name}>
+                      <a className="dropdown-item" href="/" onClick={() => handleAddToPlaylist(playlist.name)}>
+                        Add to {playlist.name}
+                      </a>
+                    </li>
+                  ))}
                 </ul>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      {showPlaylistModal && (
+        <div className="modal show" style={{ display: 'block' }}>
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Create New Playlist</h5>
+                <button type="button" className="btn-close" onClick={() => setShowPlaylistModal(false)}></button>
+              </div>
+              <div className="modal-body">
+                <input
+                  type="text"
+                  placeholder="Playlist Name"
+                  value={newPlaylistName}
+                  onChange={(e) => setNewPlaylistName(e.target.value)}
+                  className="form-control"
+                />
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" onClick={() => setShowPlaylistModal(false)}>Close</button>
+                <button type="button" className="btn btn-primary" onClick={handleCreatePlaylist}>Create</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
@@ -75,4 +201,5 @@ DisplayCards.propTypes = {
   imageUrl: PropTypes.string.isRequired,
   videoUrl: PropTypes.string.isRequired,
   onPlay: PropTypes.func.isRequired,
+  username: PropTypes.string.isRequired,
 };

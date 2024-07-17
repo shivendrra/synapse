@@ -50,7 +50,6 @@ const googleSignup = async (req, res) => {
     }
     const username = generateFromEmail(email, 4);
     const userModel = new UserModel({ name, username, email });
-    console.log(username, email, name);
     await userModel.save();
     res.status(201).json({ message: 'Signed up successfully using Google', success: true });
   } catch (error) {
@@ -63,7 +62,7 @@ const googleLogin = async (req, res) => {
   try {
     const { email } = req.body;
     const user = await UserModel.findOne({ email });
-    const errorMsg = "user doens't exists, try signup";
+    const errorMsg = "User doesn't exist, try signing up";
     if (!user) {
       return res.status(403).json({ message: errorMsg, success: false });
     }

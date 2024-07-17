@@ -6,10 +6,12 @@ import Footer from './Footer';
 export default function Home({ category, onPlay }) {
   const [randomVideos, setRandomVideos] = useState([]);
   const [loggedInUser, setLoggedInUser] = useState(false);
+  const [username, setUsername] = useState(null);
 
   useEffect(() => {
     const checkUserLoggedIn = () => {
       const token = localStorage.getItem('token');
+      setUsername(localStorage.getItem('username'));
       setLoggedInUser(!!token);
     };
     checkUserLoggedIn();
@@ -54,6 +56,7 @@ export default function Home({ category, onPlay }) {
                   imageUrl={video.thumbnailUrl}
                   videoUrl={video.videoId}
                   onPlay={() => onPlay(video.videoId, video.title, video.channel, video.thumbnailUrl, index)}
+                  username={username}
                 />
               </div>
             ))}

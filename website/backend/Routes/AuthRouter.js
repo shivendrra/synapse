@@ -1,4 +1,3 @@
-
 const { login, signup, googleSignup, googleLogin } = require('../controllers/AuthController');
 const { signupValidation, loginValidation } = require('../Middlewares/AuthValidation');
 
@@ -32,7 +31,8 @@ router.get('/login/failed', (req, res) => {
 
 router.get('/google/callback',
   passport.authenticate("google", {
-    sucessRedirect: 'http://localhost:3000/',
+    successRedirect: 'https://synapse-music.vercel.app',
+    // successRedirect: 'http://localhost:3000/',
     failureRedirect: '/login/failed',
   })
 );
@@ -40,7 +40,8 @@ router.get('/google/callback',
 router.get("/google", passport.authenticate("google", ["profile", "email"]));
 router.get("/logout", (req, res) => {
   req.logout();
-  req.redirect('http://localhost:3000');
+  // res.redirect('http://localhost:3000');
+  res.redirect('https://synapse-music.vercel.app');
 });
 
 module.exports = router;

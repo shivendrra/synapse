@@ -9,8 +9,8 @@ export default function SearchResults({ onPlay, videos, setVideos }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:3001/search', {
-      // const response = await fetch('https://synapse-backend.vercel.app/search', {
+      // const response = await fetch('http://localhost:3001/search', {
+      const response = await fetch('https://synapse-backend.vercel.app/search', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
