@@ -1,9 +1,9 @@
 {
   "name": "synapse-backend",
   "version": "1.0.0",
-  "main": "base.js",
+  "main": "index.js",
   "scripts": {
-    "start": "nodemon base.js",
+    "start": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
