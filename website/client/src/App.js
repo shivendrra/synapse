@@ -37,15 +37,19 @@ function App() {
   };
 
   const handleNext = useCallback(() => {
-    const nextIndex = (currentIndex + 1) % videos.length;
-    const nextVideo = videos[nextIndex];
-    handlePlay(nextVideo.videoId, nextVideo.title, nextVideo.channel, nextVideo.thumbnailUrl, nextIndex);
+    if (videos.length > 0) {
+      const nextIndex = (currentIndex + 1) % videos.length;
+      const nextVideo = videos[nextIndex];
+      handlePlay(nextVideo.videoId, nextVideo.title, nextVideo.channel, nextVideo.thumbnailUrl, nextIndex);
+    }
   }, [currentIndex, videos]);
 
   const handlePrevious = useCallback(() => {
-    const prevIndex = (currentIndex - 1 + videos.length) % videos.length;
-    const prevVideo = videos[prevIndex];
-    handlePlay(prevVideo.videoId, prevVideo.title, prevVideo.channel, prevVideo.thumbnailUrl, prevIndex);
+    if (videos.length > 0) {
+      const prevIndex = (currentIndex - 1 + videos.length) % videos.length;
+      const prevVideo = videos[prevIndex];
+      handlePlay(prevVideo.videoId, prevVideo.title, prevVideo.channel, prevVideo.thumbnailUrl, prevIndex);
+    }
   }, [currentIndex, videos]);
 
   const PrivateRoute = ({ element }) => {
@@ -72,7 +76,7 @@ function App() {
           />
           <Route exact path='/login' element={<Login />} />
           <Route exact path='/signup' element={<Signup />} />
-          <Route exact path='/profile' element={<Profile/>}/>
+          <Route exact path='/profile' element={<Profile />} />
         </Routes>
         {bottomNav && (
           <BottomNav

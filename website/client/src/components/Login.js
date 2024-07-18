@@ -28,8 +28,8 @@ export default function Login() {
       return handleError('All fields are required!');
     }
     try {
-      const url = 'https://synapse-backend.vercel.app/auth/login';
-      // const url = 'http://localhost:3001/auth/login';
+      // const url = 'https://synapse-backend.vercel.app/auth/login';
+      const url = 'http://localhost:3001/auth/login';
       const response = await fetch(url, {
         method: 'POST',
         headers: {
@@ -38,7 +38,7 @@ export default function Login() {
         body: JSON.stringify(loginInfo)
       });
       const results = await response.json();
-      const { success, message, jwtToken, username, name, email, error } = results;
+      const { success, message, jwtToken, username, name, email, userId, error } = results;
       if (success) {
         const avatarConfig = genConfig(username);
         handleSuccess(message);
@@ -46,6 +46,7 @@ export default function Login() {
         localStorage.setItem('name', name);
         localStorage.setItem('email', email);
         localStorage.setItem('username', username);
+        localStorage.setItem('userId', userId);
         localStorage.setItem('avatar', JSON.stringify(avatarConfig));
 
         setTimeout(() => {
@@ -71,8 +72,8 @@ export default function Login() {
     provider.setCustomParameters({ prompt: "select_account" });
     try {
       const resultsFromGoogle = await signInWithPopup(auth, provider);
-      const res = await fetch("https://synapse-backend.vercel.app/auth/googleLogin", {
-      // const res = await fetch("http://localhost:3001/auth/googleLogin", {
+      // const res = await fetch("https://synapse-backend.vercel.app/auth/googleLogin", {
+      const res = await fetch("http://localhost:3001/auth/googleLogin", {
         method: 'POST',
         headers: {
           "Content-Type": "application/json",
@@ -82,7 +83,7 @@ export default function Login() {
         }),
       });
       const data = await res.json();
-      const { success, message, jwtToken, name, username, email } = data;
+      const { success, message, jwtToken, name, username, email, userId } = data;
       if (success) {
         const avatarConfig = genConfig(username);
         handleSuccess(message);
@@ -90,6 +91,7 @@ export default function Login() {
         localStorage.setItem('name', name);
         localStorage.setItem('email', email);
         localStorage.setItem('username', username);
+        localStorage.setItem('userId', userId);
         localStorage.setItem('avatar', JSON.stringify(avatarConfig));
 
         setTimeout(() => {

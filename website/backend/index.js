@@ -17,7 +17,6 @@ const updateAvatarRouter = express.Router();
 require('events').EventEmitter.defaultMaxListeners = 15;
 require('dotenv').config({ path: '.env' });
 
-const Schema = mongoose.Schema;
 const UserSchema = new Schema({
   name: {
     type: String,
@@ -33,9 +32,31 @@ const UserSchema = new Schema({
   },
   password: {
     type: String,
-    required: true,
-  }
+  },
+  avatar: {
+    type: String,
+  },
+  gender: { type: String, required: true },
+  month: { type: String, required: true },
+  date: { type: String, required: true },
+  year: { type: String, required: true },
+  likedSongs: { type: [String], default: [] },
+  playlists: { type: [String], default: [] },
+  isAdmin: { type: Boolean, default: false },
 });
+
+const validateUser = (user) => {
+	const schema = Joi.object({
+		name: Joi.string().min(5).max(10).required(),
+		email: Joi.string().email().required(),
+		password: Joi.string().min(4).max(20).required(),
+		month: Joi.string().required(),
+		date: Joi.string().required(),
+		year: Joi.string().required(),
+		gender: Joi.string().valid("male", "female", "non-binary").required(),
+	});
+	return schema.validate(user);
+};
 
 const UserModel = mongoose.model('user', UserSchema);
 
@@ -88,7 +109,6 @@ updateAvatarRouter.post('/update-avatar', async (req, res) => {
 });
 app.use('/api', updateAvatarRouter);
 
-// Auth Router and Controller
 const authRouter = express.Router();
 
 const signupValidation = (req, res, next) => {

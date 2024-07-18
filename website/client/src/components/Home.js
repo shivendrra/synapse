@@ -2,11 +2,13 @@ import React, { useState, useEffect, useCallback } from 'react';
 import DisplayCards from './DisplayCards';
 import { handleError } from '../utils';
 import Footer from './Footer';
+import './Home.css';
 
 export default function Home({ category, onPlay }) {
   const [randomVideos, setRandomVideos] = useState([]);
   const [loggedInUser, setLoggedInUser] = useState(false);
   const [username, setUsername] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const checkUserLoggedIn = () => {
@@ -29,6 +31,8 @@ export default function Home({ category, onPlay }) {
       setRandomVideos(results);
     } catch (err) {
       handleError(err);
+    } finally {
+      setLoading(false);
     }
   }, [category]);
 
@@ -44,26 +48,31 @@ export default function Home({ category, onPlay }) {
 
   return (
     <>
-      <h4>Welcome, {loggedInUser}</h4>
-      <div className='random-videos'>
-        {randomVideos.length > 0 && (
-          <div className='row'>
-            {randomVideos.map((video, index) => (
-              <div key={video.videoId} className='col-lg-2 col-sm-6 p-2'>
-                <DisplayCards
-                  title={video.title}
-                  channel={video.channel}
-                  imageUrl={video.thumbnailUrl}
-                  videoUrl={video.videoId}
-                  onPlay={() => onPlay(video.videoId, video.title, video.channel, video.thumbnailUrl, index)}
-                  username={username}
-                />
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-      <Footer/>
+      {loading ? (
+        <div className="loading-container">
+          <div className="loading-spinner"></div>
+        </div>
+      ) : (
+        <div className='random-videos'>
+          {randomVideos.length > 0 && (
+            <div className='row'>
+              {randomVideos.map((video, index) => (
+                <div key={video.videoId} className='col-lg-2 col-sm-6 p-2'>
+                  <DisplayCards
+                    title={video.title}
+                    channel={video.channel}
+                    imageUrl={video.thumbnailUrl}
+                    videoUrl={video.videoId}
+                    onPlay={() => onPlay(video.videoId, video.title, video.channel, video.thumbnailUrl, index)}
+                    username={username}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+      <Footer />
     </>
   );
 }
