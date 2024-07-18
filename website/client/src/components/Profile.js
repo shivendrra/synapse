@@ -15,6 +15,15 @@ export default function Profile() {
   const [showModal, setShowModal] = useState(false);
   const [userN, setUserN] = useState(null);
 
+  useEffect(() => {
+    const checkUserLoggedIn = () => {
+      const token = localStorage.getItem('token');
+      setUsername(localStorage.getItem('username'));
+      setLoggedInUser(!!token);
+    };
+    checkUserLoggedIn();
+  }, []);
+
   const generateAvatarConfig = useCallback((username) => {
     return genConfig(username);
   }, []);
@@ -33,10 +42,6 @@ export default function Profile() {
       console.error('Error updating avatar in database:', error);
     }
   }, [username]);
-
-  useEffect(() => {
-    setLoggedInUser(true);
-  }, []);
 
   const navigate = useNavigate();
 
@@ -89,7 +94,8 @@ export default function Profile() {
       if (password) {
         payload.password = password;
       };
-      const response = await fetch('http://localhost:3001/auth/update', {
+      const response = await fetch('https://synapse-backend.vercel.app/auth/update', {
+      // const response = await fetch('http://localhost:3001/auth/update', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -112,7 +118,8 @@ export default function Profile() {
 
   const handleDeleteAccount = async () => {
     try {
-      const response = await fetch('http://localhost:3001/auth/delete', {
+      const response = await fetch('https://synapse-backend.vercel.app/auth/delete', {
+      // const response = await fetch('http://localhost:3001/auth/delete', {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

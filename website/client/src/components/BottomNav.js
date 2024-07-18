@@ -108,7 +108,8 @@ export default function BottomNav(props) {
 
   const handleDownload = async () => {
     try {
-      const response = await axios.get('http://localhost:3001/download', {
+      // const response = await axios.get('http://localhost:3001/download', {
+      const response = await axios.get('https://synapse-backend.vercel.app/download', {
         params: { id: audioUrl },
         responseType: 'blob',
       });
