@@ -1,18 +1,16 @@
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 
-const ensureAuthenticated = (req, res, next) => {
-  const auth = req.headers['authorization'];
-  console.log(auth);
-  if (!auth) {
-    return res.status(403).json({ message: 'Unauthorized, JWT token is required' });
-  }
+const auth = (req, res, next) => {
+  const token = req.header("x-auth-token");
+  if (!token) return res.status(401).send("Access denied. No token provided.");
+
   try {
-    const decoded = jwt.verify(auth, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = decoded;
     next();
-  } catch (err) {
-    return res.status(401).json({ message: 'Unauthorized, JWT token is wrong or expired' });
+  } catch (ex) {
+    res.status(400).send("Invalid token.");
   }
-}
+};
 
-module.exports = ensureAuthenticated;
+module.exports = auth;

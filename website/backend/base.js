@@ -106,9 +106,7 @@ app.get('/download', async (req, res) => {
       },
     });
     const output = fs.createWriteStream(filePath);
-
     audioStream.pipe(output);
-
     output.on('finish', () => {
       res.download(filePath, `${sanitizedTitle}.mp3`, (err) => {
         if (err) {

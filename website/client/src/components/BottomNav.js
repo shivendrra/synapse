@@ -10,19 +10,17 @@ export default function BottomNav(props) {
   const intervalRef = useRef(null);
   const playerRef = useRef(null);
   const [isRepeating, setIsRepeating] = useState(false);
-  const [volume, setVolume] = useState('100');
+  const [volume, setVolume] = useState(100);
 
   useEffect(() => {
     const loadYouTubeIframeAPI = () => {
       if (!window.YT) {
-        console.log('Loading YouTube IFrame API script');
         const tag = document.createElement('script');
         tag.src = 'https://www.youtube.com/iframe_api';
         const firstScriptTag = document.getElementsByTagName('script')[0];
         firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
         tag.onload = () => {
-          console.log('YouTube IFrame API script loaded');
           createPlayer(audioUrl);
         };
       } else {
@@ -32,36 +30,36 @@ export default function BottomNav(props) {
 
     const createPlayer = (url) => {
       if (!url) return;
-      console.log('Creating YouTube player with videoId:', url);
 
       playerRef.current = new window.YT.Player('ytplayer', {
         height: '0',
         width: '0',
         videoId: url,
         events: {
-          'onReady': (event) => {
-            console.log('Player is ready');
-            event.target.playVideo();
-            setDuration(event.target.getDuration());
-            setIsPlaying(true);
-            event.target.setVolume(volume * 100);
-          },
-          'onStateChange': (event) => {
-            if (event.data === window.YT.PlayerState.PLAYING) {
-              console.log('Video is playing');
-              startProgressUpdate(event.target);
-              setIsPlaying(true);
-            } else if (event.data === window.YT.PlayerState.PAUSED || event.data === window.YT.PlayerState.ENDED) {
-              console.log('Video is paused or ended');
-              clearInterval(intervalRef.current);
-              setIsPlaying(false);
-              if (event.data === window.YT.PlayerState.ENDED && isRepeating) {
-                event.target.playVideo();
-              }
-            }
-          },
+          'onReady': onPlayerReady,
+          'onStateChange': onPlayerStateChange,
         },
       });
+    };
+
+    const onPlayerReady = (event) => {
+      event.target.playVideo();
+      setDuration(event.target.getDuration());
+      setIsPlaying(true);
+      event.target.setVolume(volume);
+    };
+
+    const onPlayerStateChange = (event) => {
+      if (event.data === window.YT.PlayerState.PLAYING) {
+        startProgressUpdate(event.target);
+        setIsPlaying(true);
+      } else if (event.data === window.YT.PlayerState.PAUSED || event.data === window.YT.PlayerState.ENDED) {
+        clearInterval(intervalRef.current);
+        setIsPlaying(false);
+        if (event.data === window.YT.PlayerState.ENDED && isRepeating) {
+          event.target.playVideo();
+        }
+      }
     };
 
     if (audioUrl) {
@@ -101,7 +99,7 @@ export default function BottomNav(props) {
   const handleVolumeChange = (e) => {
     const newVolume = e.target.value;
     setVolume(newVolume);
-    playerRef.current && playerRef.current.setVolume(newVolume * 100);
+    if (playerRef.current) playerRef.current.setVolume(newVolume);
   };
 
   const handleRepeatToggle = () => {
@@ -110,8 +108,8 @@ export default function BottomNav(props) {
 
   const handleDownload = async () => {
     try {
-      console.log(audioUrl);
-      const response = await axios.get('http://localhost:3001/download', {
+      // const response = await axios.get('http://localhost:3001/download', {
+      const response = await axios.get('https://synapse-backend.vercel.app/download', {
         params: { id: audioUrl },
         responseType: 'blob',
       });

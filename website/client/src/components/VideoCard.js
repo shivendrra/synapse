@@ -13,14 +13,14 @@ export default function VideoCard(props) {
 
   return (
     <div className='video-card m-auto'>
-      <div className='card text-start mb-3 mx-auto' onClick={handlePlay} style={{ maxWidth: '80%', cursor: 'pointer' }}>
+      <div className='card text-start mb-3 mx-auto' style={{ maxWidth: '80%', cursor: 'pointer' }}>
         <div className='row'>
-          <div className='col-lg-5 col-xs-4 p-0 m-0'>
-            <img src={imageUrl} className='img-fluid img-thumbnail' style={{ objectFit: 'contain' }} alt='...' />
+          <div className='col-lg-5 col-sm-5 p-0 m-0' onClick={handlePlay}>
+            <img src={imageUrl} className='img-fluid vid-img' alt='...' />
           </div>
-          <div className='col-lg-7 col-xs-8'>
+          <div className='col-lg-7 col-sm-7'>
             <div className='card-body px-1'>
-              <h5 className='card-title' style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis' }}>{he.decode(title)}</h5>
+              <h5 className='card-title' style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis' }} onClick={handlePlay}>{he.decode(title)}</h5>
               <p className='card-text'>{he.decode(channel)}</p>
               <p className='card-text' style={{ maxWidth: '80vw', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'grey' }}>
                 <small style={{color: 'grey'}} >{he.decode(description)}</small>

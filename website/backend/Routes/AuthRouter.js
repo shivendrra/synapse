@@ -1,9 +1,10 @@
-const { login, signup, googleSignup, googleLogin } = require('../controllers/AuthController');
+const { login, signup, googleSignup, googleLogin } = require('../Controllers/AuthController');
 const { signupValidation, loginValidation } = require('../Middlewares/AuthValidation');
+const { UserModel } = require('../Models/User');
 
 const express = require('express');
+const bcrypt = require('bcrypt');
 const router = express.Router();
-const passport = require('passport');
 
 router.post('/login', loginValidation, login);
 router.post('/signup', signupValidation, signup);
@@ -16,7 +17,7 @@ router.get('/login/success', (req, res) => {
       error: false,
       message: "Successfully logged in",
       user: req.user,
-    })
+    });
   } else {
     res.status(403).json({ error: true, message: "Not Authorized" });
   }
@@ -29,19 +30,40 @@ router.get('/login/failed', (req, res) => {
   });
 });
 
-router.get('/google/callback',
-  passport.authenticate("google", {
-    successRedirect: 'https://synapse-music.vercel.app',
-    // successRedirect: 'http://localhost:3000/',
-    failureRedirect: '/login/failed',
-  })
-);
+router.put('/update', async (req, res) => {
+  try {
+    const { userId, userN, name, email, gender, password } = req.body;
+    if (!userId) {
+      return res.status(400).json({ error: 'User ID is required' });
+    }
+    const username = userN;
+    const updateData = { name, username, email, gender };
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      updateData.password = hashedPassword;
+    }
+    const updatedUser = await UserModel.findOneAndUpdate({ _id: userId }, updateData, { new: true });
+    if (!updatedUser) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    res.json(updatedUser);
+  } catch (error) {
+    console.error('Error updating profile:', error);
+    res.status(500).json({ error: 'Failed to update profile' });
+  }
+});
 
-router.get("/google", passport.authenticate("google", ["profile", "email"]));
-router.get("/logout", (req, res) => {
-  req.logout();
-  // res.redirect('http://localhost:3000');
-  res.redirect('https://synapse-music.vercel.app');
+router.delete('/delete', async (req, res) => {
+  try {
+    const { userId } = req.body;
+    const user = await UserModel.findOneAndDelete({ _id: userId });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.json({ message: 'Account deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to delete account' });
+  }
 });
 
 module.exports = router;

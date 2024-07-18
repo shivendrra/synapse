@@ -1,9 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-
-console.log('Current directory:', __dirname);
-console.log('Files in Models directory:', fs.readdirSync(path.join(__dirname, 'Models')));
-
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
@@ -11,13 +7,16 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const ytdl = require('@distube/ytdl-core');
-const passport = require('passport');
 const Joi = require('joi');
-const updateAvatarRouter = express.Router();
+const { generateFromEmail } = require("unique-username-generator");
+
+
 require('events').EventEmitter.defaultMaxListeners = 15;
 require('dotenv').config({ path: '.env' });
 
-const Schema = mongoose.Schema;
+const mongo_url = process.env.MONGODB_URL;
+const API_KEY = process.env.yt_key;
+
 const UserSchema = new Schema({
   name: {
     type: String,
@@ -33,15 +32,20 @@ const UserSchema = new Schema({
   },
   password: {
     type: String,
-    required: true,
-  }
+  },
+  avatar: {
+    type: String,
+  },
+  gender: { type: String, required: true },
+  month: { type: String, required: true },
+  date: { type: String, required: true },
+  year: { type: String, required: true },
+  likedSongs: { type: [String], default: [] },
+  playlists: { type: [String], default: [] },
+  isAdmin: { type: Boolean, default: false },
 });
 
 const UserModel = mongoose.model('user', UserSchema);
-
-const app = express();
-const mongo_url = process.env.MONGODB_URL;
-const API_KEY = process.env.yt_key;
 
 mongoose.connect(mongo_url)
   .then(() => {
@@ -69,26 +73,10 @@ const corsOptions = {
   optionsSuccessStatus: 204,
 };
 
+const app = express();
 app.use(cors(corsOptions));
 app.use(express.json());
 
-updateAvatarRouter.post('/update-avatar', async (req, res) => {
-  const { username, avatarConfig } = req.body;
-
-  try {
-    const user = await UserModel.findOneAndUpdate({ username }, { avatarConfig }, { new: true });
-    if (user) {
-      res.json({ success: true, user });
-    } else {
-      res.status(404).json({ success: false, message: 'User not found' });
-    }
-  } catch (error) {
-    res.status(500).json({ success: false, message: 'Internal Server Error' });
-  }
-});
-app.use('/api', updateAvatarRouter);
-
-// Auth Router and Controller
 const authRouter = express.Router();
 
 const signupValidation = (req, res, next) => {
@@ -98,24 +86,26 @@ const signupValidation = (req, res, next) => {
     username: Joi.string().min(3).max(15).required(),
     password: Joi.string().min(4).max(20).required(),
   });
-  const { error } = Schema.validate(req.body);
+  const {error} = Schema.validate(req.body);
   if (error) {
-    return res.status(400).json({ message: "Bad request", error });
+    return res.status(400)
+      .json({ message: "Bad request ", error })
   }
   next();
-};
+}
 
 const loginValidation = (req, res, next) => {
   const Schema = Joi.object({
     email: Joi.string().email().required(),
     password: Joi.string().min(4).max(20).required(),
   });
-  const { error } = Schema.validate(req.body);
+  const {error} = Schema.validate(req.body);
   if (error) {
-    return res.status(400).json({ message: "Bad request", error });
+    return res.status(400)
+      .json({ message: "Bad request ", error })
   }
   next();
-};
+}
 
 const signup = async (req, res) => {
   try {
@@ -127,7 +117,7 @@ const signup = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     const userModel = new UserModel({ name, username, email, password: hashedPassword });
     await userModel.save();
-    res.status(201).json({ message: 'Signed up successfully', success: true });
+    res.status(201).json({ message: 'Signed up successfully', success: true, userId: userModel._id });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Internal Server Error', success: false });
@@ -147,7 +137,7 @@ const login = async (req, res) => {
       return res.status(403).json({ message: errorMsg, success: false });
     }
     const jwtToken = jwt.sign({ email: user.email, _id: user._id }, process.env.JWT_SECRET, { expiresIn: '24h' });
-    res.status(200).json({ message: 'Logged in successfully', success: true, jwtToken, email, name: user.name, username: user.username });
+    res.status(200).json({ message: 'Logged in successfully', success: true, jwtToken, userId: user._id, email, name: user.name, username: user.username });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Internal Server Error', success: false });
@@ -164,7 +154,7 @@ const googleSignup = async (req, res) => {
     const username = generateFromEmail(email, 4);
     const userModel = new UserModel({ name, username, email });
     await userModel.save();
-    res.status(201).json({ message: 'Signed up successfully using Google', success: true });
+    res.status(201).json({ message: 'Signed up successfully using Google', success: true, userId: userModel._id });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Internal Server Error', success: false });
@@ -180,7 +170,7 @@ const googleLogin = async (req, res) => {
       return res.status(403).json({ message: errorMsg, success: false });
     }
     const jwtToken = jwt.sign({ email: user.email, _id: user._id }, process.env.JWT_SECRET, { expiresIn: '24h' });
-    res.status(200).json({ message: 'Logged in successfully', success: true, jwtToken, email, name: user.name, username: user.username });
+    res.status(200).json({ message: 'Logged in successfully', success: true, jwtToken, userId: user._id, email, name: user.name, username: user.username });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Internal Server Error', success: false });
@@ -198,7 +188,7 @@ authRouter.get('/login/success', (req, res) => {
       error: false,
       message: "Successfully logged in",
       user: req.user,
-    })
+    });
   } else {
     res.status(403).json({ error: true, message: "Not Authorized" });
   }
@@ -211,13 +201,41 @@ authRouter.get('/login/failed', (req, res) => {
   });
 });
 
-authRouter.get('/google/callback',
-  passport.authenticate("google", {
-    successRedirect: 'https://synapse-music.vercel.app',
-    // successRedirect: 'http://localhost:3000/',
-    failureRedirect: '/login/failed',
-  })
-);
+authRouter.put('/update', async (req, res) => {
+  try {
+    const { userId, userN, name, email, gender, password } = req.body;
+    if (!userId) {
+      return res.status(400).json({ error: 'User ID is required' });
+    }
+    const username = userN;
+    const updateData = { name, username, email, gender };
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      updateData.password = hashedPassword;
+    }
+    const updatedUser = await UserModel.findOneAndUpdate({ _id: userId }, updateData, { new: true });
+    if (!updatedUser) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    res.json(updatedUser);
+  } catch (error) {
+    console.error('Error updating profile:', error);
+    res.status(500).json({ error: 'Failed to update profile' });
+  }
+});
+
+authRouter.delete('/delete', async (req, res) => {
+  try {
+    const { userId } = req.body;
+    const user = await UserModel.findOneAndDelete({ _id: userId });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.json({ message: 'Account deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to delete account' });
+  }
+});
 
 authRouter.get("/google", passport.authenticate("google", ["profile", "email"]));
 authRouter.get("/logout", (req, res) => {
@@ -226,7 +244,22 @@ authRouter.get("/logout", (req, res) => {
   res.redirect('https://synapse-music.vercel.app');
 });
 
-app.use('/auth', authRouter);
+const updateAvatarRouter = express.Router();
+
+updateAvatarRouter.post('/update-avatar', async (req, res) => {
+  const { username, avatarConfig } = req.body;
+
+  try {
+    const user = await UserModel.findOneAndUpdate({ username }, { avatarConfig }, { new: true });
+    if (user) {
+      res.json({ success: true, user });
+    } else {
+      res.status(404).json({ success: false, message: 'User not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
+  }
+});
 
 const playlistRouter = express.Router();
 
@@ -272,9 +305,6 @@ playlistRouter.get('/get-playlists/:username', async (req, res) => {
   }
 });
 
-app.use('/playlists', playlistRouter);
-
-// Video Router and Controller
 const videoRouter = express.Router();
 
 const videoResults = async (req, res) => {
@@ -313,9 +343,11 @@ const videoResults = async (req, res) => {
 
 videoRouter.get('/random-videos', videoResults);
 
+app.use('/auth', authRouter);
+app.use('/playlists', playlistRouter);
 app.use('/content', videoRouter);
+app.use('/api', updateAvatarRouter);
 
-// General Routes
 app.get('/', (req, res) => {
   res.send('Welcome to the Synapse Music API');
 });
@@ -380,9 +412,7 @@ app.get('/download', async (req, res) => {
       },
     });
     const output = fs.createWriteStream(filePath);
-
     audioStream.pipe(output);
-
     output.on('finish', () => {
       res.download(filePath, `${sanitizedTitle}.mp3`, (err) => {
         if (err) {
@@ -412,7 +442,6 @@ app.get('/download', async (req, res) => {
   }
 });
 
-// Start Server
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
