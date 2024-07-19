@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import he from 'he';
 import axios from 'axios';
+import { ToastContainer } from 'react-toastify';
+import { handleError, handleSuccess } from '../utils';
 
 export default function BottomNav(props) {
   const { state, audioTitle, audioUrl, channelName, imsSrc, onNext, onPrevious } = props;
@@ -96,12 +98,6 @@ export default function BottomNav(props) {
     }
   };
 
-  const handleVolumeChange = (e) => {
-    const newVolume = e.target.value;
-    setVolume(newVolume);
-    if (playerRef.current) playerRef.current.setVolume(newVolume);
-  };
-
   const handleRepeatToggle = () => {
     setIsRepeating(!isRepeating);
   };
@@ -115,13 +111,16 @@ export default function BottomNav(props) {
       });
 
       const url = window.URL.createObjectURL(new Blob([response.data]));
+      handleSuccess("Audio downloading....");
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', 'audio.mp3');
+      link.setAttribute('download', `${audioTitle}.mp3`);
       document.body.appendChild(link);
       link.click();
+      handleSuccess("Audio downloaded");
     } catch (error) {
-      console.error('Error downloading the video', error);
+      handleError("Error while downloading the audio", error);
+      console.error('Error downloading the audio', error);
     }
   };
 
@@ -183,7 +182,7 @@ export default function BottomNav(props) {
                 <p>{formatTime(currentTime)}</p>
                 <input
                   type='range'
-                  className='form-range'
+                  className='form-range px-2'
                   min='0'
                   max={duration}
                   value={currentTime}
@@ -227,17 +226,23 @@ export default function BottomNav(props) {
                   type='range'
                   className='volume-slider'
                   min='0'
-                  max='1'
+                  max='100'
                   step='0.1'
-                  disabled
                   value={volume}
-                  onChange={handleVolumeChange}
+                  onChange={(e) => {
+                    const newVol = e.target.value;
+                    setVolume(newVol);
+                    if (playerRef.current) {
+                      playerRef.current.setVolume(newVol / 100);
+                    }
+                  }}
                 />
               </span>
             </div>
           </div>
         </div>
       </div>
+      <ToastContainer/>
     </>
   );
 }

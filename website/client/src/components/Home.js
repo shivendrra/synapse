@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import DisplayCards from './DisplayCards';
 import { handleError } from '../utils';
 import Footer from './Footer';
-import './Home.css';
 
 export default function Home({ category, onPlay }) {
   const [randomVideos, setRandomVideos] = useState([]);
@@ -63,6 +62,7 @@ export default function Home({ category, onPlay }) {
                     channel={video.channel}
                     imageUrl={video.thumbnailUrl}
                     videoUrl={video.videoId}
+                    channelId={video.channelId}
                     onPlay={() => onPlay(video.videoId, video.title, video.channel, video.thumbnailUrl, index)}
                     username={username}
                   />

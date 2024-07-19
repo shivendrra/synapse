@@ -1,15 +1,13 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import he from 'he';
+import axios from 'axios';
 import { ToastContainer } from 'react-toastify';
 import { handleError, handleSuccess } from '../utils';
-import axios from 'axios';
 
-export default function DisplayCards(props) {
-  const { title, channel, imageUrl, videoUrl, onPlay, channelId } = props;
+export default function ChannelCards(props) {
+  const { title, channel, imageUrl, videoUrl, onPlay } = props;
   const [queue, setQueue] = useState([]);
-  const audioRef = useRef(null);
 
   const newSong = {
     videoId: videoUrl,
@@ -18,21 +16,21 @@ export default function DisplayCards(props) {
     thumbnailUrl: imageUrl,
   };
 
-  const handlePlay = useCallback((song) => {
-    if (onPlay) {
-      onPlay(song.videoId, song.title, song.channel);
-    }
-  }, [onPlay]);
-
   const handleAddQueue = () => {
     setQueue([...queue, newSong]);
     console.log('Added to queue');
   };
 
+  const handlePlay = () => {
+    if (onPlay) {
+      onPlay(videoUrl, title, channel);
+    }
+  };
+
   const handleDownload = async () => {
     try {
       const response = await axios.get('https://synapse-backend.vercel.app/download', {
-      // const response = await axios.get('http://localhost:3001/download', {
+        // const response = await axios.get('http://localhost:3001/download', {
         params: { id: videoUrl },
         responseType: 'blob',
       });
@@ -41,7 +39,7 @@ export default function DisplayCards(props) {
       handleSuccess("Audio downloading....");
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', `${title}.mp3`);
+      link.setAttribute('download', 'audio.mp3');
       document.body.appendChild(link);
       link.click();
       handleSuccess("Audio downloaded");
@@ -51,35 +49,16 @@ export default function DisplayCards(props) {
     }
   };
 
-  const playNextSong = useCallback(() => {
-    if (queue.length > 0) {
-      const nextSong = queue[0];
-      setQueue(queue.slice(1));
-      handlePlay(nextSong);
-    } else {
-    }
-  }, [queue, handlePlay]);
-
-  useEffect(() => {
-    const audioElement = audioRef.current;
-    if (audioElement) {
-      audioElement.addEventListener('ended', playNextSong);
-      return () => {
-        audioElement.removeEventListener('ended', playNextSong);
-      };
-    }
-  }, [playNextSong]);
-
   return (
     <>
       <div className='display-cards p-0 mt-5'>
         <div className='card' style={{ cursor: 'pointer' }}>
-          <img src={imageUrl} alt={title} className='card-img-top' onClick={() => handlePlay(newSong)} />
+          <img src={imageUrl} alt={title} className='card-img-top' onClick={handlePlay} />
           <div className='card-body px-2 d-flex'>
-            <div className='col-lg-11' onClick={() => handlePlay(newSong)}>
+            <div className='col-lg-11' onClick={handlePlay}>
               <h5 className='card-title video-title' style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis' }}>{he.decode(title)}</h5>
               <p className='card-text'>
-                <Link to={`/channel?channelId=${channelId}`} className='channel-link'>{he.decode(channel)}</Link>
+                {he.decode(channel)}
               </p>
             </div>
             <div className='col-lg-1'>
@@ -91,7 +70,7 @@ export default function DisplayCards(props) {
                 </button>
                 <ul className='dropdown-menu'>
                   <li>
-                    <button className='dropdown-item' onClick={() => handlePlay(newSong)}>
+                    <button className='dropdown-item' onClick={handlePlay}>
                       Play Now
                     </button>
                   </li>
@@ -105,27 +84,21 @@ export default function DisplayCards(props) {
                       Download
                     </button>
                   </li>
-                  <li>
-                    <button className='dropdown-item disabled'>
-                      Add to Playlist
-                    </button>
-                  </li>
                 </ul>
               </div>
             </div>
           </div>
         </div>
       </div>
-      <ToastContainer/>
+      <ToastContainer />
     </>
   );
 }
 
-DisplayCards.propTypes = {
+ChannelCards.propTypes = {
   title: PropTypes.string.isRequired,
   channel: PropTypes.string.isRequired,
   imageUrl: PropTypes.string.isRequired,
   videoUrl: PropTypes.string.isRequired,
   onPlay: PropTypes.func.isRequired,
-  username: PropTypes.string.isRequired,
 };
