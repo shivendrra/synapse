@@ -10,13 +10,13 @@ const ytdl = require('@distube/ytdl-core');
 const Joi = require('joi');
 const { generateFromEmail } = require("unique-username-generator");
 
-
 require('events').EventEmitter.defaultMaxListeners = 15;
 require('dotenv').config({ path: '.env' });
 
 const mongo_url = process.env.MONGODB_URL;
 const API_KEY = process.env.yt_key;
 
+const Schema = mongoose.Schema;
 const UserSchema = new Schema({
   name: {
     type: String,
@@ -45,13 +45,15 @@ const UserSchema = new Schema({
   isAdmin: { type: Boolean, default: false },
 });
 
-const UserModel = mongoose.model('user', UserSchema);
+const UserModel = mongoose.models.user || mongoose.model('user', UserSchema);
 
-mongoose.connect(mongo_url)
+mongoose.connect(mongo_url, {
+  serverSelectionTimeoutMS: 5000
+})
   .then(() => {
     console.log("Database connected...");
   }).catch((err) => {
-    console.log("Database has some error: " + err);
+    console.error("Database connection error: " + err);
   });
 
 const allowedOrigins = [
@@ -80,29 +82,27 @@ app.use(express.json());
 const authRouter = express.Router();
 
 const signupValidation = (req, res, next) => {
-  const Schema = Joi.object({
+  const schema = Joi.object({
     name: Joi.string().min(3).max(100).required(),
     email: Joi.string().email().required(),
     username: Joi.string().min(3).max(15).required(),
     password: Joi.string().min(4).max(20).required(),
   });
-  const {error} = Schema.validate(req.body);
+  const { error } = schema.validate(req.body);
   if (error) {
-    return res.status(400)
-      .json({ message: "Bad request ", error })
+    return res.status(400).json({ message: "Bad request", error });
   }
   next();
 }
 
 const loginValidation = (req, res, next) => {
-  const Schema = Joi.object({
+  const schema = Joi.object({
     email: Joi.string().email().required(),
     password: Joi.string().min(4).max(20).required(),
   });
-  const {error} = Schema.validate(req.body);
+  const { error } = schema.validate(req.body);
   if (error) {
-    return res.status(400)
-      .json({ message: "Bad request ", error })
+    return res.status(400).json({ message: "Bad request", error });
   }
   next();
 }
@@ -119,7 +119,7 @@ const signup = async (req, res) => {
     await userModel.save();
     res.status(201).json({ message: 'Signed up successfully', success: true, userId: userModel._id });
   } catch (error) {
-    console.error(error);
+    console.error('Signup Error:', error);
     res.status(500).json({ message: 'Internal Server Error', success: false });
   }
 };
@@ -139,7 +139,7 @@ const login = async (req, res) => {
     const jwtToken = jwt.sign({ email: user.email, _id: user._id }, process.env.JWT_SECRET, { expiresIn: '24h' });
     res.status(200).json({ message: 'Logged in successfully', success: true, jwtToken, userId: user._id, email, name: user.name, username: user.username });
   } catch (error) {
-    console.error(error);
+    console.error('Login Error:', error);
     res.status(500).json({ message: 'Internal Server Error', success: false });
   }
 };
@@ -156,7 +156,7 @@ const googleSignup = async (req, res) => {
     await userModel.save();
     res.status(201).json({ message: 'Signed up successfully using Google', success: true, userId: userModel._id });
   } catch (error) {
-    console.error(error);
+    console.error('Google Signup Error:', error);
     res.status(500).json({ message: 'Internal Server Error', success: false });
   }
 };
@@ -172,7 +172,7 @@ const googleLogin = async (req, res) => {
     const jwtToken = jwt.sign({ email: user.email, _id: user._id }, process.env.JWT_SECRET, { expiresIn: '24h' });
     res.status(200).json({ message: 'Logged in successfully', success: true, jwtToken, userId: user._id, email, name: user.name, username: user.username });
   } catch (error) {
-    console.error(error);
+    console.error('Google Login Error:', error);
     res.status(500).json({ message: 'Internal Server Error', success: false });
   }
 };
@@ -229,15 +229,16 @@ authRouter.delete('/delete', async (req, res) => {
     const { userId } = req.body;
     const user = await UserModel.findOneAndDelete({ _id: userId });
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ error: 'User not found' });
     }
-    res.json({ message: 'Account deleted successfully' });
+    res.json({ message: 'User deleted successfully' });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to delete account' });
+    console.error('Error deleting user:', error);
+    res.status(500).json({ error: 'Failed to delete user' });
   }
 });
 
-authRouter.get("/google", passport.authenticate("google", ["profile", "email"]));
+
 authRouter.get("/logout", (req, res) => {
   req.logout();
   // res.redirect('http://localhost:3000');
@@ -419,6 +420,7 @@ app.get('/download', async (req, res) => {
           console.error('Error sending file:', err);
           res.status(500).send('Error sending file');
         } else {
+          console.log(`File sent: ${filePath}`);
           fs.unlinkSync(filePath);
         }
       });
