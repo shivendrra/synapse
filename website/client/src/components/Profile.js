@@ -95,7 +95,7 @@ export default function Profile() {
         payload.password = password;
       };
       const response = await fetch('https://synapse-backend.vercel.app/auth/update', {
-      // const response = await fetch('http://localhost:3001/auth/update', {
+        // const response = await fetch('http://localhost:3001/auth/update', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -119,7 +119,7 @@ export default function Profile() {
   const handleDeleteAccount = async () => {
     try {
       const response = await fetch('https://synapse-backend.vercel.app/auth/delete', {
-      // const response = await fetch('http://localhost:3001/auth/delete', {
+        // const response = await fetch('http://localhost:3001/auth/delete', {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -259,17 +259,17 @@ export default function Profile() {
               </div>
             </div>
           )}
-          <div className="col-lg-4 col-sm-3 m-auto text-center">
-            <br />
-            <hr />
-            <br />
-            <h2 className='footer-title'>Synapse</h2>
-            <h6 className='blockquote-footer pt-3'>Version 1.1</h6>
+        </div>
+        <div className="col-lg-6 col-sm-3 m-auto text-center">
+          <br />
+          <hr />
+          <br />
+          <h2 className='footer-title'>Synapse</h2>
+          <h6 className='blockquote-footer pt-3'>Version 1.1</h6>
 
-            <br />
-            <h5 style={{ fontSize: 'smaller' }}>made by: <span className='maker-url'><a href='https://shivendrra.vercel.app/' target='blank'>@shivendrra_</a></span></h5>
-            <br />
-          </div>
+          <br />
+          <h5 style={{ fontSize: 'smaller' }}>made by: <span className='maker-url'><a href='https://shivendrra.vercel.app/' target='blank'>@shivendrra_</a></span></h5>
+          <br />
         </div>
       </div>
       <ToastContainer />

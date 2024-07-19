@@ -687,6 +687,16 @@ body {
     margin-bottom: -30px;
   }
 
+  .about {
+    width: 100%;
+    padding: 5px;
+  }
+
+  .about .img-fluid {
+    width: 100%;
+    object-fit: contain;
+  }
+
   .search-bar,
   .search-bar:hover,
   .search-bar:focus {
