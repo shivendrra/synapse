@@ -59,7 +59,8 @@ export default function SearchResults({ onPlay, videos, setVideos }) {
                       channel={video.channel}
                       imageUrl={video.thumbnailUrl}
                       videoUrl={video.videoId}
-                      onPlay={() => onPlay(video.videoId, video.title, video.channel, video.thumbnailUrl, index)}
+                      channelId={video.channelId}
+                      onPlay={() => onPlay(video.videoId, video.title, video.channel, video.thumbnailUrl, index, video.channelId)}
                       description={video.description}
                     />
                   </div>

@@ -68,8 +68,8 @@ app.post('/search', async (req, res) => {
         channel: item.snippet.channelTitle,
         thumbnailUrl: item.snippet.thumbnails.medium.url,
         description: item.snippet.description,
+        channelId: item.snippet.channelId,
       }));
-
       res.json(videos);
     } else {
       res.status(response.status).send('Error fetching videos');

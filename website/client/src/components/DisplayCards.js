@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import he from 'he';
 import axios from 'axios';
@@ -7,7 +7,7 @@ import axios from 'axios';
 const addPlaylist = async (username, playlistName, song) => {
   try {
     const response = await fetch('http://localhost:3001/playlists/add-playlist', {
-    // const response = await fetch('https://synapse-backend.vercel.app/playlists/add-playlist', {
+      // const response = await fetch('https://synapse-backend.vercel.app/playlists/add-playlist', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -47,12 +47,11 @@ const getPlaylists = async (username) => {
 };
 
 export default function DisplayCards(props) {
-  const { title, channel, imageUrl, videoUrl, onPlay, username } = props;
+  const { title, channel, imageUrl, videoUrl, onPlay, channelId, username } = props;
   const [playlists, setPlaylists] = useState([]);
   const [newPlaylistName, setNewPlaylistName] = useState('');
   const [showPlaylistModal, setShowPlaylistModal] = useState(false);
   const [queue, setQueue] = useState([]);
-  const [currentSong, setCurrentSong] = useState(null);
   const audioRef = useRef(null);
 
   const newSong = {
@@ -61,8 +60,6 @@ export default function DisplayCards(props) {
     channel,
     thumbnailUrl: imageUrl,
   };
-
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchPlaylists = async () => {
@@ -84,7 +81,6 @@ export default function DisplayCards(props) {
   const handlePlay = useCallback((song) => {
     if (onPlay) {
       onPlay(song.videoId, song.title, song.channel);
-      setCurrentSong(song);
     }
   }, [onPlay]);
 
@@ -144,7 +140,6 @@ export default function DisplayCards(props) {
       setQueue(queue.slice(1));
       handlePlay(nextSong);
     } else {
-      setCurrentSong(null);
     }
   }, [queue, handlePlay]);
 
@@ -158,19 +153,17 @@ export default function DisplayCards(props) {
     }
   }, [playNextSong]);
 
-  const handleChannel = () => {
-    navigate(`/channel`);
-  }
-
   return (
     <>
       <div className='display-cards p-0 mt-5'>
         <div className='card' style={{ cursor: 'pointer' }}>
-          <img src={imageUrl} alt={title} className='card-img-top' onClick={() => handlePlay(newSong)}/>
+          <img src={imageUrl} alt={title} className='card-img-top' onClick={() => handlePlay(newSong)} />
           <div className='card-body px-2 d-flex'>
             <div className='col-lg-11' onClick={() => handlePlay(newSong)}>
               <h5 className='card-title video-title' style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis' }}>{he.decode(title)}</h5>
-              <p className='card-text' onClick={handleChannel}>{he.decode(channel)}</p>
+              <p className='card-text'>
+                <Link to={`/channel?channelId=${channelId}`} className='channel-link'>{he.decode(channel)}</Link>
+              </p>
             </div>
             <div className='col-lg-1'>
               <div className="dropdown">
@@ -182,28 +175,28 @@ export default function DisplayCards(props) {
                 <ul className='dropdown-menu'>
                   <li>
                     <button className='dropdown-item' onClick={() => handlePlay(newSong)}>
-                      <i className='bi bi-play-circle'></i> Play Now
+                      Play Now
                     </button>
                   </li>
                   <li>
                     <button className='dropdown-item' onClick={handleAddQueue}>
-                      <i className='bi bi-plus-circle'></i> Add to Queue
+                      Add to Queue
                     </button>
                   </li>
                   <li>
                     <button className='dropdown-item' onClick={handleDownload}>
-                      <i className='bi bi-download'></i> Download
+                      Download
                     </button>
                   </li>
                   <li>
-                    <button className='dropdown-item' onClick={() => handleAddToPlaylist(null)}>
-                      <i className='bi bi-plus-circle'></i> Add to Playlist
+                    <button className='dropdown-item disabled' onClick={() => handleAddToPlaylist(null)}>
+                      Add to Playlist
                     </button>
                   </li>
                   {playlists.map((playlist) => (
                     <li key={playlist.name}>
                       <button className='dropdown-item' onClick={() => handleAddToPlaylist(playlist.name)}>
-                        <i className='bi bi-plus-circle'></i> {playlist.name}
+                        {playlist.name}
                       </button>
                     </li>
                   ))}
@@ -213,11 +206,6 @@ export default function DisplayCards(props) {
           </div>
         </div>
       </div>
-
-      {currentSong && (
-        <audio ref={audioRef} src={`http://localhost:3001/play/${currentSong.videoId}`} autoPlay />
-        // <audio ref={audioRef} src={`https://synapse-backend.vercel.app/play/${currentSong.videoId}`} autoPlay />
-      )}
 
       {showPlaylistModal && (
         <div className='modal show d-block pt-5 px-4'>

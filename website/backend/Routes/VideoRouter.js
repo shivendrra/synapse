@@ -1,4 +1,4 @@
-const {videoResults, channelFetch} = require('../Controllers/VideoController');
+const { videoResults, channelFetch } = require('../Controllers/VideoController');
 const router = require('express').Router();
 
 router.get('/random-videos', videoResults);

@@ -90,7 +90,7 @@ export default function Profile() {
         email,
         gender,
       };
-  
+
       if (password) {
         payload.password = password;
       };
@@ -102,7 +102,7 @@ export default function Profile() {
         },
         body: JSON.stringify(payload),
       });
-  
+
       if (!response.ok) throw new Error('Failed to update profile');
       const data = await response.json();
       handleSuccess('Profile updated successfully!');
@@ -114,7 +114,7 @@ export default function Profile() {
     } catch (error) {
       handleError('There was an error updating the profile!', error);
     }
-  };  
+  };
 
   const handleDeleteAccount = async () => {
     try {
@@ -259,6 +259,17 @@ export default function Profile() {
               </div>
             </div>
           )}
+          <div className="col-lg-4 col-sm-3 m-auto text-center">
+            <br />
+            <hr />
+            <br />
+            <h2 className='footer-title'>Synapse</h2>
+            <h6 className='blockquote-footer pt-3'>Version 1.1</h6>
+
+            <br />
+            <h5 style={{ fontSize: 'smaller' }}>made by: <span className='maker-url'><a href='https://shivendrra.vercel.app/' target='blank'>@shivendrra_</a></span></h5>
+            <br />
+          </div>
         </div>
       </div>
       <ToastContainer />

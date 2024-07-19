@@ -12,6 +12,7 @@ import RefreshHandler from './RefreshHandler';
 import BottomNav from './components/BottomNav';
 import Profile from './components/Profile';
 import Channel from './components/Channel';
+import About from './components/About';
 
 function App() {
   const [category, setCategory] = useState('10');
@@ -63,22 +64,14 @@ function App() {
         <RefreshHandler setIsAuth={setIsAuth} />
         <Navbar onCategoryChange={handleCategoryChange} />
         <Routes>
-          <Route exact path='/' element={<Navigate to='/login' />} />
-          <Route exact path='/home' element={<PrivateRoute element={<Home category={category} onPlay={handlePlay} />} />} />
-          <Route
-            path='/search'
-            element={
-              <SearchResults
-                onPlay={handlePlay}
-                videos={videos}
-                setVideos={setVideos}
-              />
-            }
-          />
-          <Route exact path='/login' element={<Login />} />
-          <Route exact path='/signup' element={<Signup />} />
-          <Route exact path='/profile' element={<Profile />} />
-          <Route exact path='/channel' element={<Channel />} />
+          <Route path='/' element={<Navigate to='/home' />} />
+          <Route path='/home' element={<PrivateRoute element={<Home category={category} onPlay={handlePlay} />} />} />
+          <Route path='/search' element={<SearchResults onPlay={handlePlay} videos={videos} setVideos={setVideos} />} />
+          <Route path='/login' element={<Login setIsAuth={setIsAuth} />} />
+          <Route path='/signup' element={<Signup />} />
+          <Route path='/profile' element={<PrivateRoute element={<Profile />} />} />
+          <Route path='/channel' element={<Channel onPlay={handlePlay}/>} />
+          <Route path='/about' element={<About/>}/>
         </Routes>
         {bottomNav && (
           <BottomNav

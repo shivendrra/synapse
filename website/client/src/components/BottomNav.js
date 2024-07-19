@@ -96,12 +96,6 @@ export default function BottomNav(props) {
     }
   };
 
-  const handleVolumeChange = (e) => {
-    const newVolume = e.target.value;
-    setVolume(newVolume);
-    if (playerRef.current) playerRef.current.setVolume(newVolume);
-  };
-
   const handleRepeatToggle = () => {
     setIsRepeating(!isRepeating);
   };
@@ -183,7 +177,7 @@ export default function BottomNav(props) {
                 <p>{formatTime(currentTime)}</p>
                 <input
                   type='range'
-                  className='form-range'
+                  className='form-range px-2'
                   min='0'
                   max={duration}
                   value={currentTime}
@@ -227,11 +221,16 @@ export default function BottomNav(props) {
                   type='range'
                   className='volume-slider'
                   min='0'
-                  max='1'
+                  max='100'
                   step='0.1'
-                  disabled
                   value={volume}
-                  onChange={handleVolumeChange}
+                  onChange={(e) => {
+                    const newVol = e.target.value;
+                    setVolume(newVol);
+                    if (playerRef.current) {
+                      playerRef.current.setVolume(newVol / 100);
+                    }
+                  }}
                 />
               </span>
             </div>

@@ -25,6 +25,40 @@ body {
   line-height: 1.2rem;
 }
 
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: center;
+  width: 100%;
+  margin: auto;
+  position: absolute;
+  top: 40%;
+  right: 50%;
+  transform: translate(50%, 0%);
+}
+
+.loading-spinner {
+  border: 16px solid #f3f3f3;
+  border-top: 16px solid #A9C52F;
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  animation: spin 2s linear infinite;
+  margin: 50px auto;
+  /* Center the spinner */
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 .normal-link:focus {
   background-color: transparent;
   border: none;
@@ -271,7 +305,15 @@ body {
 .modal-body input:focus {
   box-shadow: none;
   outline: 0px;
- }
+}
+
+.modal select,
+.modal select:focus {
+  background-color: white;
+  border: none;
+  outline: none;
+  padding: 0px 5px;
+}
 
 .prof-body {
   display: flex;
@@ -348,14 +390,25 @@ body {
   background-color: #A9C52F;
 }
 
-.display-cards .card-text:hover, .video-results .card .channel:hover {
+.display-cards .card-text .channel-link,
+.video-results .card .channel .channel-link {
+  color: white;
+  text-decoration: none;
+  background-color: transparent;
+}
+
+.display-cards .card-text .channel-link:hover,
+.video-results .card .channel .channel-link:hover,
+.display-cards .card-text .channel-link:focus,
+.video-results .card .channel .channel-link:focus {
   text-decoration: underline;
   color: #BDC3C7;
+  background-color: transparent;
 }
 
 .footer {
   position: absolute;
-  bottom: -75%;
+  bottom: -85%;
   right: 50%;
   transform: translate(50%, 0%);
   padding-bottom: 20px;
@@ -418,16 +471,31 @@ body {
   width: 80%;
 }
 
-input[type=range]::-webkit-slider-runnable-track {
-  width: 100%;
-  height: 4px;
-  cursor: pointer;
-  background: white;
+.bottom-nav input[type=range]:focus {
+  outline: none;
+  border: none;
 }
 
-input[type=range]::-webkit-slider-thumb {
-  background: #A9C52F;
+.bottom-nav input[type=range]::-webkit-slider-runnable-track {
+  width: 300px;
+  height: 5px;
+  background: white;
+  border: none;
+  border-radius: 3px;
+}
+
+.bottom-nav input[type=range]::-webkit-slider-thumb {
   -webkit-appearance: none;
+  border: none;
+  height: 10px;
+  width: 10px;
+  border-radius: 50%;
+  background: #A9C52F;
+  margin: -2px 0px;
+}
+
+.bottom-nav input[type=range]:focus {
+  outline: none;
 }
 
 .bottom-nav input[type=range]:hover,
@@ -496,6 +564,60 @@ input[type=range]::-webkit-slider-thumb {
   justify-content: space-between;
 }
 
+.channel-page {
+  position: absolute;
+  top: 20%;
+  right: 50%;
+  width: 90%;
+  transform: translate(50%, 0%);
+}
+
+.channel-img {
+  border: none;
+  padding: 10px;
+  outline: 1px solid white;
+  object-fit: contain;
+  border-radius: 1000px;
+}
+
+.display-cards .card-img-top {
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.pagination .page-link:hover {
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.about {
+  position: absolute;
+  top: 20%;
+  right: 50%;
+  width: 90%;
+  margin: auto;
+  transform: translate(50%, 0%);
+  text-align: center;
+}
+
+.special-url {
+  text-decoration: none;
+  color: #A9C52F;
+  background-color: transparent;
+}
+
+.special-url:hover, .special-url:focus {
+  text-decoration: underline;
+  color: #BDC3C7;
+  background-color: transparent;
+}
+
+.about .img-fluid {
+  height: 300px;
+  margin: auto;
+  padding: 20px;
+}
+
 @media only screen and (max-width: 600px) {
   .navbar {
     padding: 5px 10px;
@@ -535,7 +657,7 @@ input[type=range]::-webkit-slider-thumb {
     width: 90%;
     margin: auto;
   }
-  
+
   .prof-del {
     margin: auto;
     width: 90%;
@@ -650,6 +772,31 @@ input[type=range]::-webkit-slider-thumb {
     width: 95%;
   }
 
+  .channel-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .channel-header .col-lg-11 {
+    margin-top: 10px;
+  }
+
+  .channel-header .channel-des {
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .channel-contents .col-sm-6 {
+    width: 50%;
+    margin: auto;
+  }
+
   .vid-sec {
     width: 90%;
     position: absolute;
@@ -680,7 +827,7 @@ input[type=range]::-webkit-slider-thumb {
 
   .footer {
     position: absolute;
-    bottom: -210%;
+    bottom: -225%;
     right: 50%;
     padding-bottom: 20px;
     transform: translate(50%, 600%);
