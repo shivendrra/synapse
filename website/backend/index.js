@@ -45,7 +45,7 @@ const UserSchema = new Schema({
   isAdmin: { type: Boolean, default: false },
 });
 
-const UserModel = mongoose.model('user', UserSchema);
+const UserModel = mongoose.models.user || mongoose.model('user', UserSchema);
 
 mongoose.connect(mongo_url)
   .then(() => {
@@ -237,7 +237,6 @@ authRouter.delete('/delete', async (req, res) => {
   }
 });
 
-authRouter.get("/google", passport.authenticate("google", ["profile", "email"]));
 authRouter.get("/logout", (req, res) => {
   req.logout();
   // res.redirect('http://localhost:3000');
@@ -419,6 +418,7 @@ app.get('/download', async (req, res) => {
           console.error('Error sending file:', err);
           res.status(500).send('Error sending file');
         } else {
+          console.log(`File sent: ${filePath}`);
           fs.unlinkSync(filePath);
         }
       });
