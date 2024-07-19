@@ -18,8 +18,8 @@ export default function Channel({ onPlay }) {
         console.error('Channel ID is undefined');
         return;
       }
-      const url = `http://localhost:3001/content/channel?channelId=${channelId}&pageToken=${pageToken}&maxResults=24`;
-      // const url = `https://synapse-backend.vercel.app/content/channel?channelId=${channelId}&pageToken=${pageToken}&maxResults=20`;
+      // const url = `http://localhost:3001/content/channel?channelId=${channelId}&pageToken=${pageToken}&maxResults=24`;
+      const url = `https://synapse-backend.vercel.app/content/channel?channelId=${channelId}&pageToken=${pageToken}&maxResults=24`;
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error('Failed to fetch channel information');

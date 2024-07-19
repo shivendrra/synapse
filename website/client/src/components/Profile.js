@@ -94,8 +94,8 @@ export default function Profile() {
       if (password) {
         payload.password = password;
       };
-      // const response = await fetch('https://synapse-backend.vercel.app/auth/update', {
-      const response = await fetch('http://localhost:3001/auth/update', {
+      const response = await fetch('https://synapse-backend.vercel.app/auth/update', {
+      // const response = await fetch('http://localhost:3001/auth/update', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -118,8 +118,8 @@ export default function Profile() {
 
   const handleDeleteAccount = async () => {
     try {
-      // const response = await fetch('https://synapse-backend.vercel.app/auth/delete', {
-      const response = await fetch('http://localhost:3001/auth/delete', {
+      const response = await fetch('https://synapse-backend.vercel.app/auth/delete', {
+      // const response = await fetch('http://localhost:3001/auth/delete', {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

@@ -2,55 +2,12 @@ import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import he from 'he';
+import { ToastContainer } from 'react-toastify';
+import { handleError, handleSuccess } from '../utils';
 import axios from 'axios';
 
-const addPlaylist = async (username, playlistName, song) => {
-  try {
-    const response = await fetch('http://localhost:3001/playlists/add-playlist', {
-      // const response = await fetch('https://synapse-backend.vercel.app/playlists/add-playlist', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        username,
-        playlistName,
-        song,
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to add playlist');
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error('Error adding playlist:', error);
-    throw error;
-  }
-};
-
-const getPlaylists = async (username) => {
-  try {
-    const response = await fetch(`http://localhost:3001/playlists/get-playlists/${username}`);
-    // const response = await fetch(`https://synapse-backend.vercel.app/playlists/get-playlists/${username}`);
-
-    if (!response.ok) {
-      throw new Error('Failed to get playlists');
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error('Error getting playlists:', error);
-    throw error;
-  }
-};
-
 export default function DisplayCards(props) {
-  const { title, channel, imageUrl, videoUrl, onPlay, channelId, username } = props;
-  const [playlists, setPlaylists] = useState([]);
-  const [newPlaylistName, setNewPlaylistName] = useState('');
-  const [showPlaylistModal, setShowPlaylistModal] = useState(false);
+  const { title, channel, imageUrl, videoUrl, onPlay, channelId } = props;
   const [queue, setQueue] = useState([]);
   const audioRef = useRef(null);
 
@@ -60,23 +17,6 @@ export default function DisplayCards(props) {
     channel,
     thumbnailUrl: imageUrl,
   };
-
-  useEffect(() => {
-    const fetchPlaylists = async () => {
-      try {
-        if (username) {
-          const data = await getPlaylists(username);
-          setPlaylists(data.playlists);
-        } else {
-          console.error('Username is not defined');
-        }
-      } catch (error) {
-        console.error('Error fetching playlists:', error);
-      }
-    };
-
-    fetchPlaylists();
-  }, [username]);
 
   const handlePlay = useCallback((song) => {
     if (onPlay) {
@@ -91,46 +31,23 @@ export default function DisplayCards(props) {
 
   const handleDownload = async () => {
     try {
-      // const response = await axios.get('https://synapse-backend.vercel.app/download', {
-      const response = await axios.get('http://localhost:3001/download', {
+      const response = await axios.get('https://synapse-backend.vercel.app/download', {
+      // const response = await axios.get('http://localhost:3001/download', {
         params: { id: videoUrl },
         responseType: 'blob',
       });
 
       const url = window.URL.createObjectURL(new Blob([response.data]));
+      handleSuccess("Audio downloading....");
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', 'audio.mp3');
+      link.setAttribute('download', `${title}.mp3`);
       document.body.appendChild(link);
       link.click();
+      handleSuccess("Audio downloaded");
     } catch (error) {
+      handleError("Error while downloading the audio", error);
       console.error('Error downloading the video', error);
-    }
-  };
-
-  const handleAddPlaylist = async (playlistName) => {
-    try {
-      await addPlaylist(username, playlistName, newSong);
-      const data = await getPlaylists(username);
-      setPlaylists(data.playlists);
-    } catch (error) {
-      console.error('Error adding playlist:', error);
-    }
-  };
-
-  const handleAddToPlaylist = async (playlistName) => {
-    if (!playlistName) {
-      setShowPlaylistModal(true);
-    } else {
-      await handleAddPlaylist(playlistName);
-    }
-  };
-
-  const handleCreatePlaylist = async () => {
-    if (newPlaylistName) {
-      await handleAddPlaylist(newPlaylistName);
-      setShowPlaylistModal(false);
-      setNewPlaylistName('');
     }
   };
 
@@ -189,53 +106,17 @@ export default function DisplayCards(props) {
                     </button>
                   </li>
                   <li>
-                    <button className='dropdown-item disabled' onClick={() => handleAddToPlaylist(null)}>
+                    <button className='dropdown-item disabled'>
                       Add to Playlist
                     </button>
                   </li>
-                  {playlists.map((playlist) => (
-                    <li key={playlist.name}>
-                      <button className='dropdown-item' onClick={() => handleAddToPlaylist(playlist.name)}>
-                        {playlist.name}
-                      </button>
-                    </li>
-                  ))}
                 </ul>
               </div>
             </div>
           </div>
         </div>
       </div>
-
-      {showPlaylistModal && (
-        <div className='modal show d-block pt-5 px-4'>
-          <div className='modal-dialog'>
-            <div className='modal-content'>
-              <div className='modal-header'>
-                <h5 className='modal-title'>Create New Playlist</h5>
-                <button type='button' className='btn-close' onClick={() => setShowPlaylistModal(false)}></button>
-              </div>
-              <div className='modal-body'>
-                <input
-                  type='text'
-                  className='form-control'
-                  placeholder='New Playlist Name'
-                  value={newPlaylistName}
-                  onChange={(e) => setNewPlaylistName(e.target.value)}
-                />
-              </div>
-              <div className='modal-footer'>
-                <button type='button' className='btn btn-secondary' onClick={() => setShowPlaylistModal(false)}>
-                  Cancel
-                </button>
-                <button type='button' className='btn btn-primary' onClick={handleCreatePlaylist}>
-                  Create
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <ToastContainer/>
     </>
   );
 }

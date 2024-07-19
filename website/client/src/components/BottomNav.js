@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import he from 'he';
 import axios from 'axios';
+import { ToastContainer } from 'react-toastify';
+import { handleError, handleSuccess } from '../utils';
 
 export default function BottomNav(props) {
   const { state, audioTitle, audioUrl, channelName, imsSrc, onNext, onPrevious } = props;
@@ -109,13 +111,16 @@ export default function BottomNav(props) {
       });
 
       const url = window.URL.createObjectURL(new Blob([response.data]));
+      handleSuccess("Audio downloading....");
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', 'audio.mp3');
+      link.setAttribute('download', `${audioTitle}.mp3`);
       document.body.appendChild(link);
       link.click();
+      handleSuccess("Audio downloaded");
     } catch (error) {
-      console.error('Error downloading the video', error);
+      handleError("Error while downloading the audio", error);
+      console.error('Error downloading the audio', error);
     }
   };
 
@@ -237,6 +242,7 @@ export default function BottomNav(props) {
           </div>
         </div>
       </div>
+      <ToastContainer/>
     </>
   );
 }

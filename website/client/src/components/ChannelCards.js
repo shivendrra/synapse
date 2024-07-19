@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import he from 'he';
 import axios from 'axios';
+import { ToastContainer } from 'react-toastify';
+import { handleError, handleSuccess } from '../utils';
 
 export default function ChannelCards(props) {
   const { title, channel, imageUrl, videoUrl, onPlay } = props;
@@ -27,19 +29,22 @@ export default function ChannelCards(props) {
 
   const handleDownload = async () => {
     try {
-      // const response = await axios.get('https://synapse-backend.vercel.app/download', {
-      const response = await axios.get('http://localhost:3001/download', {
+      const response = await axios.get('https://synapse-backend.vercel.app/download', {
+        // const response = await axios.get('http://localhost:3001/download', {
         params: { id: videoUrl },
         responseType: 'blob',
       });
 
       const url = window.URL.createObjectURL(new Blob([response.data]));
+      handleSuccess("Audio downloading....");
       const link = document.createElement('a');
       link.href = url;
       link.setAttribute('download', 'audio.mp3');
       document.body.appendChild(link);
       link.click();
+      handleSuccess("Audio downloaded");
     } catch (error) {
+      handleError("Error while downloading the audio", error);
       console.error('Error downloading the video', error);
     }
   };
@@ -85,6 +90,7 @@ export default function ChannelCards(props) {
           </div>
         </div>
       </div>
+      <ToastContainer />
     </>
   );
 }
