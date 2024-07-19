@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import he from 'he';
 
@@ -10,6 +11,11 @@ export default function VideoCard(props) {
       onPlay(videoUrl, title, channel);
     }
   };
+  const navigate = useNavigate();
+
+  const handleChannel = () => {
+    navigate(`/channel`);
+  }
 
   return (
     <div className='video-card m-auto'>
@@ -21,7 +27,7 @@ export default function VideoCard(props) {
           <div className='col-lg-7 col-sm-7'>
             <div className='card-body px-1'>
               <h5 className='card-title' style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis' }} onClick={handlePlay}>{he.decode(title)}</h5>
-              <p className='card-text'>{he.decode(channel)}</p>
+              <p className='card-text channel' onClick={handleChannel}>{he.decode(channel)}</p>
               <p className='card-text' style={{ maxWidth: '80vw', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'grey' }}>
                 <small style={{color: 'grey'}} >{he.decode(description)}</small>
               </p>

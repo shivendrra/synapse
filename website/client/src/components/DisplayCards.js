@@ -1,11 +1,13 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import he from 'he';
 import axios from 'axios';
 
 const addPlaylist = async (username, playlistName, song) => {
   try {
-    const response = await fetch('https://synapse-backend.vercel.app/playlists/add-playlist', {
+    const response = await fetch('http://localhost:3001/playlists/add-playlist', {
+    // const response = await fetch('https://synapse-backend.vercel.app/playlists/add-playlist', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -30,7 +32,8 @@ const addPlaylist = async (username, playlistName, song) => {
 
 const getPlaylists = async (username) => {
   try {
-    const response = await fetch(`https://synapse-backend.vercel.app/playlists/get-playlists/${username}`);
+    const response = await fetch(`http://localhost:3001/playlists/get-playlists/${username}`);
+    // const response = await fetch(`https://synapse-backend.vercel.app/playlists/get-playlists/${username}`);
 
     if (!response.ok) {
       throw new Error('Failed to get playlists');
@@ -58,6 +61,8 @@ export default function DisplayCards(props) {
     channel,
     thumbnailUrl: imageUrl,
   };
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchPlaylists = async () => {
@@ -90,8 +95,8 @@ export default function DisplayCards(props) {
 
   const handleDownload = async () => {
     try {
-      const response = await axios.get('https://synapse-backend.vercel.app/download', {
-      // const response = await axios.get('http://localhost:3001/download', {
+      // const response = await axios.get('https://synapse-backend.vercel.app/download', {
+      const response = await axios.get('http://localhost:3001/download', {
         params: { id: videoUrl },
         responseType: 'blob',
       });
@@ -153,15 +158,19 @@ export default function DisplayCards(props) {
     }
   }, [playNextSong]);
 
+  const handleChannel = () => {
+    navigate(`/channel`);
+  }
+
   return (
     <>
       <div className='display-cards p-0 mt-5'>
         <div className='card' style={{ cursor: 'pointer' }}>
-          <img src={imageUrl} alt={title} className='card-img-top' />
+          <img src={imageUrl} alt={title} className='card-img-top' onClick={() => handlePlay(newSong)}/>
           <div className='card-body px-2 d-flex'>
             <div className='col-lg-11' onClick={() => handlePlay(newSong)}>
               <h5 className='card-title video-title' style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis' }}>{he.decode(title)}</h5>
-              <p className='card-text'>{he.decode(channel)}</p>
+              <p className='card-text' onClick={handleChannel}>{he.decode(channel)}</p>
             </div>
             <div className='col-lg-1'>
               <div className="dropdown">
@@ -206,7 +215,8 @@ export default function DisplayCards(props) {
       </div>
 
       {currentSong && (
-        <audio ref={audioRef} src={`https://synapse-backend.vercel.app/play/${currentSong.videoId}`} autoPlay />
+        <audio ref={audioRef} src={`http://localhost:3001/play/${currentSong.videoId}`} autoPlay />
+        // <audio ref={audioRef} src={`https://synapse-backend.vercel.app/play/${currentSong.videoId}`} autoPlay />
       )}
 
       {showPlaylistModal && (

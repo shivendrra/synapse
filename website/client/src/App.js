@@ -11,6 +11,7 @@ import SearchResults from './components/SearchResults';
 import RefreshHandler from './RefreshHandler';
 import BottomNav from './components/BottomNav';
 import Profile from './components/Profile';
+import Channel from './components/Channel';
 
 function App() {
   const [category, setCategory] = useState('10');
@@ -77,6 +78,7 @@ function App() {
           <Route exact path='/login' element={<Login />} />
           <Route exact path='/signup' element={<Signup />} />
           <Route exact path='/profile' element={<Profile />} />
+          <Route exact path='/channel' element={<Channel />} />
         </Routes>
         {bottomNav && (
           <BottomNav

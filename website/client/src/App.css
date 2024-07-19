@@ -348,6 +348,11 @@ body {
   background-color: #A9C52F;
 }
 
+.display-cards .card-text:hover, .video-results .card .channel:hover {
+  text-decoration: underline;
+  color: #BDC3C7;
+}
+
 .footer {
   position: absolute;
   bottom: -75%;

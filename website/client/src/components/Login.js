@@ -28,8 +28,8 @@ export default function Login() {
       return handleError('All fields are required!');
     }
     try {
-      const url = 'https://synapse-backend.vercel.app/auth/login';
-      // const url = 'http://localhost:3001/auth/login';
+      // const url = 'https://synapse-backend.vercel.app/auth/login';
+      const url = 'http://localhost:3001/auth/login';
       const response = await fetch(url, {
         method: 'POST',
         headers: {
@@ -72,8 +72,8 @@ export default function Login() {
     provider.setCustomParameters({ prompt: "select_account" });
     try {
       const resultsFromGoogle = await signInWithPopup(auth, provider);
-      const res = await fetch("https://synapse-backend.vercel.app/auth/googleLogin", {
-      // const res = await fetch("http://localhost:3001/auth/googleLogin", {
+      // const res = await fetch("https://synapse-backend.vercel.app/auth/googleLogin", {
+      const res = await fetch("http://localhost:3001/auth/googleLogin", {
         method: 'POST',
         headers: {
           "Content-Type": "application/json",
