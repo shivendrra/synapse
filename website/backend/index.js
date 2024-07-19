@@ -36,19 +36,14 @@ const UserSchema = new Schema({
   avatar: {
     type: String,
   },
-  gender: { type: String, required: true },
-  month: { type: String, required: true },
-  date: { type: String, required: true },
-  year: { type: String, required: true },
-  likedSongs: { type: [String], default: [] },
-  playlists: { type: [String], default: [] },
-  isAdmin: { type: Boolean, default: false },
+  gender: { type: String, required: false},
 });
 
 const UserModel = mongoose.models.user || mongoose.model('user', UserSchema);
 
 mongoose.connect(mongo_url, {
-  serverSelectionTimeoutMS: 5000
+  serverSelectionTimeoutMS: 20000,
+  socketTimeoutMS: 45000,
 })
   .then(() => {
     console.log("Database connected...");
