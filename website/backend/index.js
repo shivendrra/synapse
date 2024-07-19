@@ -330,8 +330,8 @@ const videoResults = async (req, res) => {
         channel: item.snippet.channelTitle,
         thumbnailUrl: item.snippet.thumbnails.medium.url,
         description: item.snippet.description,
+        channelId: item.snippet.channelId,
       }));
-
       res.json(videos);
     } else {
       res.status(response.status).send('Error fetching random videos');
@@ -340,9 +340,60 @@ const videoResults = async (req, res) => {
     console.error(error);
     res.status(500).send('Error fetching random videos');
   }
-};
+}
+
+const channelFetch = async (req, res) => {
+  try {
+    const channelId = req.query.channelId;
+    const maxResults = req.query.maxResults || 24;
+    const pageToken = req.query.pageToken || '';
+
+    const channelResponse = await axios.get('https://www.googleapis.com/youtube/v3/channels', {
+      params: {
+        key: API_KEY,
+        id: channelId,
+        part: 'snippet,contentDetails,statistics',
+      },
+    });
+
+    if (channelResponse.status !== 200) {
+      return res.status(channelResponse.status).send('Error fetching channel details');
+    }
+
+    const channelData = channelResponse.data.items[0];
+    const uploadsPlaylistId = channelData.contentDetails.relatedPlaylists.uploads;
+
+    const videosResponse = await axios.get('https://www.googleapis.com/youtube/v3/playlistItems', {
+      params: {
+        key: API_KEY,
+        playlistId: uploadsPlaylistId,
+        part: 'snippet',
+        maxResults: maxResults,
+        pageToken: pageToken,
+      },
+    });
+
+    if (videosResponse.status !== 200) {
+      return res.status(videosResponse.status).send('Error fetching videos');
+    }
+
+    const formattedVideos = videosResponse.data.items.map((item) => ({
+      videoId: item.snippet.resourceId.videoId,
+      title: item.snippet.title,
+      channel: item.snippet.channelTitle,
+      thumbnailUrl: item.snippet.thumbnails.medium.url,
+      description: item.snippet.description,
+    }));
+
+    res.json({ channel: channelData.snippet, videos: formattedVideos, nextPageToken: videosResponse.data.nextPageToken, prevPageToken: videosResponse.data.prevPageToken });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error fetching channel information');
+  }
+}
 
 videoRouter.get('/random-videos', videoResults);
+videoRouter.get('/channel', channelFetch);
 
 app.use('/auth', authRouter);
 app.use('/playlists', playlistRouter);
@@ -375,8 +426,8 @@ app.post('/search', async (req, res) => {
         channel: item.snippet.channelTitle,
         thumbnailUrl: item.snippet.thumbnails.medium.url,
         description: item.snippet.description,
+        channelId: item.snippet.channelId,
       }));
-
       res.json(videos);
     } else {
       res.status(response.status).send('Error fetching videos');

@@ -132,14 +132,14 @@ export default function Navbar({ onCategoryChange }) {
                       Account
                     </Link>
                   </li>
-                  <li className='dropdown-item'>
+                  <li className='dropdown-item disabled'>
                     <Link to="/" className='drop-link' style={{ textDecoration: 'none', color: 'black' }}>
                       Help
                     </Link>
                   </li>
-                  <li className='dropdown-item disabled'>
-                    <Link to="/" className='drop-link' style={{ textDecoration: 'none', color: 'black' }}>
-                      Manage
+                  <li className='dropdown-item'>
+                    <Link to="/about" className='drop-link' style={{ textDecoration: 'none', color: 'black' }}>
+                      About
                     </Link>
                   </li>
                   <li><hr className='dropdown-divider' /></li>
