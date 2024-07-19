@@ -10,13 +10,13 @@ const ytdl = require('@distube/ytdl-core');
 const Joi = require('joi');
 const { generateFromEmail } = require("unique-username-generator");
 
-
 require('events').EventEmitter.defaultMaxListeners = 15;
 require('dotenv').config({ path: '.env' });
 
 const mongo_url = process.env.MONGODB_URL;
 const API_KEY = process.env.yt_key;
 
+const Schema = mongoose.Schema;
 const UserSchema = new Schema({
   name: {
     type: String,
