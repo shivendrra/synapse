@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import ChannelCards from './ChannelCards';
 
-export default function Channel({ onPlay }) {
+export default function Channel({ onPlay, handleAddToQueue }) {
   const { search } = useLocation();
   const params = new URLSearchParams(search);
   const channelId = params.get('channelId');
@@ -71,6 +71,7 @@ export default function Channel({ onPlay }) {
                     channel={video.channel}
                     imageUrl={video.thumbnailUrl}
                     videoUrl={video.videoId}
+                    handleAddToQueue={handleAddToQueue}
                     onPlay={() => onPlay(video.videoId, video.title, video.channel, video.thumbnailUrl, index)}
                   />
                 </div>

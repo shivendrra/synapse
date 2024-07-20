@@ -3,7 +3,7 @@ import VideoCard from './VideoCard';
 import { handleError } from '../utils';
 import { ToastContainer } from 'react-toastify';
 
-export default function SearchResults({ onPlay, videos, setVideos }) {
+export default function SearchResults({ onPlay, videos, setVideos, handleAddToQueue }) {
   const [searchText, setSearchText] = useState('');
 
   const handleSubmit = async (e) => {
@@ -60,6 +60,7 @@ export default function SearchResults({ onPlay, videos, setVideos }) {
                       imageUrl={video.thumbnailUrl}
                       videoUrl={video.videoId}
                       channelId={video.channelId}
+                      handleAddToQueue={handleAddToQueue}
                       onPlay={() => onPlay(video.videoId, video.title, video.channel, video.thumbnailUrl, index, video.channelId)}
                       description={video.description}
                     />
