@@ -3,7 +3,7 @@ import DisplayCards from './DisplayCards';
 import { handleError } from '../utils';
 import Footer from './Footer';
 
-export default function Home({ category, onPlay }) {
+export default function Home({ category, onPlay, handleAddToQueue }) {
   const [randomVideos, setRandomVideos] = useState([]);
   const [loggedInUser, setLoggedInUser] = useState(false);
   const [username, setUsername] = useState(null);
@@ -20,8 +20,8 @@ export default function Home({ category, onPlay }) {
 
   const fetchRandomVideos = useCallback(async () => {
     try {
-      // const url = `http://localhost:3001/content/random-videos?category=${category}`;
-      const url = `https://synapse-backend.vercel.app/content/random-videos?category=${category}`;
+      const url = `http://localhost:3001/content/random-videos?category=${category}`;
+      // const url = `https://synapse-backend.vercel.app/content/random-videos?category=${category}`;
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error('Error while fetching random videos');
@@ -63,6 +63,7 @@ export default function Home({ category, onPlay }) {
                     imageUrl={video.thumbnailUrl}
                     videoUrl={video.videoId}
                     channelId={video.channelId}
+                    handleAddToQueue={handleAddToQueue}
                     onPlay={() => onPlay(video.videoId, video.title, video.channel, video.thumbnailUrl, index)}
                     username={username}
                   />

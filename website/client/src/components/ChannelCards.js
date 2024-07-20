@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import PropTypes from 'prop-types';
 import he from 'he';
 import axios from 'axios';
@@ -6,8 +6,9 @@ import { ToastContainer } from 'react-toastify';
 import { handleError, handleSuccess } from '../utils';
 
 export default function ChannelCards(props) {
-  const { title, channel, imageUrl, videoUrl, onPlay } = props;
+  const { title, channel, imageUrl, videoUrl, onPlay, handleAddToQueue } = props;
   const [queue, setQueue] = useState([]);
+  const audioRef = useRef(null);
 
   const newSong = {
     videoId: videoUrl,
@@ -16,21 +17,21 @@ export default function ChannelCards(props) {
     thumbnailUrl: imageUrl,
   };
 
-  const handleAddQueue = () => {
-    setQueue([...queue, newSong]);
-    console.log('Added to queue');
-  };
-
-  const handlePlay = () => {
+  const handlePlay = useCallback(() => {
     if (onPlay) {
       onPlay(videoUrl, title, channel);
     }
+  }, [onPlay, videoUrl, title, channel]);
+
+  const handleAddQueue = () => {
+    handleAddToQueue(newSong);
+    handleSuccess('added to queue');
   };
 
   const handleDownload = async () => {
     try {
-      const response = await axios.get('https://synapse-backend.vercel.app/download', {
-        // const response = await axios.get('http://localhost:3001/download', {
+      // const response = await axios.get('https://synapse-backend.vercel.app/download', {
+        const response = await axios.get('http://localhost:3001/download', {
         params: { id: videoUrl },
         responseType: 'blob',
       });
@@ -39,7 +40,7 @@ export default function ChannelCards(props) {
       handleSuccess("Audio downloading....");
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', 'audio.mp3');
+      link.setAttribute('download', `${title}.mp3`);
       document.body.appendChild(link);
       link.click();
       handleSuccess("Audio downloaded");
@@ -49,6 +50,24 @@ export default function ChannelCards(props) {
     }
   };
 
+
+  const playNextSong = useCallback(() => {
+    if (queue.length > 0) {
+      const nextSong = queue[0];
+      setQueue(queue.slice(1));
+      handlePlay(nextSong);
+    }
+  }, [queue, handlePlay]);
+
+  useEffect(() => {
+    const audioElement = audioRef.current;
+    if (audioElement) {
+      audioElement.addEventListener('ended', playNextSong);
+      return () => {
+        audioElement.removeEventListener('ended', playNextSong);
+      };
+    }
+  }, [playNextSong]);
   return (
     <>
       <div className='display-cards p-0 mt-5'>

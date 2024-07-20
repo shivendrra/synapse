@@ -1,5 +1,5 @@
 import { Navigate, BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
 
@@ -24,6 +24,7 @@ function App() {
   const [imsSrc, setImsSrc] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [videos, setVideos] = useState([]);
+  const [queue, setQueue] = useState([]);
 
   const handleCategoryChange = (categoryId) => {
     setCategory(categoryId);
@@ -38,13 +39,17 @@ function App() {
     setBottomNav(true);
   };
 
+  const handleAddToQueue = (song) => {
+    setQueue((prevQueue) => [...prevQueue, song]);
+  };
+
   const handleNext = useCallback(() => {
-    if (videos.length > 0) {
-      const nextIndex = (currentIndex + 1) % videos.length;
-      const nextVideo = videos[nextIndex];
-      handlePlay(nextVideo.videoId, nextVideo.title, nextVideo.channel, nextVideo.thumbnailUrl, nextIndex);
+    if (queue.length > 0) {
+      const nextSong = queue.shift();
+      setQueue(queue);
+      handlePlay(nextSong.videoId, nextSong.title, nextSong.channel, nextSong.thumbnailUrl, currentIndex + 1);
     }
-  }, [currentIndex, videos]);
+  }, [queue, currentIndex]);
 
   const handlePrevious = useCallback(() => {
     if (videos.length > 0) {
@@ -53,6 +58,16 @@ function App() {
       handlePlay(prevVideo.videoId, prevVideo.title, prevVideo.channel, prevVideo.thumbnailUrl, prevIndex);
     }
   }, [currentIndex, videos]);
+
+  useEffect(() => {
+    const audioElement = document.getElementById('audio-player');
+    if (audioElement) {
+      audioElement.addEventListener('ended', handleNext);
+      return () => {
+        audioElement.removeEventListener('ended', handleNext);
+      };
+    }
+  }, [handleNext]);
 
   const PrivateRoute = ({ element }) => {
     return isAuth ? element : <Navigate to='/login' />;
@@ -65,13 +80,13 @@ function App() {
         <Navbar onCategoryChange={handleCategoryChange} />
         <Routes>
           <Route path='/' element={<Navigate to='/home' />} />
-          <Route path='/home' element={<PrivateRoute element={<Home category={category} onPlay={handlePlay} />} />} />
+          <Route path='/home' element={<PrivateRoute element={<Home category={category} onPlay={handlePlay} handleAddToQueue={handleAddToQueue} />} />} />
           <Route path='/search' element={<SearchResults onPlay={handlePlay} videos={videos} setVideos={setVideos} />} />
           <Route path='/login' element={<Login setIsAuth={setIsAuth} />} />
           <Route path='/signup' element={<Signup />} />
           <Route path='/profile' element={<PrivateRoute element={<Profile />} />} />
-          <Route path='/channel' element={<Channel onPlay={handlePlay}/>} />
-          <Route path='/about' element={<About/>}/>
+          <Route path='/channel' element={<Channel onPlay={handlePlay} handleAddToQueue={handleAddToQueue}/>} />
+          <Route path='/about' element={<About />} />
         </Routes>
         {bottomNav && (
           <BottomNav

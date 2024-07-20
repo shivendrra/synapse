@@ -7,7 +7,7 @@ import { handleError, handleSuccess } from '../utils';
 import axios from 'axios';
 
 export default function DisplayCards(props) {
-  const { title, channel, imageUrl, videoUrl, onPlay, channelId } = props;
+  const { title, channel, imageUrl, videoUrl, onPlay, channelId, handleAddToQueue } = props;
   const [queue, setQueue] = useState([]);
   const audioRef = useRef(null);
 
@@ -25,14 +25,14 @@ export default function DisplayCards(props) {
   }, [onPlay]);
 
   const handleAddQueue = () => {
-    setQueue([...queue, newSong]);
+    handleAddToQueue(newSong);
     console.log('Added to queue');
   };
 
   const handleDownload = async () => {
     try {
-      const response = await axios.get('https://synapse-backend.vercel.app/download', {
-      // const response = await axios.get('http://localhost:3001/download', {
+      // const response = await axios.get('https://synapse-backend.vercel.app/download', {
+      const response = await axios.get('http://localhost:3001/download', {
         params: { id: videoUrl },
         responseType: 'blob',
       });
@@ -56,7 +56,6 @@ export default function DisplayCards(props) {
       const nextSong = queue[0];
       setQueue(queue.slice(1));
       handlePlay(nextSong);
-    } else {
     }
   }, [queue, handlePlay]);
 
@@ -105,18 +104,13 @@ export default function DisplayCards(props) {
                       Download
                     </button>
                   </li>
-                  <li>
-                    <button className='dropdown-item disabled'>
-                      Add to Playlist
-                    </button>
-                  </li>
                 </ul>
               </div>
             </div>
           </div>
         </div>
       </div>
-      <ToastContainer/>
+      <ToastContainer />
     </>
   );
 }
@@ -127,5 +121,6 @@ DisplayCards.propTypes = {
   imageUrl: PropTypes.string.isRequired,
   videoUrl: PropTypes.string.isRequired,
   onPlay: PropTypes.func.isRequired,
-  username: PropTypes.string.isRequired,
+  channelId: PropTypes.string.isRequired,
+  handleAddToQueue: PropTypes.func.isRequired,
 };
