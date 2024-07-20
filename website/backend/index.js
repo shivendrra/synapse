@@ -36,19 +36,14 @@ const UserSchema = new Schema({
   avatar: {
     type: String,
   },
-  gender: { type: String, required: true },
-  month: { type: String, required: true },
-  date: { type: String, required: true },
-  year: { type: String, required: true },
-  likedSongs: { type: [String], default: [] },
-  playlists: { type: [String], default: [] },
-  isAdmin: { type: Boolean, default: false },
+  gender: { type: String, required: false},
 });
 
 const UserModel = mongoose.models.user || mongoose.model('user', UserSchema);
 
 mongoose.connect(mongo_url, {
-  serverSelectionTimeoutMS: 5000
+  serverSelectionTimeoutMS: 20000,
+  socketTimeoutMS: 45000,
 })
   .then(() => {
     console.log("Database connected...");
@@ -449,11 +444,7 @@ app.get('/download', async (req, res) => {
     const videoInfo = await ytdl.getInfo(videoUrl);
     const videoTitle = videoInfo.videoDetails.title;
     const sanitizedTitle = videoTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-    const downloadDir = path.resolve(__dirname, 'downloads');
-    if (!fs.existsSync(downloadDir)) {
-      fs.mkdirSync(downloadDir);
-    }
-    const filePath = path.resolve(downloadDir, `${sanitizedTitle}.mp3`);
+    const filePath = path.join('/tmp', `${sanitizedTitle}.mp3`);
 
     const audioStream = ytdl(videoUrl, {
       filter: 'audioonly',

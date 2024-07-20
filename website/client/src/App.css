@@ -289,9 +289,9 @@ body {
 .modal-body .user-de {
   display: flex;
   flex-direction: row;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   justify-content: space-between;
-  padding: 5px 0px;
+  padding: 10px 0px;
 }
 
 .modal-body input {
@@ -620,7 +620,8 @@ body {
 
 @media only screen and (max-width: 600px) {
   .navbar {
-    padding: 5px 10px;
+    padding: 5px 0px;
+    margin: 0px -10px;
   }
 
   .navbar-brand {
@@ -663,30 +664,8 @@ body {
     width: 90%;
   }
 
-  .playlists .card {
-    border-color: #0C0C0C;
-    padding: 0px;
-    margin: auto;
-  }
-
-  .playlists .card .playlist-img {
-    height: 120px;
-    width: 160px;
-    object-fit: cover;
-    margin: auto;
-    padding: 5px;
-    border-radius: 10px 10px 0px 0px;
-  }
-
-  .playlists {
-    padding: 10px 0px;
-  }
-
-  .playlists .card .row {
-    display: flex;
-    flex-direction: column;
-    flex-wrap: nowrap;
-    align-items: center;
+  .modal-body input {
+    width: 250px;
   }
 
   .random-videos {
@@ -695,6 +674,8 @@ body {
     flex-direction: row;
     justify-content: center;
     align-items: center;
+    width: 100%;
+    padding: 0px;
   }
 
   .random-videos .col-sm-6 {
@@ -702,11 +683,43 @@ body {
     margin-bottom: none;
   }
 
+  .display-cards {
+    margin-bottom: -30px;
+  }
+
+  .about {
+    width: 100%;
+    padding: 5px;
+  }
+
+  .about .img-fluid {
+    width: 100%;
+    object-fit: contain;
+  }
+
   .search-bar,
   .search-bar:hover,
   .search-bar:focus {
-    width: 90%;
-    margin: auto;
+    width: 100%;
+    margin: 0px;
+    height: 50px;
+  }
+
+  .btn-search {
+    padding: 10px 15px;
+  }
+
+  .search-bar .input-group-text {
+    padding: 0px 3px 0px 10px;
+  }
+
+  .video-results {
+    width: 100%;
+    padding: 0px 0px;
+  }
+
+  .video-results .row .col-lg-12 {
+    padding: 0px;
   }
 
   .video-card .card-title,
@@ -722,6 +735,7 @@ body {
     border: 1px solid black;
     border-radius: 5px;
     margin: auto;
+    padding-bottom: 10px;
   }
 
   .bottom-nav {
@@ -754,7 +768,7 @@ body {
   .bottom-nav .row .col-lg-12 {
     width: 100%;
     margin: auto;
-    padding: 0px 10px;
+    padding: 5px 10px;
   }
 
   .bottom-nav .audio-title,
@@ -772,6 +786,11 @@ body {
     width: 95%;
   }
 
+  .channel-page {
+    width: 100%;
+    padding: 0px 7px;
+  }
+
   .channel-header {
     display: flex;
     flex-direction: row;
@@ -780,7 +799,7 @@ body {
   }
 
   .channel-header .col-lg-11 {
-    margin-top: 10px;
+    margin-top: 20px;
   }
 
   .channel-header .channel-des {
@@ -792,9 +811,15 @@ body {
     text-overflow: ellipsis;
   }
 
+  .channel-contents {
+    width: 100%;
+    padding: 0px;
+  }
+
   .channel-contents .col-sm-6 {
     width: 50%;
     margin: auto;
+    padding: 0px;
   }
 
   .vid-sec {
@@ -827,7 +852,7 @@ body {
 
   .footer {
     position: absolute;
-    bottom: -225%;
+    bottom: -170%;
     right: 50%;
     padding-bottom: 20px;
     transform: translate(50%, 600%);

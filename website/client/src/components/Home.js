@@ -56,7 +56,7 @@ export default function Home({ category, onPlay }) {
           {randomVideos.length > 0 && (
             <div className='row'>
               {randomVideos.map((video, index) => (
-                <div key={video.videoId} className='col-lg-2 col-sm-6 p-2'>
+                <div key={video.videoId} className='col-lg-2 col-sm-6 p-1 pb-0'>
                   <DisplayCards
                     title={video.title}
                     channel={video.channel}

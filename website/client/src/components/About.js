@@ -14,11 +14,11 @@ export default function About() {
           <br />
           <hr style={{ width: '50%', margin: 'auto' }} />
           <br />
-          <img src={pic1} className='img-fluid' alt="..." />
           <h5><em>Worried how artists are paid?</em></h5>
           <p>This app uses Youtube's V3 API for fetching songs, search & other features, which means it would add a view to each video each time it's fetched using this api. And hence Youtube would pay them
             as they would have paid them for each view on their app.
           </p>
+          <img src={pic1} className='img-fluid' alt="..." />
         </div>
         <div className="col-lg-6 m-auto text-center">
           <br />
