@@ -31,8 +31,8 @@ export default function DisplayCards(props) {
 
   const handleDownload = async () => {
     try {
-      // const response = await axios.get('https://synapse-backend.vercel.app/download', {
-      const response = await axios.get('http://localhost:3001/download', {
+      const response = await axios.get('https://synapse-backend.vercel.app/download', {
+      // const response = await axios.get('http://localhost:3001/download', {
         params: { id: videoUrl },
         responseType: 'blob',
       });

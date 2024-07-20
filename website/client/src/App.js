@@ -81,7 +81,7 @@ function App() {
         <Routes>
           <Route path='/' element={<Navigate to='/home' />} />
           <Route path='/home' element={<PrivateRoute element={<Home category={category} onPlay={handlePlay} handleAddToQueue={handleAddToQueue} />} />} />
-          <Route path='/search' element={<SearchResults onPlay={handlePlay} videos={videos} setVideos={setVideos} />} />
+          <Route path='/search' element={<SearchResults onPlay={handlePlay} videos={videos} setVideos={setVideos} handleAddToQueue={handleAddToQueue}/>} />
           <Route path='/login' element={<Login setIsAuth={setIsAuth} />} />
           <Route path='/signup' element={<Signup />} />
           <Route path='/profile' element={<PrivateRoute element={<Profile />} />} />

@@ -8,7 +8,7 @@ export default function About() {
       <div className="about row">
         <div className="col-lg-12">
           <h2>Welcome to Synapse</h2>
-          <p>It's a free music streaming web-app built by <a className='special-url' href='https://shivendrra.vercel.app/' target='blank'>Shivendra</a> as project during <em><a href="https://buildspace.so/nw" className="special-url" target='blank'>nights&weekends</a></em> by <a className="special-url" href="https://buildspace.so/" target='blank'>buildspace.</a></p>
+          <p>It's a free music streaming web-app built by <a className='special-url' href='https://shivendrra.vercel.app/' target='blank'>Shivendra</a> as project during <em><a href="https://buildspace.so/nw" className="special-url" target='blank'>nights&weekends</a></em>'s s5 by <a className="special-url" href="https://buildspace.so/" target='blank'>buildspace.</a></p>
           <img src={pic2} className='img-fluid' alt="..." />
           <p>Motivation behind building this was that I was fedup of Spotify & Youtube playing annoying ads after each song & videos, so I decided to built a service that would allow users to stream music for free without any ads or any interruptions.</p>
           <br />
