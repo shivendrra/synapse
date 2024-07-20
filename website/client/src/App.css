@@ -739,7 +739,7 @@ body {
   }
 
   .video-card .row .card-body .col-lg-11 {
-    width: 100%;
+    width: 92%;
   }
 
   .video-card .row .card-body .col-lg-1 {
@@ -782,6 +782,18 @@ body {
 
   .bottom-nav .options {
     display: none;
+  }
+
+  .bottom-nav .row .title-sec {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+  }
+
+  .bottom-nav .row .title-sec .col-lg-8 {
+    width: 100%;
   }
 
   .bottom-nav .title-sec .img-thumbnail {

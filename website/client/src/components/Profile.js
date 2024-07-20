@@ -173,13 +173,7 @@ export default function Profile() {
               <h6 className='headers'>gender: </h6>
               <h6 className='key'>{gender || 'Not Set'}</h6>
             </span>
-            <span className='recent-de'>
-              <h6 className='headers'>recent listen: </h6>
-              <div className="form-check form-switch">
-                <input className="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" />
-              </div>
-            </span>
-            <span className='update-btn'>
+            <span className='update-btn pt-2'>
               <button className='btn btn-outline-secondary' style={{ borderRadius: '0px' }} onClick={handleShowModal}>
                 Update Profile
               </button>

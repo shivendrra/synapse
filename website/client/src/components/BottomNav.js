@@ -5,7 +5,7 @@ import { ToastContainer } from 'react-toastify';
 import { handleError, handleSuccess } from '../utils';
 
 export default function BottomNav(props) {
-  const { state, audioTitle, audioUrl, channelName, imsSrc, onNext, onPrevious } = props;
+  const { state, audioTitle, audioUrl, channelName, imsSrc, onNext, onPrevious, setEnded } = props;
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -57,6 +57,7 @@ export default function BottomNav(props) {
         setIsPlaying(true);
       } else if (event.data === window.YT.PlayerState.PAUSED || event.data === window.YT.PlayerState.ENDED) {
         clearInterval(intervalRef.current);
+        setEnded(true);
         setIsPlaying(false);
         if (event.data === window.YT.PlayerState.ENDED && isRepeating) {
           event.target.playVideo();
@@ -75,7 +76,7 @@ export default function BottomNav(props) {
       }
       clearInterval(intervalRef.current);
     };
-  }, [audioUrl, isRepeating, volume]);
+  }, [audioUrl, isRepeating, volume, setEnded]);
 
   const startProgressUpdate = (target) => {
     clearInterval(intervalRef.current);
