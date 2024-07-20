@@ -444,7 +444,7 @@ app.get('/download', async (req, res) => {
     const videoInfo = await ytdl.getInfo(videoUrl);
     const videoTitle = videoInfo.videoDetails.title;
     const sanitizedTitle = videoTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-    const filePath = path.dirname('/tmp');
+    const filePath = path.join('/tmp', `${sanitizedTitle}.mp3`);
 
     const audioStream = ytdl(videoUrl, {
       filter: 'audioonly',
