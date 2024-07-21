@@ -55,9 +55,11 @@ export default function BottomNav(props) {
       if (event.data === window.YT.PlayerState.PLAYING) {
         startProgressUpdate(event.target);
         setIsPlaying(true);
-      } else if (event.data === window.YT.PlayerState.PAUSED || event.data === window.YT.PlayerState.ENDED) {
+      } else if (event.data === window.YT.PlayerState.PAUSED) {
+        if (event.data === window.YT.PlayerState.ENDED) {
+          setEnded(true);
+        }
         clearInterval(intervalRef.current);
-        setEnded(true);
         setIsPlaying(false);
         if (event.data === window.YT.PlayerState.ENDED && isRepeating) {
           event.target.playVideo();
@@ -243,7 +245,7 @@ export default function BottomNav(props) {
           </div>
         </div>
       </div>
-      <ToastContainer/>
+      <ToastContainer />
     </>
   );
 }

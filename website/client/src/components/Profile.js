@@ -24,8 +24,8 @@ export default function Profile() {
     checkUserLoggedIn();
   }, []);
 
-  const generateAvatarConfig = useCallback((username) => {
-    return genConfig(username);
+  const generateAvatarConfig = useCallback((seed) => {
+    return genConfig(seed);
   }, []);
 
   const updateAvatarInDatabase = useCallback(async (config) => {
@@ -74,8 +74,12 @@ export default function Profile() {
     }
   }, [loggedInUser, generateAvatarConfig, updateAvatarInDatabase, username]);
 
+  const generateRandomString = () => {
+    return Math.random().toString(36).substring(7);
+  };
+
   const handleChangeAvatar = () => {
-    const newConfig = generateAvatarConfig(username);
+    const newConfig = generateAvatarConfig(username + generateRandomString());
     setAvatarConfig(newConfig);
     localStorage.setItem('avatar', JSON.stringify(newConfig));
     updateAvatarInDatabase(newConfig);
