@@ -91,39 +91,24 @@ app.get('/download', async (req, res) => {
     const videoInfo = await ytdl.getInfo(videoUrl);
     const videoTitle = videoInfo.videoDetails.title;
     const sanitizedTitle = videoTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-    const downloadDir = path.resolve(__dirname, 'downloads');
-    if (!fs.existsSync(downloadDir)) {
-      fs.mkdirSync(downloadDir);
-    }
-    const filePath = path.resolve(downloadDir, `${sanitizedTitle}.mp3`);
+
+    res.setHeader('Content-Disposition', `attachment; filename="${sanitizedTitle}.mp3"`);
+    res.setHeader('Content-Type', 'audio/mpeg');
 
     const audioStream = ytdl(videoUrl, {
       filter: 'audioonly',
+      quality: 'highestaudio',
       requestOptions: {
         headers: {
           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
         },
       },
     });
-    const output = fs.createWriteStream(filePath);
-    audioStream.pipe(output);
-    output.on('finish', () => {
-      res.download(filePath, `${sanitizedTitle}.mp3`, (err) => {
-        if (err) {
-          console.error('Error sending file:', err);
-          res.status(500).send('Error sending file');
-        } else {
-          fs.unlinkSync(filePath);
-        }
-      });
-    });
+
+    audioStream.pipe(res);
 
     req.on('close', () => {
-      if (!res.headersSent) {
-        res.status(499).send('Client closed request');
-      }
       audioStream.destroy();
-      output.end();
     });
 
     audioStream.on('error', (err) => {
