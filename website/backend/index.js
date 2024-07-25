@@ -42,8 +42,8 @@ const UserSchema = new Schema({
 const UserModel = mongoose.models.user || mongoose.model('user', UserSchema);
 
 mongoose.connect(mongo_url, {
-  serverSelectionTimeoutMS: 20000,
-  socketTimeoutMS: 45000,
+  serverSelectionTimeoutMS: 30000,
+  socketTimeoutMS: 60000,
 })
   .then(() => {
     console.log("Database connected...");
