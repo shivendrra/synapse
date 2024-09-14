@@ -17,13 +17,13 @@
 
 ## 📹 Tutorial
 
-Learn how to use and set up the project by watching this YouTube tutorial:
+Learn how to use the project by watching this YouTube tutorial:
 
-<div align="center">
-<iframe width="560" height="315" src="https://www.youtube.com/embed/SlYSvyaMhcQ?si=lOshuX240F4TOFmF" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-</div>
+<!-- <div align="center">
+   <iframe width="560" height="315" src="https://www.youtube.com/embed/SlYSvyaMhcQ?si=lOshuX240F4TOFmF" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+</div> -->
 
----
+[![SynapseTutorial](https://i9.ytimg.com/vi_webp/SlYSvyaMhcQ/mq2.webp?sqp=COSelbcG-oaymwEmCMACELQB8quKqQMa8AEB-AH-CYAC0AWKAgwIABABGFIgZSgbMA8=&rs=AOn4CLAzGe1rB_DEaRLhevOfO1_57rPmxA)](https://youtu.be/SlYSvyaMhcQ, "synapse demo video")
 
 ## 🚀 Features
 
@@ -33,16 +33,12 @@ Learn how to use and set up the project by watching this YouTube tutorial:
 - Full-stack setup (Frontend: React, Backend: Node.js)
 - Hosted on Vercel for fast deployment
 
----
-
 ## 🛠️ Tech Stack
 
 - **Frontend**: React.js
 - **Backend**: Node.js, Express.js
 - **Database**: MongoDB
 - **Hosting**: Vercel
-
----
 
 ## 🖥️ Getting Started
 
@@ -108,8 +104,6 @@ Before you start, make sure you have the following installed:
 
    The backend server will be running on `http://localhost:5000`.
 
----
-
 ## 🌐 Deploy to Vercel
 
 Deploying the app to Vercel is simple:
@@ -118,16 +112,12 @@ Deploying the app to Vercel is simple:
 2. Import the project.
 3. Vercel will automatically build and deploy your app.
 
----
-
 ## 🎥 Video API Integration
 
 The app uses YouTube v3 API to stream audio content from videos:
 
 - To interact with the API, you can find the logic inside the `src/services/youtubeService.js` file.
 - The API extracts only audio from YouTube videos, making it ideal for music and podcast streaming.
-
----
 
 ## 📂 Project Structure
 
@@ -151,8 +141,6 @@ The app uses YouTube v3 API to stream audio content from videos:
 └── README.md
 ```
 
----
-
 ## 📚 Learn More
 
 For more details, check the official documentation for each framework and library used:
@@ -161,8 +149,6 @@ For more details, check the official documentation for each framework and librar
 - [Express](https://expressjs.com/)
 - [YouTube Data API v3](https://developers.google.com/youtube/v3)
 - [Vercel](https://vercel.com/)
-
----
 
 ## 📝 License
 
