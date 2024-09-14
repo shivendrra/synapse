@@ -7,6 +7,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const ytdl = require('@distube/ytdl-core');
+const ffmpeg = require('fluent-ffmpeg');
 const Joi = require('joi');
 const { generateFromEmail } = require("unique-username-generator");
 
