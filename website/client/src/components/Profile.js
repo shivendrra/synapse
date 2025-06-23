@@ -3,6 +3,7 @@ import Avatar, { genConfig } from 'react-nice-avatar';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import { handleError, handleSuccess } from '../utils';
+// import './styles/Profile.css'
 
 export default function Profile() {
   const [username, setUsername] = useState('');

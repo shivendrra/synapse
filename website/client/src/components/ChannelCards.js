@@ -4,10 +4,12 @@ import he from 'he';
 import axios from 'axios';
 import { ToastContainer } from 'react-toastify';
 import { handleError, handleSuccess } from '../utils';
+import './styles/ChannelCards.css';
 
 export default function ChannelCards(props) {
   const { title, channel, imageUrl, videoUrl, onPlay, handleAddToQueue } = props;
   const [queue, setQueue] = useState([]);
+  const [isHovered, setIsHovered] = useState(false);
   const audioRef = useRef(null);
 
   const newSong = {
@@ -25,13 +27,12 @@ export default function ChannelCards(props) {
 
   const handleAddQueue = () => {
     handleAddToQueue(newSong);
-    handleSuccess('added to queue');
+    handleSuccess('Added to queue');
   };
 
   const handleDownload = async () => {
     try {
       const response = await axios.get('https://synapse-backend.vercel.app/download', {
-        // const response = await axios.get('http://localhost:3001/download', {
         params: { id: videoUrl },
         responseType: 'blob',
       });
@@ -50,7 +51,6 @@ export default function ChannelCards(props) {
     }
   };
 
-
   const playNextSong = useCallback(() => {
     if (queue.length > 0) {
       const nextSong = queue[0];
@@ -68,38 +68,69 @@ export default function ChannelCards(props) {
       };
     }
   }, [playNextSong]);
+
   return (
     <>
-      <div className='display-cards p-0 mt-5'>
-        <div className='card' style={{ cursor: 'pointer' }}>
-          <img src={imageUrl} alt={title} className='card-img-top' onClick={handlePlay} />
-          <div className='card-body px-2 d-flex'>
-            <div className='col-lg-11' onClick={handlePlay}>
-              <h5 className='card-title video-title' style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis' }}>{he.decode(title)}</h5>
-              <p className='card-text'>
-                {he.decode(channel)}
-              </p>
+      <div 
+        className="channel-card-container"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        <div className="channel-card">
+          <div className="card-image-container" onClick={handlePlay}>
+            <img src={imageUrl} alt={title} className="card-image" />
+            <div className={`play-overlay ${isHovered ? 'show' : ''}`}>
+              <div className="play-button">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M8 5v14l11-7z"/>
+                </svg>
+              </div>
             </div>
-            <div className='col-lg-1'>
+          </div>
+          
+          <div className="card-content">
+            <div className="card-main-content" onClick={handlePlay}>
+              <h5 className="card-title">{he.decode(title)}</h5>
+              <p className="card-channel">{he.decode(channel)}</p>
+            </div>
+            
+            <div className="card-actions">
               <div className="dropdown">
-                <button className="option-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  <svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' fill='currentColor' className='bi bi-three-dots-vertical' viewBox='0 0 16 16'>
-                    <path d='M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0' />
+                <button className="options-button" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <circle cx="12" cy="12" r="1.5"/>
+                    <circle cx="12" cy="6" r="1.5"/>
+                    <circle cx="12" cy="18" r="1.5"/>
                   </svg>
                 </button>
-                <ul className='dropdown-menu'>
+                <ul className="dropdown-menu">
                   <li>
-                    <button className='dropdown-item' onClick={handlePlay}>
+                    <button className="dropdown-item" onClick={handlePlay}>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M8 5v14l11-7z"/>
+                      </svg>
                       Play Now
                     </button>
                   </li>
                   <li>
-                    <button className='dropdown-item' onClick={handleAddQueue}>
+                    <button className="dropdown-item" onClick={handleAddQueue}>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z"/>
+                        <polyline points="14,2 14,8 20,8"/>
+                        <line x1="16" y1="13" x2="8" y2="13"/>
+                        <line x1="16" y1="17" x2="8" y2="17"/>
+                        <polyline points="10,9 9,9 8,9"/>
+                      </svg>
                       Add to Queue
                     </button>
                   </li>
                   <li>
-                    <button className='dropdown-item' onClick={handleDownload}>
+                    <button className="dropdown-item" onClick={handleDownload}>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7,10 12,15 17,10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                      </svg>
                       Download
                     </button>
                   </li>
