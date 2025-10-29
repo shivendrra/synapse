@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="../resources/synapse_logo_light.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Synapse Music: Stream Music Online for Free</title>
+    
+    <!-- Google Fonts and Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+            },
+            colors: {
+              'brand': {
+                '50': '#fff1f2',
+                '100': '#ffe4e6',
+                '200': '#fecdd3',
+                '300': '#fda4af',
+                '400': '#fb7185',
+                '500': '#f43f5e',
+                '600': '#e11d48',
+                '700': '#be123c',
+                '800': '#9f1239',
+                '900': '#881337',
+                '950': '#4c0519',
+              },
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings:
+        'FILL' 0,
+        'wght' 400,
+        'GRAD' 0,
+        'opsz' 24
+      }
+
+      /* Custom Scrollbar Styles */
+      /* For Webkit-based browsers (Chrome, Safari) */
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background-color: #4a4a4a;
+        border-radius: 10px;
+        border: 2px solid transparent;
+        background-clip: content-box;
+      }
+      html.light ::-webkit-scrollbar-thumb {
+        background-color: #cccccc;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background-color: #6a6a6a;
+      }
+      html.light ::-webkit-scrollbar-thumb:hover {
+        background-color: #aaaaaa;
+      }
+      /* For Firefox */
+      * {
+        scrollbar-width: thin;
+        scrollbar-color: #4a4a4a transparent;
+      }
+      html.light * {
+        scrollbar-color: #cccccc transparent;
+      }
+      
+      /* Mobile Sidebar */
+      .sidebar-mobile-enter {
+        transform: translateX(-100%);
+      }
+      .sidebar-mobile-enter-active {
+        transform: translateX(0);
+        transition: transform 300ms ease-in-out;
+      }
+      .sidebar-mobile-exit {
+        transform: translateX(0);
+      }
+      .sidebar-mobile-exit-active {
+        transform: translateX(-100%);
+        transition: transform 300ms ease-in-out;
+      }
+      .sidebar-backdrop-enter {
+        opacity: 0;
+      }
+      .sidebar-backdrop-enter-active {
+        opacity: 1;
+        transition: opacity 300ms ease-in-out;
+      }
+      .sidebar-backdrop-exit {
+        opacity: 1;
+      }
+      .sidebar-backdrop-exit-active {
+        opacity: 0;
+        transition: opacity 300ms ease-in-out;
+      }
+
+      /* Full Screen Player */
+      .player-fullscreen-enter {
+        transform: translateY(100%);
+      }
+      .player-fullscreen-enter-active {
+        transform: translateY(0);
+        transition: transform 300ms cubic-bezier(0.32, 0.72, 0, 1);
+      }
+      .player-fullscreen-exit {
+        transform: translateY(0);
+      }
+      .player-fullscreen-exit-active {
+        transform: translateY(100%);
+        transition: transform 300ms cubic-bezier(0.32, 0.72, 0, 1);
+      }
+      
+      /* Off-screen positioning for the YouTube player */
+      #youtube-player {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+        width: 1px;
+        height: 1px;
+        opacity: 0;
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body class="bg-white dark:bg-black font-sans">
+    <div id="root"></div>
+    <div id="youtube-player"></div>
+    
+    <!-- External APIs -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>

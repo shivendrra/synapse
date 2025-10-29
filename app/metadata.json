@@ -1,0 +1,5 @@
+{
+  "name": "Synapse",
+  "description": "A web application that works like a YouTube-powered music player, allowing users to search, play, and manage playlists of YouTube content in an audio-only format. It features a modern, responsive interface with light and dark modes.",
+  "requestFramePermissions": []
+}
