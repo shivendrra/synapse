@@ -1,4 +1,3 @@
-
 export interface Track {
   videoId: string;
   title: string;
@@ -9,10 +8,13 @@ export interface Track {
 }
 
 export interface User {
-  uid: string;
+  uid: string; // Firebase UID
   name: string;
   email: string;
   photoURL: string;
+  // YouTube specific, optional
+  channelId?: string; 
+  youtubeToken?: any | null;
 }
 
 export interface Playlist {
@@ -20,6 +22,13 @@ export interface Playlist {
   name: string;
   trackCount: number;
   ownerName: string;
-  ownerId: string;
+  thumbnail?: string;
   tracks: Track[];
+  source: 'firebase' | 'youtube';
+}
+
+export interface Subscription {
+  channelId: string;
+  title: string;
+  thumbnail: string;
 }

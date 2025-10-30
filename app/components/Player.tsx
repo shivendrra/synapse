@@ -1,38 +1,37 @@
-
 import React, { useState, useEffect, useRef } from 'react';
-import type { Track, Playlist } from '../types';
+import type { Track } from '../types';
 
 interface PlayerProps {
   track: Track;
   isPlaying: boolean;
   setIsPlaying: (isPlaying: boolean) => void;
-  playlists: Playlist[];
   onTogglePlay: () => void;
   onNext: () => void;
   onPrev: () => void;
   onAddToQueue: (track: Track) => void;
-  onAddToPlaylist: (playlistId: string, track: Track) => void;
   onNavigateToChannel: (channelId: string) => void;
-  onToggleLike: (track: Track) => void;
-  isCurrentTrackLiked: boolean;
   isYtApiReady: boolean;
   isMaximized: boolean;
   onToggleMaximize: () => void;
 }
 
 const Player: React.FC<PlayerProps> = ({ 
-    track, isPlaying, setIsPlaying, playlists, 
+    track, isPlaying, setIsPlaying,
     onTogglePlay, onNext, onPrev, 
-    onAddToQueue, onAddToPlaylist, onNavigateToChannel,
-    onToggleLike, isCurrentTrackLiked, isYtApiReady,
+    onAddToQueue, onNavigateToChannel,
+    isYtApiReady,
     isMaximized, onToggleMaximize
 }) => {
   const playerRef = useRef<any>(null);
   const [progress, setProgress] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const [volume, setVolume] = useState(0.75);
-  const [isPlaylistModalOpen, setIsPlaylistModalOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  // Swipe to close state
+  const touchStartY = useRef(0);
+  const touchMoveY = useRef(0);
+  const playerRefEl = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const checkIsMobile = () => setIsMobile(window.innerWidth < 768);
@@ -127,6 +126,31 @@ const Player: React.FC<PlayerProps> = ({
       playerRef.current.seekTo(newTime, true);
     }
   }
+  
+  // Swipe to close handlers
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartY.current = e.targetTouches[0].clientY;
+  };
+  
+  const handleTouchMove = (e: React.TouchEvent) => {
+      touchMoveY.current = e.targetTouches[0].clientY;
+      const diff = touchMoveY.current - touchStartY.current;
+      if (diff > 0 && playerRefEl.current) {
+          playerRefEl.current.style.transform = `translateY(${diff}px)`;
+      }
+  };
+
+  const handleTouchEnd = () => {
+      const diff = touchMoveY.current - touchStartY.current;
+      if (diff > 100) { // If swiped more than 100px
+          onToggleMaximize();
+      }
+      if (playerRefEl.current) {
+          playerRefEl.current.style.transform = ''; // Reset transform
+      }
+      touchStartY.current = 0;
+      touchMoveY.current = 0;
+  };
 
   const PlayerControls = (
     <div className="flex flex-col items-center justify-center w-full">
@@ -166,45 +190,9 @@ const Player: React.FC<PlayerProps> = ({
 
   const ActionButtons = (
      <>
-        <button 
-            onClick={() => onToggleLike(track)}
-            className={`p-1 transition-colors ${isCurrentTrackLiked ? 'text-brand-500' : 'text-gray-400 hover:text-white'}`}
-            title={isCurrentTrackLiked ? "Remove from Liked Songs" : "Add to Liked Songs"}
-            >
-            <span
-                className="material-symbols-outlined text-xl"
-                style={{ fontVariationSettings: `'FILL' ${isCurrentTrackLiked ? 1 : 0}` }}
-            >
-                favorite
-            </span>
-        </button>
         <button onClick={() => onAddToQueue(track)} className="p-2 text-gray-400 hover:text-white" title="Add to Queue">
             <span className="material-symbols-outlined">queue_music</span>
         </button>
-        <div className="relative">
-            <button onClick={() => setIsPlaylistModalOpen(prev => !prev)} className="p-2 text-gray-400 hover:text-white" title="Add to Playlist">
-                <span className="material-symbols-outlined">playlist_add</span>
-            </button>
-            {isPlaylistModalOpen && (
-                <div className="absolute bottom-full right-0 mb-2 w-56 bg-gray-800/95 backdrop-blur-sm rounded-md shadow-lg py-2 z-30 ring-1 ring-black ring-opacity-5">
-                    <p className="px-4 pb-2 text-sm font-semibold text-white border-b border-gray-700">Add to playlist</p>
-                    <div className="max-h-48 overflow-y-auto">
-                        {playlists.map(playlist => (
-                            <button
-                                key={playlist.id}
-                                onClick={() => {
-                                    onAddToPlaylist(playlist.id, track);
-                                    setIsPlaylistModalOpen(false);
-                                }}
-                                className="w-full text-left block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 truncate"
-                            >
-                                {playlist.name}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-            )}
-        </div>
         <div className="hidden md:flex items-center w-32">
             <span className="material-symbols-outlined">volume_up</span>
             <input 
@@ -220,7 +208,6 @@ const Player: React.FC<PlayerProps> = ({
      </>
   );
 
-  // Maximized / Desktop Player
   const MaximizedPlayer = (
     <div className="grid grid-cols-3 items-center h-full">
       <div className="flex items-center justify-start">
@@ -237,7 +224,6 @@ const Player: React.FC<PlayerProps> = ({
     </div>
   );
 
-  // Mobile Mini Player
   const MiniPlayer = (
     <div className="h-full relative">
         <div className="flex items-center justify-between h-full px-3">
@@ -249,12 +235,6 @@ const Player: React.FC<PlayerProps> = ({
                 </div>
             </div>
             <div className="flex items-center space-x-2">
-                <button 
-                    onClick={() => onToggleLike(track)}
-                    className={`p-1 transition-colors ${isCurrentTrackLiked ? 'text-brand-500' : 'text-gray-400'}`}
-                >
-                    <span className="material-symbols-outlined" style={{ fontVariationSettings: `'FILL' ${isCurrentTrackLiked ? 1 : 0}` }}>favorite</span>
-                </button>
                 <button onClick={onTogglePlay} className="p-2">
                     {isPlaying ? <span className="material-symbols-outlined text-3xl">pause</span> : <span className="material-symbols-outlined text-3xl">play_arrow</span>}
                 </button>
@@ -267,7 +247,13 @@ const Player: React.FC<PlayerProps> = ({
   );
 
   const FullscreenPlayer = (
-    <div className="fixed inset-0 bg-gradient-to-b from-gray-800 to-black z-50 flex flex-col p-4 text-white player-fullscreen-enter-active">
+    <div 
+        ref={playerRefEl}
+        className="fixed inset-0 bg-gradient-to-b from-gray-800 to-black z-50 flex flex-col p-4 text-white player-fullscreen-enter-active transition-transform duration-200 ease-out"
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+    >
         <div className="flex justify-between items-center">
             <button onClick={onToggleMaximize} className="p-2">
                 <span className="material-symbols-outlined">expand_more</span>

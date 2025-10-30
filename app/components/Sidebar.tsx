@@ -2,12 +2,12 @@ import React, { useEffect, useRef } from 'react';
 import type { Playlist } from '../types';
 
 interface SidebarProps {
-  currentView: 'Home' | 'Search' | 'Library' | 'Channel';
+  currentView: 'Home' | 'Search' | 'Library' | 'Channel' | 'Profile';
   onNavigate: (view: 'Home' | 'Search' | 'Library') => void;
   playlists: Playlist[];
-  onOpenCreatePlaylistModal: () => void;
   onSelectPlaylist: (playlistId: string) => void;
   selectedPlaylistId: string | null;
+  onCreatePlaylist: () => void;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -33,7 +33,8 @@ const NavItem: React.FC<{
 
 const SidebarContent: React.FC<Omit<SidebarProps, 'isOpen' | 'onClose'>> = ({
     currentView, onNavigate, playlists,
-    onOpenCreatePlaylistModal, onSelectPlaylist, selectedPlaylistId
+    onSelectPlaylist, selectedPlaylistId,
+    onCreatePlaylist
 }) => (
     <>
       <div className="text-2xl font-bold text-brand-500">Synapse</div>
@@ -49,7 +50,7 @@ const SidebarContent: React.FC<Omit<SidebarProps, 'isOpen' | 'onClose'>> = ({
       <div className="flex-1 overflow-y-auto border-t border-gray-800 pt-4 flex flex-col">
         <div className="flex justify-between items-center px-4 mb-2">
             <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">Playlists</h2>
-            <button onClick={onOpenCreatePlaylistModal} className="p-1 text-gray-400 hover:text-white" title="Create Playlist">
+            <button onClick={onCreatePlaylist} className="p-1 text-gray-400 hover:text-white" title="Create Playlist">
                 <span className="material-symbols-outlined">add</span>
             </button>
         </div>

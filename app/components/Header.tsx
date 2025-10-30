@@ -12,14 +12,15 @@ interface HeaderProps {
   canGoBack: boolean;
   canGoForward: boolean;
   onSearch: (query: string) => void;
-  currentView: 'Home' | 'Search' | 'Library' | 'Channel';
+  currentView: string;
   onToggleSidebar: () => void;
+  onNavigate: (view: { name: 'Profile' }) => void;
 }
 
 const Header: React.FC<HeaderProps> = ({ 
   user, onLogout, toggleTheme, theme, 
   onBack, onForward, canGoBack, canGoForward,
-  onSearch, currentView, onToggleSidebar
+  onSearch, currentView, onToggleSidebar, onNavigate
 }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -73,8 +74,8 @@ const Header: React.FC<HeaderProps> = ({
             <div 
               onMouseLeave={() => setDropdownOpen(false)}
               className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-20 ring-1 ring-black ring-opacity-5">
-              <a href="#" className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">Profile</a>
-              <a href="#" className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">Settings</a>
+              <button onClick={() => { onNavigate({ name: 'Profile' }); setDropdownOpen(false); }} className="w-full text-left block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">Profile</button>
+              <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener noreferrer" className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">Settings</a>
               <button
                 onClick={() => {
                   onLogout();
