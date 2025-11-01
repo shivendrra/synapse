@@ -1,5 +1,6 @@
 
-import React, { useState, useEffect } from 'react';
+
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import type { Track } from '../types';
 import { getChannelDetails, getChannelVideos } from '../services/youtube';
 import TrackCard from '../components/TrackCard';
@@ -29,7 +30,42 @@ const Channel: React.FC<ChannelProps> = ({ channelId, onPlay, onNavigateToChanne
   const [details, setDetails] = useState<ChannelDetails | null>(null);
   const [videos, setVideos] = useState<Track[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [nextPageToken, setNextPageToken] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  const observer = useRef<IntersectionObserver>();
+  
+  const loadMoreVideos = useCallback(async () => {
+    if (!nextPageToken || loadingMore) return;
+    setLoadingMore(true);
+    try {
+      const { tracks: newVideos, nextPageToken: newNextPageToken } = await getChannelVideos(channelId, nextPageToken);
+      setVideos(prev => [...prev, ...newVideos]);
+      setNextPageToken(newNextPageToken);
+    } catch (err) {
+      console.error("Failed to load more videos:", err);
+      // Optionally show a small error message to the user
+    } finally {
+      setLoadingMore(false);
+    }
+  }, [channelId, nextPageToken, loadingMore]);
+
+  // FIX: The type for a ref callback's node argument must include `null` because React calls the callback with `null` when the component unmounts.
+  const lastVideoElementRef = useCallback((node: HTMLDivElement | null) => {
+    if (loadingMore) return;
+    if (observer.current) observer.current.disconnect();
+    observer.current = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && nextPageToken) {
+        loadMoreVideos();
+      }
+    });
+    if (node) observer.current.observe(node);
+    // FIX: Added `loadMoreVideos` to the dependency array. The `loadMoreVideos` function
+    // is defined outside this callback and is a dependency. Without it, this
+    // callback could hold a stale reference to `loadMoreVideos` from a previous render.
+  }, [loadingMore, nextPageToken, loadMoreVideos]);
+
 
   useEffect(() => {
     const fetchChannelData = async () => {
@@ -37,9 +73,10 @@ const Channel: React.FC<ChannelProps> = ({ channelId, onPlay, onNavigateToChanne
       setError(null);
       setDetails(null);
       setVideos([]);
+      setNextPageToken(null);
 
       try {
-        const [channelData, channelVideos] = await Promise.all([
+        const [channelData, initialVideosData] = await Promise.all([
           getChannelDetails(channelId),
           getChannelVideos(channelId),
         ]);
@@ -51,7 +88,8 @@ const Channel: React.FC<ChannelProps> = ({ channelId, onPlay, onNavigateToChanne
             banner: channelData.brandingSettings?.image?.bannerExternalUrl || null,
             subscriberCount: formatSubscribers(channelData.statistics.subscriberCount),
         });
-        setVideos(channelVideos);
+        setVideos(initialVideosData.tracks);
+        setNextPageToken(initialVideosData.nextPageToken);
 
       } catch (err: any) {
         console.error(err);
@@ -100,11 +138,18 @@ const Channel: React.FC<ChannelProps> = ({ channelId, onPlay, onNavigateToChanne
       <div className="mt-8">
         <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-white px-4 md:px-8">Uploads</h2>
         {videos.length > 0 ? (
+          <>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-                {videos.map(track => (
-                    <TrackCard key={track.videoId} track={track} trackList={videos} onPlay={onPlay} onNavigateToChannel={onNavigateToChannel} />
-                ))}
+                {videos.map((track, index) => {
+                    if (videos.length === index + 1) {
+                        return <div ref={lastVideoElementRef} key={track.videoId}><TrackCard track={track} trackList={videos} onPlay={onPlay} onNavigateToChannel={onNavigateToChannel} /></div>
+                    } else {
+                        return <TrackCard key={track.videoId} track={track} trackList={videos} onPlay={onPlay} onNavigateToChannel={onNavigateToChannel} />
+                    }
+                })}
             </div>
+            {loadingMore && <p className="text-center mt-4">Loading more videos...</p>}
+          </>
         ) : (
             <p className="text-gray-500 dark:text-gray-400 px-4 md:px-8">This channel has no public videos.</p>
         )}

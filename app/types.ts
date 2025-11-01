@@ -12,6 +12,7 @@ export interface User {
   name: string;
   email: string;
   photoURL: string;
+  authProvider: 'password' | 'google.com' | string;
   // YouTube specific, optional
   channelId?: string; 
   youtubeToken?: any | null;
@@ -25,6 +26,7 @@ export interface Playlist {
   thumbnail?: string;
   tracks: Track[];
   source: 'firebase' | 'youtube';
+  specialType?: 'liked-songs';
 }
 
 export interface Subscription {

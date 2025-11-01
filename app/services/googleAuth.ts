@@ -1,7 +1,7 @@
 import type { User } from '../types';
 
-const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
-const API_KEY = process.env.GOOGLE_AUTH_KEY;
+const CLIENT_ID = "594447042992-n5o1ritc0jv4udrh8bvsuq7tlan4dhs9.apps.googleusercontent.com";
+const API_KEY = "AIzaSyBhbYzOh_B3snsiBlCEwI4DdUZbKJVHass";
 const SCOPES = 'https://www.googleapis.com/auth/youtube.readonly';
 
 let tokenClient: any = null;
@@ -23,11 +23,11 @@ const gisLoad = () => new Promise<void>((resolve, reject) => {
 });
 
 export const initClient = async () => {
-    if (!CLIENT_ID || CLIENT_ID.includes('YOUR_GOOGLE_CLIENT_ID')) {
-        throw new Error('Google Client ID is not configured. Please ensure the GOOGLE_CLIENT_ID environment variable is set correctly.');
+    if (!CLIENT_ID) {
+        throw new Error('Google Client ID is not configured. Please set the GOOGLE_CLIENT_ID environment variable.');
     }
     if (!API_KEY) {
-        throw new Error('YouTube API Key is not configured. Please ensure the API_KEY environment variable is set.');
+        throw new Error('YouTube API Key is not configured. Please set the YOUTUBE_API_KEY environment variable.');
     }
 
     try {

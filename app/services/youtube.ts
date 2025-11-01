@@ -1,11 +1,11 @@
 import type { Track, Playlist, Subscription } from '../types';
 
-const API_KEY = process.env.YT_API_KEY;
+const API_KEY = "AIzaSyBhbYzOh_B3snsiBlCEwI4DdUZbKJVHass";
 const BASE_URL = 'https://www.googleapis.com/youtube/v3';
 
 const getApiKey = () => {
   if (!API_KEY) {
-    throw new Error('YouTube API Key is not configured. Please ensure the API_KEY environment variable is set.');
+    throw new Error('YouTube API Key is not configured. Please set the YOUTUBE_API_KEY environment variable.');
   }
   return API_KEY;
 }
@@ -95,8 +95,13 @@ export const getChannelDetails = async (channelId: string) => {
   return data.items[0];
 };
 
-export const getChannelVideos = async (channelId: string): Promise<Track[]> => {
-  const searchResponse = await fetch(`${BASE_URL}/search?part=snippet&channelId=${channelId}&maxResults=50&type=video&order=date&key=${getApiKey()}`);
+export const getChannelVideos = async (channelId: string, pageToken?: string): Promise<{ tracks: Track[], nextPageToken: string | null }> => {
+  let url = `${BASE_URL}/search?part=snippet&channelId=${channelId}&maxResults=50&type=video&order=date&key=${getApiKey()}`;
+  if (pageToken) {
+    url += `&pageToken=${pageToken}`;
+  }
+
+  const searchResponse = await fetch(url);
   if (!searchResponse.ok) {
     const error = await searchResponse.json();
     throw new Error(error.error.message);
@@ -104,7 +109,7 @@ export const getChannelVideos = async (channelId: string): Promise<Track[]> => {
   const searchData = await searchResponse.json();
   const videoIds = searchData.items.map((item: any) => item.id.videoId).filter(Boolean);
 
-  if (videoIds.length === 0) return [];
+  if (videoIds.length === 0) return { tracks: [], nextPageToken: null };
 
   const details = await fetchVideoDetails(videoIds);
 
@@ -113,9 +118,14 @@ export const getChannelVideos = async (channelId: string): Promise<Track[]> => {
     return acc;
   }, {});
 
-  return searchData.items
+  const tracks = searchData.items
     .map((item: any) => mapToTrack(item, detailsMap[item.id.videoId]))
     .filter((track: Track) => track.duration > 61);
+
+  return {
+    tracks,
+    nextPageToken: searchData.nextPageToken || null
+  };
 };
 
 // Authenticated requests

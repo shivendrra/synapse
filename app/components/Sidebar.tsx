@@ -2,9 +2,11 @@ import React, { useEffect, useRef } from 'react';
 import type { Playlist } from '../types';
 
 interface SidebarProps {
-  currentView: 'Home' | 'Search' | 'Library' | 'Channel' | 'Profile';
+  // FIX: Added 'Settings' to the union type to handle all possible view names.
+  currentView: 'Home' | 'Search' | 'Library' | 'Channel' | 'Profile' | 'Settings';
   onNavigate: (view: 'Home' | 'Search' | 'Library') => void;
   playlists: Playlist[];
+  likedSongsPlaylist: Playlist | null;
   onSelectPlaylist: (playlistId: string) => void;
   selectedPlaylistId: string | null;
   onCreatePlaylist: () => void;
@@ -34,10 +36,10 @@ const NavItem: React.FC<{
 const SidebarContent: React.FC<Omit<SidebarProps, 'isOpen' | 'onClose'>> = ({
     currentView, onNavigate, playlists,
     onSelectPlaylist, selectedPlaylistId,
-    onCreatePlaylist
+    onCreatePlaylist, likedSongsPlaylist
 }) => (
     <>
-      <div className="text-2xl font-bold text-brand-500">Synapse</div>
+      <div className="text-2xl font-bold text-brand-600">Synapse</div>
       
       <nav>
         <ul className="space-y-2">
@@ -48,6 +50,21 @@ const SidebarContent: React.FC<Omit<SidebarProps, 'isOpen' | 'onClose'>> = ({
       </nav>
 
       <div className="flex-1 overflow-y-auto border-t border-gray-800 pt-4 flex flex-col">
+        {likedSongsPlaylist && (
+             <button 
+              onClick={() => onSelectPlaylist(likedSongsPlaylist.id)}
+              className={`flex items-center w-full px-4 py-2 text-sm text-left rounded-md transition-colors duration-200 mb-2 ${
+                  currentView === 'Library' && selectedPlaylistId === likedSongsPlaylist.id 
+                    ? 'text-white bg-gray-800' 
+                    : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
+              }`}
+            >
+              <div className="w-6 h-6 rounded-sm bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center mr-3">
+                <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>favorite</span>
+              </div>
+              <span className="font-semibold">Liked Songs</span>
+            </button>
+        )}
         <div className="flex justify-between items-center px-4 mb-2">
             <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">Playlists</h2>
             <button onClick={onCreatePlaylist} className="p-1 text-gray-400 hover:text-white" title="Create Playlist">

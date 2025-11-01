@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import type { User, Playlist } from '../types';
-import { getChannelDetails } from '../services/youtube';
+import type { User, Playlist } from '../../types';
+import { getChannelDetails } from '../../services/youtube';
 
-interface ProfileProps {
+interface ProfileOverviewProps {
   user: User;
+  onConnectYouTube: () => void;
+  onDisconnectYouTube: () => void;
   playlists: Playlist[];
   onSelectPlaylist: (playlistId: string) => void;
-  onNavigateToSettings: () => void;
-  onConnectYouTube: () => void;
 }
 
 interface ChannelDetails {
   title: string;
+  thumbnail: string;
+  banner: string | null;
   subscriberCount: string;
   videoCount: string;
   viewCount: string;
@@ -22,36 +24,38 @@ const formatNumber = (count: string): string => {
   return parseInt(count, 10).toLocaleString();
 };
 
-const Profile: React.FC<ProfileProps> = ({ user, playlists, onSelectPlaylist, onNavigateToSettings, onConnectYouTube }) => {
-    const [details, setDetails] = useState<ChannelDetails | null>(null);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+const ProfileOverview: React.FC<ProfileOverviewProps> = ({ user, onConnectYouTube, onDisconnectYouTube, playlists, onSelectPlaylist }) => {
+  const [details, setDetails] = useState<ChannelDetails | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-      const fetchChannelData = async () => {
-        if (!user.channelId) {
-          setDetails(null);
-          return;
-        }
-        setLoading(true);
-        setError(null);
-        try {
-          const channelData = await getChannelDetails(user.channelId);
-          setDetails({
-              title: channelData.snippet.title,
-              subscriberCount: formatNumber(channelData.statistics.subscriberCount),
-              videoCount: formatNumber(channelData.statistics.videoCount),
-              viewCount: formatNumber(channelData.statistics.viewCount),
-          });
-        } catch (err: any) {
-          console.error(err);
-          setError(`Failed to load YouTube profile data. ${err.message}`);
-        } finally {
-          setLoading(false);
-        }
-      };
-      fetchChannelData();
-    }, [user.channelId]);
+  useEffect(() => {
+    const fetchChannelData = async () => {
+      if (!user.channelId) {
+        setDetails(null);
+        return;
+      }
+      setLoading(true);
+      setError(null);
+      try {
+        const channelData = await getChannelDetails(user.channelId);
+        setDetails({
+            title: channelData.snippet.title,
+            thumbnail: channelData.snippet.thumbnails.high.url,
+            banner: channelData.brandingSettings?.image?.bannerExternalUrl || null,
+            subscriberCount: formatNumber(channelData.statistics.subscriberCount),
+            videoCount: formatNumber(channelData.statistics.videoCount),
+            viewCount: formatNumber(channelData.statistics.viewCount),
+        });
+      } catch (err: any) {
+        console.error(err);
+        setError(`Failed to load YouTube profile data. ${err.message}`);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchChannelData();
+  }, [user.channelId]);
 
   const NotConnectedView = () => (
     <div className="text-center p-10 bg-gray-200 dark:bg-gray-900/50 rounded-lg">
@@ -62,7 +66,7 @@ const Profile: React.FC<ProfileProps> = ({ user, playlists, onSelectPlaylist, on
       </p>
       <button 
         onClick={onConnectYouTube}
-        className="px-6 py-3 bg-brand-600 text-white font-semibold rounded-lg hover:bg-brand-700 transition-colors flex items-center justify-center mx-auto"
+        className="px-6 py-3 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center mx-auto"
       >
         <svg className="w-6 h-6 mr-2" aria-hidden="true" focusable="false" viewBox="0 0 24 24">
             <path fill="currentColor" d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"></path>
@@ -79,9 +83,12 @@ const Profile: React.FC<ProfileProps> = ({ user, playlists, onSelectPlaylist, on
     
     return (
       <div className="bg-gray-200 dark:bg-gray-900/50 p-6 rounded-lg">
-        <div className="text-center sm:text-left flex-1">
-            <h2 className="text-2xl font-bold text-gray-800 dark:text-white">{details.title}</h2>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Your Connected YouTube Profile</p>
+        <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-6">
+            <img src={details.thumbnail} alt={details.title} className="w-24 h-24 rounded-full border-4 border-gray-100 dark:border-black" />
+            <div className="text-center sm:text-left flex-1">
+                <h2 className="text-2xl font-bold text-gray-800 dark:text-white">{details.title}</h2>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Your Connected YouTube Profile</p>
+            </div>
         </div>
         <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
             <div>
@@ -100,22 +107,9 @@ const Profile: React.FC<ProfileProps> = ({ user, playlists, onSelectPlaylist, on
       </div>
     );
   };
-
+  
   return (
     <div className="space-y-8">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-6 pb-6 border-b border-gray-200 dark:border-gray-800">
-        <img src={user.photoURL} alt={user.name} className="w-24 h-24 rounded-full" />
-        <div className="text-center sm:text-left flex-1">
-          <h1 className="text-3xl font-bold text-gray-800 dark:text-white">{user.name}</h1>
-          <p className="text-md text-gray-500 dark:text-gray-400">{user.email}</p>
-        </div>
-        <button onClick={onNavigateToSettings} className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-gray-200 dark:bg-gray-800 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-700">
-            Account Settings
-        </button>
-      </div>
-
-      {/* Playlists */}
       <div>
         <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-white">Your Playlists</h2>
         {playlists.length > 0 ? (
@@ -135,8 +129,6 @@ const Profile: React.FC<ProfileProps> = ({ user, playlists, onSelectPlaylist, on
           <p className="text-gray-500 dark:text-gray-400">You haven't created any playlists yet.</p>
         )}
       </div>
-      
-      {/* YouTube Connection */}
       <div>
          <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-white">Connected YouTube Channel</h2>
          {user.youtubeToken ? <ConnectedView /> : <NotConnectedView />}
@@ -145,4 +137,4 @@ const Profile: React.FC<ProfileProps> = ({ user, playlists, onSelectPlaylist, on
   );
 };
 
-export default Profile;
+export default ProfileOverview;

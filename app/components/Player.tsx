@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import type { Track } from '../types';
+import Visualizer from './Visualizer';
 
 interface PlayerProps {
   track: Track;
@@ -13,6 +14,11 @@ interface PlayerProps {
   isYtApiReady: boolean;
   isMaximized: boolean;
   onToggleMaximize: () => void;
+  onLikeToggle: (track: Track, isLiked: boolean) => void;
+  onOpenAddToPlaylistModal: (track: Track) => void;
+  likedTracks: Track[];
+  isAudioOnly: boolean;
+  onToggleAudioOnly: () => void;
 }
 
 const Player: React.FC<PlayerProps> = ({ 
@@ -20,7 +26,9 @@ const Player: React.FC<PlayerProps> = ({
     onTogglePlay, onNext, onPrev, 
     onAddToQueue, onNavigateToChannel,
     isYtApiReady,
-    isMaximized, onToggleMaximize
+    isMaximized, onToggleMaximize,
+    onLikeToggle, onOpenAddToPlaylistModal, likedTracks,
+    isAudioOnly, onToggleAudioOnly
 }) => {
   const playerRef = useRef<any>(null);
   const [progress, setProgress] = useState(0);
@@ -33,6 +41,15 @@ const Player: React.FC<PlayerProps> = ({
   const touchMoveY = useRef(0);
   const playerRefEl = useRef<HTMLDivElement>(null);
 
+  const isLiked = likedTracks.some(t => t.videoId === track.videoId);
+  
+  // Use a ref to get the latest isAudioOnly value in event handlers without re-triggering effects
+  const audioOnlyRef = useRef(isAudioOnly);
+  useEffect(() => {
+    audioOnlyRef.current = isAudioOnly;
+  }, [isAudioOnly]);
+
+
   useEffect(() => {
     const checkIsMobile = () => setIsMobile(window.innerWidth < 768);
     window.addEventListener('resize', checkIsMobile);
@@ -44,8 +61,16 @@ const Player: React.FC<PlayerProps> = ({
       return;
     }
     
+    const setQuality = (player: any) => {
+        if (player && typeof player.setPlaybackQuality === 'function') {
+            const quality = audioOnlyRef.current ? 'small' : 'default';
+            player.setPlaybackQuality(quality);
+        }
+    };
+
     const onPlayerReady = (event: any) => {
         event.target.setVolume(volume * 100);
+        setQuality(event.target);
         event.target.playVideo();
         setIsPlaying(true);
     };
@@ -53,6 +78,7 @@ const Player: React.FC<PlayerProps> = ({
     const onPlayerStateChange = (event: any) => {
         if (event.data === (window as any).YT.PlayerState.PLAYING) {
             setIsPlaying(true);
+            setQuality(event.target); // Set quality each time a video starts playing
         } else if (event.data === (window as any).YT.PlayerState.PAUSED) {
             setIsPlaying(false);
         } else if (event.data === (window as any).YT.PlayerState.ENDED) {
@@ -81,6 +107,14 @@ const Player: React.FC<PlayerProps> = ({
 
   }, [isYtApiReady, track.videoId, onNext, setIsPlaying, volume]);
   
+  // Effect to handle live toggling of audio-only mode
+  useEffect(() => {
+    if (playerRef.current && typeof playerRef.current.setPlaybackQuality === 'function') {
+        const quality = isAudioOnly ? 'small' : 'default';
+        playerRef.current.setPlaybackQuality(quality);
+    }
+  }, [isAudioOnly]);
+
   useEffect(() => {
     const interval = setInterval(() => {
         if (playerRef.current && typeof playerRef.current.getCurrentTime === 'function' && isPlaying) {
@@ -169,7 +203,7 @@ const Player: React.FC<PlayerProps> = ({
             max="100"
             value={progress}
             onChange={handleProgressSeek}
-            className="w-full h-1 bg-gray-600 rounded-full appearance-none cursor-pointer accent-white"
+            className="w-full h-1 bg-gray-600 rounded-full appearance-none cursor-pointer accent-brand-500"
             />
             <span className="text-xs text-gray-400 w-10 text-center">{formatTime(track.duration)}</span>
         </div>
@@ -190,6 +224,15 @@ const Player: React.FC<PlayerProps> = ({
 
   const ActionButtons = (
      <>
+        <button onClick={() => onLikeToggle(track, isLiked)} className="p-2 text-gray-400 hover:text-white" title={isLiked ? "Unlike" : "Like"}>
+           <span className="material-symbols-outlined" style={{ fontVariationSettings: `'FILL' ${isLiked ? 1 : 0}` }}>favorite</span>
+        </button>
+        <button onClick={() => onOpenAddToPlaylistModal(track)} className="p-2 text-gray-400 hover:text-white" title="Add to playlist">
+           <span className="material-symbols-outlined">playlist_add</span>
+        </button>
+        <button onClick={onToggleAudioOnly} className="p-2 text-gray-400 hover:text-white" title={isAudioOnly ? "Disable Audio-Only Mode" : "Enable Audio-Only Mode"}>
+           <span className="material-symbols-outlined">{isAudioOnly ? 'music_note' : 'smart_display'}</span>
+        </button>
         <button onClick={() => onAddToQueue(track)} className="p-2 text-gray-400 hover:text-white" title="Add to Queue">
             <span className="material-symbols-outlined">queue_music</span>
         </button>
@@ -202,26 +245,10 @@ const Player: React.FC<PlayerProps> = ({
                 step="0.01"
                 value={volume}
                 onChange={handleVolumeChange}
-                className="w-full h-1 bg-gray-600 rounded-full appearance-none cursor-pointer ml-2 accent-white"
+                className="w-full h-1 bg-gray-600 rounded-full appearance-none cursor-pointer ml-2 accent-brand-500"
             />
         </div>
      </>
-  );
-
-  const MaximizedPlayer = (
-    <div className="grid grid-cols-3 items-center h-full">
-      <div className="flex items-center justify-start">
-        {TrackInfo}
-      </div>
-
-      <div className="flex flex-col items-center justify-center">
-        {PlayerControls}
-      </div>
-      
-      <div className="flex items-center justify-end space-x-2">
-        {ActionButtons}
-      </div>
-    </div>
   );
 
   const MiniPlayer = (
@@ -235,6 +262,9 @@ const Player: React.FC<PlayerProps> = ({
                 </div>
             </div>
             <div className="flex items-center space-x-2">
+                <button onClick={() => onLikeToggle(track, isLiked)} className="p-2">
+                    <span className="material-symbols-outlined" style={{ fontVariationSettings: `'FILL' ${isLiked ? 1 : 0}` }}>favorite</span>
+                </button>
                 <button onClick={onTogglePlay} className="p-2">
                     {isPlaying ? <span className="material-symbols-outlined text-3xl">pause</span> : <span className="material-symbols-outlined text-3xl">play_arrow</span>}
                 </button>
@@ -249,20 +279,29 @@ const Player: React.FC<PlayerProps> = ({
   const FullscreenPlayer = (
     <div 
         ref={playerRefEl}
-        className="fixed inset-0 bg-gradient-to-b from-gray-800 to-black z-50 flex flex-col p-4 text-white player-fullscreen-enter-active transition-transform duration-200 ease-out"
+        className="fixed inset-0 bg-gradient-to-b from-gray-800 to-black z-50 flex flex-col p-4 text-white player-fullscreen-enter-active transition-transform duration-200 ease-out overflow-hidden"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
     >
-        <div className="flex justify-between items-center">
+        <div className="absolute inset-0 opacity-20 blur-lg scale-110">
+            <img src={track.thumbnail.replace('default', 'hqdefault')} alt="" className="w-full h-full object-cover" />
+        </div>
+        <div className="absolute inset-x-0 bottom-0 h-1/2 flex items-center justify-center opacity-30">
+            <Visualizer isPlaying={isPlaying} />
+        </div>
+
+        <div className="relative z-10 flex justify-between items-center">
             <button onClick={onToggleMaximize} className="p-2">
                 <span className="material-symbols-outlined">expand_more</span>
             </button>
             <span className="text-sm font-bold">Now Playing</span>
             <div className="w-8"></div>
         </div>
-        <div className="flex-1 flex flex-col justify-center items-center px-4">
-            <img src={track.thumbnail.replace('default', 'hqdefault')} alt={track.title} className="w-full max-w-xs aspect-square rounded-lg shadow-2xl mb-8" />
+        <div className="relative z-10 flex-1 flex flex-col justify-center items-center px-4">
+            <div className="w-full max-w-md aspect-video rounded-lg shadow-2xl mb-8 overflow-hidden">
+              <img src={track.thumbnail.replace('default', 'hqdefault')} alt={track.title} className="w-full h-full object-cover" />
+            </div>
             <div className="w-full text-center">
                 <h2 className="text-xl font-bold">{track.title}</h2>
                 <button onClick={() => onNavigateToChannel(track.channelId)} className="text-md text-gray-400 hover:underline">
@@ -270,10 +309,21 @@ const Player: React.FC<PlayerProps> = ({
                 </button>
             </div>
         </div>
-        <div className="pb-8">
+        <div className="relative z-10 pb-8">
             {PlayerControls}
-            <div className="flex justify-between items-center mt-4">
-                {ActionButtons}
+             <div className="flex justify-around items-center mt-4">
+                <button onClick={() => onLikeToggle(track, isLiked)} className="p-2 text-gray-400 hover:text-white" title={isLiked ? "Unlike" : "Like"}>
+                    <span className="material-symbols-outlined text-3xl" style={{ fontVariationSettings: `'FILL' ${isLiked ? 1 : 0}` }}>favorite</span>
+                </button>
+                <button onClick={onToggleAudioOnly} className="p-2 text-gray-400 hover:text-white" title={isAudioOnly ? "Disable Audio-Only Mode" : "Enable Audio-Only Mode"}>
+                    <span className="material-symbols-outlined text-3xl">{isAudioOnly ? 'music_note' : 'smart_display'}</span>
+                </button>
+                <button onClick={() => onOpenAddToPlaylistModal(track)} className="p-2 text-gray-400 hover:text-white" title="Add to playlist">
+                    <span className="material-symbols-outlined text-3xl">playlist_add</span>
+                </button>
+                <button onClick={() => onAddToQueue(track)} className="p-2 text-gray-400 hover:text-white" title="Add to Queue">
+                    <span className="material-symbols-outlined text-3xl">queue_music</span>
+                </button>
             </div>
         </div>
     </div>
@@ -292,8 +342,21 @@ const Player: React.FC<PlayerProps> = ({
 
   // Desktop player
   return (
-    <div className="fixed bottom-0 left-0 right-0 h-24 bg-gray-900/80 dark:bg-black/80 backdrop-blur-md text-white p-3 z-50 border-t border-gray-700">
-      {MaximizedPlayer}
+    <div className="fixed bottom-0 left-0 right-0 h-24 bg-gray-900/80 dark:bg-black/80 backdrop-blur-md text-white z-50 border-t border-gray-700">
+      <div className="h-full grid grid-cols-3 items-center px-4">
+        <div className="flex items-center justify-start min-w-0 gap-4">
+          {TrackInfo}
+          <div className="w-20 h-10">
+            <Visualizer isPlaying={isPlaying} />
+          </div>
+        </div>
+        <div className="flex items-center justify-center">
+          {PlayerControls}
+        </div>
+        <div className="flex items-center justify-end space-x-2">
+          {ActionButtons}
+        </div>
+      </div>
     </div>
   );
 };
