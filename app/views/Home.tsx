@@ -7,6 +7,7 @@ interface HomeProps {
   onPlay: (track: Track, trackList: Track[]) => void;
   onNavigateToChannel: (channelId: string) => void;
   subscriptions: Subscription[];
+  subscriptionVideos: Track[];
 }
 
 const TrackSection: React.FC<{
@@ -36,7 +37,7 @@ const SubscriptionSection: React.FC<{
     return (
         <section className="mb-12">
              <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-white">Subscriptions</h2>
-             <div className="flex space-x-4 overflow-x-auto pb-4">
+             <div className="flex space-x-4 overflow-x-auto pb-4 subtle-scrollbar">
                 {subscriptions.map(sub => (
                     <button key={sub.channelId} onClick={() => onNavigateToChannel(sub.channelId)} className="flex flex-col items-center space-y-2 flex-shrink-0 w-28 text-center">
                         <img src={sub.thumbnail} alt={sub.title} className="w-24 h-24 rounded-full" />
@@ -49,7 +50,7 @@ const SubscriptionSection: React.FC<{
 };
 
 
-const Home: React.FC<HomeProps> = ({ onPlay, onNavigateToChannel, subscriptions }) => {
+const Home: React.FC<HomeProps> = ({ onPlay, onNavigateToChannel, subscriptions, subscriptionVideos }) => {
   const [trending, setTrending] = useState<Track[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -83,6 +84,7 @@ const Home: React.FC<HomeProps> = ({ onPlay, onNavigateToChannel, subscriptions 
   return (
     <div className="space-y-8">
       <SubscriptionSection subscriptions={subscriptions} onNavigateToChannel={onNavigateToChannel} />
+      <TrackSection title="From your Subscriptions" tracks={subscriptionVideos} onPlay={onPlay} onNavigateToChannel={onNavigateToChannel} />
       <TrackSection title="Trending Now" tracks={trending} onPlay={onPlay} onNavigateToChannel={onNavigateToChannel} />
     </div>
   );

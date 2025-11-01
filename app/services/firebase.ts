@@ -3,12 +3,12 @@ import type { User, Playlist, Track } from '../types';
 
 // IMPORTANT: Using the provided Firebase project configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyDAuyBNXc4ev0VimJU_TkBkYmdzgRMK5pk",
-  authDomain: "synapsemusic.firebaseapp.com",
-  projectId: "synapsemusic",
-  storageBucket: "synapsemusic.appspot.com",
-  messagingSenderId: "491908510557",
-  appId: "1:491908510557:web:866415232b503433a08859"
+  apiKey: process.env.FIREBASE_API_KEY,
+  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.FIREBASE_ID,
+  storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.FIREBASE_MESSAGE_SENDER_ID,
+  appId: process.env.FIREBASE_APP_ID,
 };
 
 // Initialize Firebase

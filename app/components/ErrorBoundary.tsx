@@ -1,4 +1,4 @@
-import React, { Component, ErrorInfo, ReactNode } from 'react';
+import React, { ErrorInfo, ReactNode } from 'react';
 
 interface Props {
   children: ReactNode;
@@ -8,21 +8,26 @@ interface State {
   hasError: boolean;
 }
 
-class ErrorBoundary extends Component<Props, State> {
-  public state: State = {
+// FIX: Changed from `React.Component` to destructuring `Component` and extending it directly.
+// This resolves a potential TypeScript resolution issue that could cause the
+// "Property 'props' does not exist" error.
+// FIX: The destructured `Component` might not be resolved correctly by TypeScript in some environments.
+// Using `React.Component` directly is a more robust way to extend a class component and ensures `props` are correctly typed.
+class ErrorBoundary extends React.Component<Props, State> {
+  state: State = {
     hasError: false
   };
 
-  public static getDerivedStateFromError(_: Error): State {
+  static getDerivedStateFromError(_: Error): State {
     // Update state so the next render will show the fallback UI.
     return { hasError: true };
   }
 
-  public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error("Uncaught error:", error, errorInfo);
   }
 
-  public render() {
+  render() {
     if (this.state.hasError) {
       return (
         <div className="flex items-center justify-center h-full text-center p-8">

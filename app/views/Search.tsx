@@ -12,9 +12,9 @@ interface SearchProps {
   onClearHistory: () => void;
 }
 
-const Search: React.FC<SearchProps> = ({ 
-    onPlay, onNavigateToChannel, searchQuery, 
-    searchHistory, onSearch, onClearHistory
+const Search: React.FC<SearchProps> = ({
+  onPlay, onNavigateToChannel, searchQuery,
+  searchHistory, onSearch, onClearHistory
 }) => {
   const [results, setResults] = useState<Track[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -22,8 +22,8 @@ const Search: React.FC<SearchProps> = ({
 
   const performSearch = useCallback(async (query: string) => {
     if (!query) {
-        setResults([]);
-        return;
+      setResults([]);
+      return;
     }
 
     setIsLoading(true);
@@ -53,35 +53,35 @@ const Search: React.FC<SearchProps> = ({
     }
 
     if (!searchQuery) {
-        if (searchHistory.length === 0) {
-            return (
-                <div className="text-center text-gray-500 pt-16">
-                    <span className="material-symbols-outlined text-6xl text-gray-400 dark:text-gray-600 mb-4">search</span>
-                    <h2 className="text-xl font-bold">Find your next favorite track.</h2>
-                    <p>Use the search bar in the header to get started.</p>
-                </div>
-            );
-        }
-
+      if (searchHistory.length === 0) {
         return (
-            <div>
-                <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-xl font-bold text-gray-800 dark:text-white">Recent Searches</h2>
-                    <button onClick={onClearHistory} className="text-sm text-gray-500 hover:text-brand-500">Clear History</button>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                    {searchHistory.map((term, index) => (
-                        <button 
-                            key={`${term}-${index}`}
-                            onClick={() => onSearch(term)}
-                            className="px-4 py-2 bg-gray-200 dark:bg-gray-800 rounded-full text-sm hover:bg-gray-300 dark:hover:bg-gray-700"
-                        >
-                            {term}
-                        </button>
-                    ))}
-                </div>
-            </div>
+          <div className="text-center text-gray-500 pt-16">
+            <span className="material-symbols-outlined text-6xl text-gray-400 dark:text-gray-600 mb-4">search</span>
+            <h2 className="text-xl font-bold">Find your next favorite track.</h2>
+            <p>Use the search bar in the header to get started.</p>
+          </div>
         );
+      }
+
+      return (
+        <div>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-bold text-gray-800 dark:text-white">Recent Searches</h2>
+            <button onClick={onClearHistory} className="text-sm text-gray-500 hover:text-brand-500">Clear History</button>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {searchHistory.map((term, index) => (
+              <button
+                key={`${term}-${index}`}
+                onClick={() => onSearch(term)}
+                className="px-4 py-2 bg-gray-200 dark:bg-gray-800 rounded-full text-sm hover:bg-gray-300 dark:hover:bg-gray-700"
+              >
+                {term}
+              </button>
+            ))}
+          </div>
+        </div>
+      );
     }
 
     if (results.length === 0) {
@@ -99,12 +99,12 @@ const Search: React.FC<SearchProps> = ({
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
           {results.map(track => (
-            <TrackCard 
-              key={track.videoId} 
-              track={track} 
-              trackList={results} 
-              onPlay={onPlay} 
-              onNavigateToChannel={onNavigateToChannel} 
+            <TrackCard
+              key={track.videoId}
+              track={track}
+              trackList={results}
+              onPlay={onPlay}
+              onNavigateToChannel={onNavigateToChannel}
             />
           ))}
         </div>

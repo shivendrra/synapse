@@ -1,6 +1,6 @@
 import type { Track, Playlist, Subscription } from '../types';
 
-const API_KEY = "AIzaSyBhbYzOh_B3snsiBlCEwI4DdUZbKJVHass";
+const API_KEY = process.env.YT_API_KEY;
 const BASE_URL = 'https://www.googleapis.com/youtube/v3';
 
 const getApiKey = () => {

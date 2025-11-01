@@ -87,6 +87,29 @@
       html.light * {
         scrollbar-color: #d1d5db transparent;
       }
+
+      /* Subtle Scrollbar for Subscriptions */
+      .subtle-scrollbar::-webkit-scrollbar {
+        height: 6px;
+      }
+      .subtle-scrollbar::-webkit-scrollbar-thumb {
+        background-color: rgba(107, 114, 128, 0.5); /* gray-500 with 50% opacity */
+      }
+      html.dark .subtle-scrollbar::-webkit-scrollbar-thumb {
+        background-color: rgba(107, 114, 128, 0.4);
+      }
+      .subtle-scrollbar::-webkit-scrollbar-thumb:hover {
+        background-color: rgba(107, 114, 128, 0.8);
+      }
+      html.dark .subtle-scrollbar::-webkit-scrollbar-thumb:hover {
+        background-color: rgba(107, 114, 128, 0.6);
+      }
+      .subtle-scrollbar {
+        scrollbar-color: rgba(107, 114, 128, 0.5) transparent;
+      }
+      html.dark .subtle-scrollbar {
+        scrollbar-color: rgba(107, 114, 128, 0.4) transparent;
+      }
       
       @media (max-width: 767px) {
         /* Hide scrollbar for Webkit browsers */

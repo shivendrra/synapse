@@ -3,8 +3,8 @@ import type { Playlist } from '../types';
 
 interface SidebarProps {
   // FIX: Added 'Settings' to the union type to handle all possible view names.
-  currentView: 'Home' | 'Search' | 'Library' | 'Channel' | 'Profile' | 'Settings';
-  onNavigate: (view: 'Home' | 'Search' | 'Library') => void;
+  currentView: 'Home' | 'Search' | 'Library' | 'Channel' | 'Profile' | 'Settings' | 'Subscriptions';
+  onNavigate: (view: 'Home' | 'Search' | 'Library' | 'Subscriptions') => void;
   playlists: Playlist[];
   likedSongsPlaylist: Playlist | null;
   onSelectPlaylist: (playlistId: string) => void;
@@ -46,6 +46,7 @@ const SidebarContent: React.FC<Omit<SidebarProps, 'isOpen' | 'onClose'>> = ({
           <li><NavItem label="Home" icon="home" isActive={currentView === 'Home'} onClick={() => onNavigate('Home')} /></li>
           <li><NavItem label="Search" icon="search" isActive={currentView === 'Search'} onClick={() => onNavigate('Search')} /></li>
           <li><NavItem label="Your Library" icon="library_music" isActive={currentView === 'Library'} onClick={() => onNavigate('Library')} /></li>
+          <li><NavItem label="Subscriptions" icon="subscriptions" isActive={currentView === 'Subscriptions'} onClick={() => onNavigate('Subscriptions')} /></li>
         </ul>
       </nav>
 

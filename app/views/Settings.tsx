@@ -11,6 +11,8 @@ interface SettingsProps {
   onDisconnectYouTube: () => void;
   onAccountDelete: () => void;
   onProfileUpdate: (updates: { displayName?: string; photoURL?: string; }) => Promise<void>;
+  showYouTubePlaylists: boolean;
+  onToggleYouTubePlaylists: () => void;
 }
 
 type SettingView = 'Profile' | 'Account' | 'Connections' | 'Security';
@@ -51,7 +53,7 @@ const Settings: React.FC<SettingsProps> = (props) => {
       <main className="flex-1">
         {currentView === 'Profile' && <ProfileSettings user={props.user} onProfileUpdate={props.onProfileUpdate} />}
         {currentView === 'Account' && <AccountSettings user={props.user} />}
-        {currentView === 'Connections' && <ConnectionSettings user={props.user} onConnectYouTube={props.onConnectYouTube} onDisconnectYouTube={props.onDisconnectYouTube} />}
+        {currentView === 'Connections' && <ConnectionSettings user={props.user} onConnectYouTube={props.onConnectYouTube} onDisconnectYouTube={props.onDisconnectYouTube} showYouTubePlaylists={props.showYouTubePlaylists} onToggleYouTubePlaylists={props.onToggleYouTubePlaylists} />}
         {currentView === 'Security' && <DangerZone onAccountDelete={props.onAccountDelete} authProvider={props.user.authProvider} />}
       </main>
     </div>

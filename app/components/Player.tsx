@@ -120,7 +120,11 @@ const Player: React.FC<PlayerProps> = ({
         if (playerRef.current && typeof playerRef.current.getCurrentTime === 'function' && isPlaying) {
             const time = playerRef.current.getCurrentTime();
             setCurrentTime(time);
-            setProgress((time / track.duration) * 100);
+            if (track.duration > 0) {
+              setProgress((time / track.duration) * 100);
+            } else {
+              setProgress(0);
+            }
         }
     }, 1000);
     return () => clearInterval(interval);

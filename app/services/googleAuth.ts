@@ -1,7 +1,7 @@
 import type { User } from '../types';
 
-const CLIENT_ID = "594447042992-n5o1ritc0jv4udrh8bvsuq7tlan4dhs9.apps.googleusercontent.com";
-const API_KEY = "AIzaSyBhbYzOh_B3snsiBlCEwI4DdUZbKJVHass";
+const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+const API_KEY = process.env.GOOGLE_AUTH_KEY;
 const SCOPES = 'https://www.googleapis.com/auth/youtube.readonly';
 
 let tokenClient: any = null;
