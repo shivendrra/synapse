@@ -17,16 +17,19 @@ const SettingCard: React.FC<{ title: string; description: string; children: Reac
 );
 
 const ProfileSettings: React.FC<ProfileSettingsProps> = ({ user, onProfileUpdate }) => {
-    const [name, setName] = useState(user.name);
+    // Fix: Changed state variable from 'name' to 'displayName' to match User type.
+    const [displayName, setDisplayName] = useState(user.displayName);
     const [photoURL, setPhotoURL] = useState(user.photoURL);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
 
-    const isChanged = name !== user.name || photoURL !== user.photoURL;
+    // Fix: Updated comparison to use 'displayName'.
+    const isChanged = displayName !== user.displayName || photoURL !== user.photoURL;
 
     useEffect(() => {
-        setName(user.name);
+        // Fix: Updated state setter to use 'displayName'.
+        setDisplayName(user.displayName);
         setPhotoURL(user.photoURL);
     }, [user]);
 
@@ -39,7 +42,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ user, onProfileUpdate
         setSuccess(null);
         
         try {
-            await onProfileUpdate({ displayName: name, photoURL });
+            await onProfileUpdate({ displayName, photoURL });
             setSuccess("Profile updated successfully!");
             setTimeout(() => setSuccess(null), 3000);
         } catch (err: any) {
@@ -63,8 +66,8 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ user, onProfileUpdate
                             <input
                                 type="text"
                                 id="displayName"
-                                value={name}
-                                onChange={e => setName(e.target.value)}
+                                value={displayName}
+                                onChange={e => setDisplayName(e.target.value)}
                                 className="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md placeholder-gray-500 text-gray-900 dark:text-gray-200 bg-transparent focus:outline-none focus:ring-2 focus:ring-brand-500 sm:text-sm"
                             />
                         </div>

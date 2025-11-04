@@ -1,3 +1,5 @@
+
+
 import React, { ErrorInfo, ReactNode } from 'react';
 
 interface Props {
@@ -8,11 +10,6 @@ interface State {
   hasError: boolean;
 }
 
-// FIX: Changed from `React.Component` to destructuring `Component` and extending it directly.
-// This resolves a potential TypeScript resolution issue that could cause the
-// "Property 'props' does not exist" error.
-// FIX: The destructured `Component` might not be resolved correctly by TypeScript in some environments.
-// Using `React.Component` directly is a more robust way to extend a class component and ensures `props` are correctly typed.
 class ErrorBoundary extends React.Component<Props, State> {
   state: State = {
     hasError: false

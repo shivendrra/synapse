@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import DeleteAccountModal from '../../components/modals/DeleteAccountModal';
 
 interface DangerZoneProps {
-  onAccountDelete: () => void;
+  // Fix: Changed return type to Promise<void> to match expected prop type in DeleteAccountModal
+  onAccountDelete: () => Promise<void>;
   authProvider: string;
 }
 

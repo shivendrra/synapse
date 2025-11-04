@@ -1,7 +1,7 @@
 import type { User } from '../types';
 
-const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
-const API_KEY = process.env.GOOGLE_AUTH_KEY;
+const CLIENT_ID = "594447042992-n5o1ritc0jv4udrh8bvsuq7tlan4dhs9.apps.googleusercontent.com";
+const API_KEY = "AIzaSyBhbYzOh_B3snsiBlCEwI4DdUZbKJVHass";
 const SCOPES = 'https://www.googleapis.com/auth/youtube.readonly';
 
 let tokenClient: any = null;
@@ -91,7 +91,8 @@ export const revokeYouTubeAccess = (token: string) => new Promise<void>((resolve
 });
 
 
-export const getCurrentUserProfile = async (): Promise<Pick<User, 'channelId' | 'name' | 'photoURL'> | null> => {
+// Fix: Changed 'name' to 'displayName' to match the User type.
+export const getCurrentUserProfile = async (): Promise<Pick<User, 'channelId' | 'displayName' | 'photoURL'> | null> => {
     if (!(window as any).gapi?.client?.getToken()) {
         return null;
     }
@@ -105,7 +106,7 @@ export const getCurrentUserProfile = async (): Promise<Pick<User, 'channelId' | 
             const channel = response.result.items[0];
             return {
                 channelId: channel.id,
-                name: channel.snippet.title,
+                displayName: channel.snippet.title,
                 photoURL: channel.snippet.thumbnails.default.url,
             };
         }

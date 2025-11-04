@@ -1,17 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface LoginProps {
   onGoogleLogin: () => void;
   onEmailLogin: (email: string, password: string) => Promise<any>;
   onEmailSignUp: (email: string, password: string) => Promise<any>;
+  navigate: (path: string) => void;
+  initialView: 'login' | 'signup';
 }
 
-const Login: React.FC<LoginProps> = ({ onGoogleLogin, onEmailLogin, onEmailSignUp }) => {
-  const [isLoginView, setIsLoginView] = useState(true);
+const Login: React.FC<LoginProps> = ({ onGoogleLogin, onEmailLogin, onEmailSignUp, navigate, initialView }) => {
+  const [isLoginView, setIsLoginView] = useState(initialView === 'login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setIsLoginView(initialView === 'login');
+    setError(null); // Clear errors when switching views
+  }, [initialView]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,6 +30,7 @@ const Login: React.FC<LoginProps> = ({ onGoogleLogin, onEmailLogin, onEmailSignU
       } else {
         await onEmailSignUp(email, password);
       }
+      // On success, the App component will handle redirection
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -97,8 +105,11 @@ const Login: React.FC<LoginProps> = ({ onGoogleLogin, onEmailLogin, onEmailSignU
             </form>
             
             <div className="mt-4 text-center text-sm">
-                <button onClick={() => { setIsLoginView(!isLoginView); setError(null); }} className="font-medium text-brand-600 hover:text-brand-500">
-                {isLoginView ? "Don't have an account? Sign Up" : "Already have an account? Sign In"}
+                <button 
+                  onClick={() => navigate(isLoginView ? '/auth/signup' : '/auth/login')} 
+                  className="font-medium text-brand-600 hover:text-brand-500"
+                >
+                  {isLoginView ? "Don't have an account? Sign Up" : "Already have an account? Sign In"}
                 </button>
             </div>
 

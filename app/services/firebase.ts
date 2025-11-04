@@ -3,12 +3,12 @@ import type { User, Playlist, Track } from '../types';
 
 // IMPORTANT: Using the provided Firebase project configuration
 const firebaseConfig = {
-  apiKey: process.env.FIREBASE_API_KEY,
-  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.FIREBASE_ID,
-  storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.FIREBASE_MESSAGE_SENDER_ID,
-  appId: process.env.FIREBASE_APP_ID,
+  apiKey: "AIzaSyDAuyBNXc4ev0VimJU_TkBkYmdzgRMK5pk",
+  authDomain: "synapsemusic.firebaseapp.com",
+  projectId: "synapsemusic",
+  storageBucket: "synapsemusic.appspot.com",
+  messagingSenderId: "491908510557",
+  appId: "1:491908510557:web:866415232b503433a08859"
 };
 
 // Initialize Firebase
@@ -65,15 +65,30 @@ export const deleteUserAccount = async (): Promise<void> => {
     const user = auth.currentUser;
     if (!user) throw new Error("No user is currently signed in.");
     
+    // Delete username claim
+    const userDoc = await usersCollection.doc(user.uid).get();
+    if(userDoc.exists) {
+        const username = userDoc.data()?.username;
+        if(username) {
+            await usernamesCollection.doc(username).delete();
+        }
+    }
+
     // Optional: Delete user data from Firestore first
-    // await usersCollection.doc(user.uid).delete();
+    await usersCollection.doc(user.uid).delete();
     
     await user.delete();
 };
 
 
 const usersCollection = db.collection('users');
+const usernamesCollection = db.collection('usernames');
 const playlistsCollection = db.collection('playlists');
+
+export const isUsernameAvailable = async (username: string): Promise<boolean> => {
+    const doc = await usernamesCollection.doc(username.toLowerCase()).get();
+    return !doc.exists;
+};
 
 // User Data Management
 export const ensureUserDocument = async (user: { uid: string; email: string; displayName: string | null; photoURL: string | null; }) => {
@@ -84,16 +99,41 @@ export const ensureUserDocument = async (user: { uid: string; email: string; dis
     if (!snapshot.exists) {
         const { email, displayName, photoURL } = user;
         const createdAt = (window as any).firebase.firestore.FieldValue.serverTimestamp();
-        const userName = displayName || email.split('@')[0];
+        const userDisplayName = displayName || email.split('@')[0];
+
+        // Generate and ensure unique username
+        let baseUsername = userDisplayName.replace(/[^a-zA-Z0-9_]/g, '').toLowerCase().slice(0, 15) || 'user';
+        let username = baseUsername;
+        let isAvailable = await isUsernameAvailable(username);
+        let attempts = 0;
+        while (!isAvailable && attempts < 5) {
+            username = `${baseUsername}${(Math.random() * 900 + 100).toFixed(0)}`;
+            isAvailable = await isUsernameAvailable(username);
+            attempts++;
+        }
+        if (!isAvailable) { // Fallback if random attempts fail
+           username = `user_${Date.now()}`;
+        }
+
         try {
-            await userRef.set({
-                name: userName,
+            const batch = db.batch();
+            
+            // Set user document
+            batch.set(userRef, {
+                username,
+                displayName: userDisplayName,
                 email,
-                photoURL: photoURL || `https://api.dicebear.com/7.x/initials/svg?seed=${userName}`,
+                photoURL: photoURL || `https://api.dicebear.com/7.x/initials/svg?seed=${userDisplayName}`,
                 createdAt
             });
+
+            // Claim username
+            batch.set(usernamesCollection.doc(username), { userId: user.uid });
+
+            await batch.commit();
+
             // Create default "Liked Songs" playlist for new users
-            await getOrCreateLikedSongsPlaylist(user.uid, userName);
+            await getOrCreateLikedSongsPlaylist(user.uid, userDisplayName);
         } catch (error) {
             console.error("Error creating user document and default playlist:", error);
             throw error;
@@ -101,22 +141,51 @@ export const ensureUserDocument = async (user: { uid: string; email: string; dis
     }
 };
 
-export const updateUserProfile = async (updates: { displayName?: string, photoURL?: string }) => {
+export const updateUserProfile = async (updates: { username?: string, displayName?: string, photoURL?: string }) => {
     const user = auth.currentUser;
     if (!user) throw new Error("No user is currently signed in.");
 
-    await user.updateProfile({
-        displayName: updates.displayName,
-        photoURL: updates.photoURL,
-    });
-    
     const userRef = usersCollection.doc(user.uid);
-    const firestoreUpdates: { name?: string, photoURL?: string } = {};
-    if (updates.displayName) firestoreUpdates.name = updates.displayName;
-    if (updates.photoURL) firestoreUpdates.photoURL = updates.photoURL;
+    const userDoc = await userRef.get();
+    const currentData = userDoc.data();
+    if (!currentData) throw new Error("User document not found.");
+
+    const newUsername = updates.username?.toLowerCase();
+    
+    if (newUsername && newUsername !== currentData.username) {
+        if (!/^[a-zA-Z0-9_]{3,15}$/.test(newUsername)) {
+            throw new Error("Username must be 3-15 characters long and can only contain letters, numbers, and underscores.");
+        }
+        const isAvailable = await isUsernameAvailable(newUsername);
+        if (!isAvailable) {
+            throw new Error("Username is already taken.");
+        }
+    }
+
+    const firestoreUpdates: any = {};
+    if (updates.displayName && updates.displayName !== currentData.displayName) firestoreUpdates.displayName = updates.displayName;
+    if (updates.photoURL !== undefined && updates.photoURL !== currentData.photoURL) firestoreUpdates.photoURL = updates.photoURL;
+    if (newUsername && newUsername !== currentData.username) firestoreUpdates.username = newUsername;
+
+    const authUpdates: any = {};
+    if (updates.displayName && updates.displayName !== user.displayName) authUpdates.displayName = updates.displayName;
+    if (updates.photoURL !== undefined && updates.photoURL !== user.photoURL) authUpdates.photoURL = updates.photoURL;
+
+    const batch = db.batch();
+
+    if (newUsername && newUsername !== currentData.username) {
+        batch.delete(usernamesCollection.doc(currentData.username));
+        batch.set(usernamesCollection.doc(newUsername), { userId: user.uid });
+    }
 
     if (Object.keys(firestoreUpdates).length > 0) {
-        await userRef.update(firestoreUpdates);
+        batch.update(userRef, firestoreUpdates);
+    }
+    
+    await batch.commit();
+    
+    if (Object.keys(authUpdates).length > 0) {
+        await user.updateProfile(authUpdates);
     }
 };
 
@@ -124,6 +193,17 @@ export const getUserData = async (uid: string) => {
     const userDoc = await usersCollection.doc(uid).get();
     return userDoc.exists ? userDoc.data() : null;
 };
+
+export const getUserByUsername = async (username: string): Promise<User | null> => {
+    const usernameRef = await usernamesCollection.doc(username.toLowerCase()).get();
+    if (!usernameRef.exists) return null;
+    
+    const { userId } = usernameRef.data() as { userId: string };
+    const userDoc = await usersCollection.doc(userId).get();
+    if (!userDoc.exists) return null;
+
+    return { uid: userDoc.id, ...userDoc.data() } as User;
+}
 
 export const saveYouTubeToken = async (uid: string, token: any) => {
     return usersCollection.doc(uid).set({ youtubeToken: token }, { merge: true });
@@ -135,7 +215,7 @@ export const clearYouTubeToken = async (uid: string) => {
     });
 };
 
-export const getOrCreateLikedSongsPlaylist = async (userId: string, userName: string): Promise<{ ref: any, data: Playlist }> => {
+export const getOrCreateLikedSongsPlaylist = async (userId: string, userDisplayName: string): Promise<{ ref: any, data: Playlist }> => {
     const query = playlistsCollection
         .where('ownerId', '==', userId)
         .where('specialType', '==', 'liked-songs');
@@ -151,7 +231,7 @@ export const getOrCreateLikedSongsPlaylist = async (userId: string, userName: st
         const playlistData = {
             name: "Liked Songs",
             ownerId: userId,
-            ownerName: userName,
+            ownerName: userDisplayName,
             tracks: [],
             trackCount: 0,
             createdAt: (window as any).firebase.firestore.FieldValue.serverTimestamp(),
@@ -164,7 +244,7 @@ export const getOrCreateLikedSongsPlaylist = async (userId: string, userName: st
 };
 
 export const likeTrack = async (user: User, track: Track) => {
-    const { ref } = await getOrCreateLikedSongsPlaylist(user.uid, user.name);
+    const { ref } = await getOrCreateLikedSongsPlaylist(user.uid, user.displayName);
     await db.runTransaction(async (transaction: any) => {
         const doc = await transaction.get(ref);
         if (!doc.exists) throw new Error("Playlist does not exist!");
@@ -266,7 +346,7 @@ export const createPlaylist = async (name: string, user: User): Promise<string> 
     const newPlaylistRef = await playlistsCollection.add({
         name,
         ownerId: user.uid,
-        ownerName: user.name,
+        ownerName: user.displayName,
         tracks: [],
         trackCount: 0,
         createdAt: (window as any).firebase.firestore.FieldValue.serverTimestamp(),

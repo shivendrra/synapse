@@ -9,7 +9,8 @@ export interface Track {
 
 export interface User {
   uid: string; // Firebase UID
-  name: string;
+  username: string;
+  displayName: string;
   email: string;
   photoURL: string;
   authProvider: 'password' | 'google.com' | string;

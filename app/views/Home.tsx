@@ -64,7 +64,8 @@ const Home: React.FC<HomeProps> = ({ onPlay, onNavigateToChannel, subscriptions,
         setTrending(trendingData);
       } catch (err) {
         console.error(err);
-        setError('Failed to load trending music. Please check your YouTube API key.');
+        const message = err instanceof Error ? err.message : 'An unknown error occurred while fetching trending music.';
+        setError(message);
       } finally {
         setLoading(false);
       }
@@ -78,7 +79,7 @@ const Home: React.FC<HomeProps> = ({ onPlay, onNavigateToChannel, subscriptions,
   }
 
   if (error) {
-    return <div className="text-center p-10 text-red-500">{error}</div>;
+    return <div className="text-center p-10 text-red-500" dangerouslySetInnerHTML={{ __html: error }} />;
   }
 
   return (

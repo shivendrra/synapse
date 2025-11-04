@@ -8,9 +8,7 @@ interface VisualizerProps {
 
 const Visualizer: React.FC<VisualizerProps> = ({ isPlaying }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  // FIX: Explicitly initialize useRef with null to ensure it's always called with one argument.
   const animationFrameRef = useRef<number | null>(null);
-  // The ref type must include `null` because React calls the ref callback with `null` when the component unmounts.
   const barsRef = useRef<(HTMLDivElement | null)[]>([]);
   const barCount = 24;
 
@@ -50,9 +48,6 @@ const Visualizer: React.FC<VisualizerProps> = ({ isPlaying }) => {
       {Array.from({ length: barCount }).map((_, i) => (
         <div
           key={i}
-          // FIX: The ref callback function must not return a value. 
-          // An arrow function with a body `() => expression` returns the expression.
-          // By wrapping the assignment in curly braces `() => { expression }`, we ensure it returns `undefined`.
           ref={el => { barsRef.current[i] = el; }}
           className="w-full bg-brand-500 rounded-full"
           style={{ height: '100%', transform: 'scaleY(0.1)', transition: 'transform 0.1s ease-out' }}

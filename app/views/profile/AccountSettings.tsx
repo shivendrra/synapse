@@ -1,3 +1,5 @@
+
+
 import React, { useState } from 'react';
 import type { User } from '../../types';
 import ChangePasswordModal from '../../components/modals/ChangePasswordModal';
@@ -7,7 +9,8 @@ interface AccountSettingsProps {
   user: User;
   onConnectYouTube: () => void;
   onDisconnectYouTube: () => void;
-  onAccountDelete: () => void;
+  // Fix: Changed return type to Promise<void> to match expected prop type in DeleteAccountModal
+  onAccountDelete: () => Promise<void>;
 }
 
 const SettingCard: React.FC<{ title: string; description: string; children: React.ReactNode; danger?: boolean }> = ({ title, description, children, danger = false }) => (
@@ -86,7 +89,6 @@ const AccountSettings: React.FC<AccountSettingsProps> = ({ user, onConnectYouTub
         isOpen={isDeleteModalOpen}
         onClose={() => setDeleteModalOpen(false)}
         onConfirm={onAccountDelete}
-        // FIX: Pass the user's authProvider to the modal, as it's a required prop.
         authProvider={user.authProvider}
       />
     </div>
