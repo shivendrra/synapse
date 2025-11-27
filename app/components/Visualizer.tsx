@@ -1,0 +1,60 @@
+
+
+import React, { useRef, useEffect } from 'react';
+
+interface VisualizerProps {
+  isPlaying: boolean;
+}
+
+const Visualizer: React.FC<VisualizerProps> = ({ isPlaying }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const animationFrameRef = useRef<number | null>(null);
+  const barsRef = useRef<(HTMLDivElement | null)[]>([]);
+  const barCount = 24;
+
+  useEffect(() => {
+    const animate = () => {
+      barsRef.current.forEach(bar => {
+        if (bar) {
+          const newHeight = Math.random() * 0.9 + 0.1;
+          bar.style.transform = `scaleY(${newHeight})`;
+        }
+      });
+      animationFrameRef.current = requestAnimationFrame(animate);
+    };
+
+    if (isPlaying) {
+      animate();
+    } else {
+      if (animationFrameRef.current !== null) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+      barsRef.current.forEach(bar => {
+        if (bar) {
+          bar.style.transform = 'scaleY(0.1)';
+        }
+      });
+    }
+
+    return () => {
+      if (animationFrameRef.current !== null) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
+  }, [isPlaying]);
+
+  return (
+    <div ref={containerRef} className="flex items-end justify-center w-full h-full gap-1">
+      {Array.from({ length: barCount }).map((_, i) => (
+        <div
+          key={i}
+          ref={el => { barsRef.current[i] = el; }}
+          className="w-full bg-brand-500 rounded-full"
+          style={{ height: '100%', transform: 'scaleY(0.1)', transition: 'transform 0.1s ease-out' }}
+        />
+      ))}
+    </div>
+  );
+};
+
+export default Visualizer;

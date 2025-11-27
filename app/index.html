@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="../resources/synapse_logo_light.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Synapse Music: Stream Music Online for Free</title>
+    <title>Synapse: Stream Music Online for Free</title>
     
     <!-- Google Fonts and Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -23,18 +23,24 @@
             },
             colors: {
               'brand': {
-                '50': '#fff1f2',
-                '100': '#ffe4e6',
-                '200': '#fecdd3',
-                '300': '#fda4af',
-                '400': '#fb7185',
-                '500': '#f43f5e',
-                '600': '#e11d48',
-                '700': '#be123c',
-                '800': '#9f1239',
-                '900': '#881337',
-                '950': '#4c0519',
+                '50': '#FFF8F2',
+                '100': '#FEF0E0',
+                '200': '#FCDCB8',
+                '300': '#FAC790',
+                '400': '#F7A95C',
+                '500': '#F1842B',
+                '600': '#BB3E00',
+                '700': '#9C3400',
+                '800': '#7D2A00',
+                '900': '#642200',
+                '950': '#351100',
               },
+              'accent': {
+                'yellow': '#FFB433',
+                'cyan': '#6FA4AF',
+                'green': '#708A58',
+                'blue': '#254D70',
+              }
             }
           }
         }
@@ -59,29 +65,63 @@
         background: transparent;
       }
       ::-webkit-scrollbar-thumb {
-        background-color: #4a4a4a;
+        background-color: #333333; /* Darker grey for black bg */
         border-radius: 10px;
         border: 2px solid transparent;
         background-clip: content-box;
       }
       html.light ::-webkit-scrollbar-thumb {
-        background-color: #cccccc;
+        background-color: #d1d5db; /* Light grey for light bg */
       }
       ::-webkit-scrollbar-thumb:hover {
-        background-color: #6a6a6a;
+        background-color: #555555;
       }
       html.light ::-webkit-scrollbar-thumb:hover {
-        background-color: #aaaaaa;
+        background-color: #9ca3af;
       }
       /* For Firefox */
       * {
         scrollbar-width: thin;
-        scrollbar-color: #4a4a4a transparent;
+        scrollbar-color: #333333 transparent;
       }
       html.light * {
-        scrollbar-color: #cccccc transparent;
+        scrollbar-color: #d1d5db transparent;
+      }
+
+      /* Subtle Scrollbar for Subscriptions */
+      .subtle-scrollbar::-webkit-scrollbar {
+        height: 6px;
+      }
+      .subtle-scrollbar::-webkit-scrollbar-thumb {
+        background-color: rgba(107, 114, 128, 0.5); /* gray-500 with 50% opacity */
+      }
+      html.dark .subtle-scrollbar::-webkit-scrollbar-thumb {
+        background-color: rgba(107, 114, 128, 0.4);
+      }
+      .subtle-scrollbar::-webkit-scrollbar-thumb:hover {
+        background-color: rgba(107, 114, 128, 0.8);
+      }
+      html.dark .subtle-scrollbar::-webkit-scrollbar-thumb:hover {
+        background-color: rgba(107, 114, 128, 0.6);
+      }
+      .subtle-scrollbar {
+        scrollbar-color: rgba(107, 114, 128, 0.5) transparent;
+      }
+      html.dark .subtle-scrollbar {
+        scrollbar-color: rgba(107, 114, 128, 0.4) transparent;
       }
       
+      @media (max-width: 767px) {
+        /* Hide scrollbar for Webkit browsers */
+        ::-webkit-scrollbar {
+          display: none;
+        }
+        /* Hide scrollbar for Firefox */
+        * {
+          scrollbar-width: none;
+        }
+      }
+
       /* Mobile Sidebar */
       .sidebar-mobile-enter {
         transform: translateX(-100%);
@@ -138,15 +178,6 @@
         opacity: 0;
       }
     </style>
-  <script type="importmap">
-{
-  "imports": {
-    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
-    "react/": "https://aistudiocdn.com/react@^19.2.0/",
-    "react": "https://aistudiocdn.com/react@^19.2.0"
-  }
-}
-</script>
 <link rel="stylesheet" href="/index.css">
 </head>
   <body class="bg-white dark:bg-black font-sans">
@@ -154,10 +185,14 @@
     <div id="youtube-player"></div>
     
     <!-- External APIs -->
-    <script src="https://www.youtube.com/iframe_api"></script>
+    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+    <!-- Google APIs -->
+    <script src="https://apis.google.com/js/api.js"></script>
+    <script src="https://www.youtube.com/iframe_api"></script>
 
     <script type="module" src="/index.tsx"></script>
   </body>

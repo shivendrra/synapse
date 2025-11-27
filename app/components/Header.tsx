@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import type { User } from '../types';
 import ThemeToggle from './ThemeToggle';
 
@@ -9,72 +9,75 @@ interface HeaderProps {
   theme: 'light' | 'dark';
   onBack: () => void;
   onForward: () => void;
-  canGoBack: boolean;
-  canGoForward: boolean;
-  onSearch: (query: string) => void;
-  currentView: 'Home' | 'Search' | 'Library' | 'Channel';
   onToggleSidebar: () => void;
+  navigate: (path: string) => void;
+  location: string;
 }
 
 const Header: React.FC<HeaderProps> = ({ 
   user, onLogout, toggleTheme, theme, 
-  onBack, onForward, canGoBack, canGoForward,
-  onSearch, currentView, onToggleSidebar
+  onBack, onForward,
+  onToggleSidebar, navigate,
+  location
 }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [canGoBack, setCanGoBack] = useState(window.history.length > 1);
+  const [canGoForward, setCanGoForward] = useState(false); // Hard to track reliably without a full router
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if(searchQuery.trim()) {
-      onSearch(searchQuery.trim());
-    }
-  };
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+  
+  // A simple way to check navigation state on path change.
+  useEffect(() => {
+    // This is a proxy and not 100% reliable for forward state.
+    setCanGoBack(window.history.length > 1);
+  }, [location]);
 
   return (
-    <header className="grid grid-cols-3 items-center justify-between p-4 bg-gray-100 dark:bg-black border-b border-gray-200 dark:border-gray-800 sticky top-0 z-10">
+    <header className="flex items-center justify-between p-4 bg-gray-100 dark:bg-black border-b border-gray-200 dark:border-gray-800 sticky top-0 z-10">
       <div className="flex items-center space-x-2">
         <button onClick={onToggleSidebar} className="p-2 rounded-full md:hidden text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800">
           <span className="material-symbols-outlined">menu</span>
         </button>
-        <button onClick={onBack} disabled={!canGoBack} className="hidden md:block p-2 rounded-full disabled:text-gray-600 disabled:cursor-not-allowed text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800">
+        <button onClick={onBack} className="hidden md:block p-2 rounded-full disabled:text-gray-600 disabled:cursor-not-allowed text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800">
             <span className="material-symbols-outlined">arrow_back_ios_new</span>
         </button>
-        <button onClick={onForward} disabled={!canGoForward} className="hidden md:block p-2 rounded-full disabled:text-gray-600 disabled:cursor-not-allowed text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800">
+        <button onClick={onForward} className="hidden md:block p-2 rounded-full disabled:text-gray-600 disabled:cursor-not-allowed text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800">
             <span className="material-symbols-outlined">arrow_forward_ios</span>
         </button>
       </div>
       
-      <div className="flex justify-center">
-        {currentView !== 'Search' && (
-          <form onSubmit={handleSearchSubmit} className="relative w-full max-w-md">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search..."
-              className="w-full pl-10 pr-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-full focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm"
-            />
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-                <span className="material-symbols-outlined text-xl">search</span>
-            </div>
-          </form>
-        )}
-      </div>
+      <div className="flex items-center space-x-2 md:space-x-4">
+         <button onClick={() => navigate('/search')} className="p-2 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800">
+            <span className="material-symbols-outlined">search</span>
+        </button>
 
-      <div className="flex items-center justify-end space-x-4">
-        <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
-        <div className="relative">
+        <div className="hidden md:block">
+            <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
+        </div>
+        <div className="relative" ref={dropdownRef}>
           <button onClick={() => setDropdownOpen(!dropdownOpen)} className="flex items-center space-x-2">
-            <img src={user.photoURL} alt={user.name} className="w-8 h-8 rounded-full" />
-            <span className="hidden sm:inline text-sm font-medium text-gray-800 dark:text-gray-200">{user.name}</span>
+            <img src={user.photoURL} alt={user.displayName} className="w-8 h-8 rounded-full" />
+            <span className="hidden sm:inline text-sm font-medium text-gray-800 dark:text-gray-200">{user.displayName}</span>
           </button>
           {dropdownOpen && (
-            <div 
-              onMouseLeave={() => setDropdownOpen(false)}
-              className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-20 ring-1 ring-black ring-opacity-5">
-              <a href="#" className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">Profile</a>
-              <a href="#" className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">Settings</a>
+            <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-20 ring-1 ring-black ring-opacity-5">
+              <button onClick={() => { navigate(`/${user.username}`); setDropdownOpen(false); }} className="w-full text-left block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">Profile</button>
+              <button onClick={() => { navigate('/settings'); setDropdownOpen(false); }} className="w-full text-left block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">Settings</button>
+              <div className="border-t border-gray-200 dark:border-gray-700 my-1 md:hidden"></div>
+              <div className="flex md:hidden items-center justify-between px-4 py-2 text-sm text-gray-700 dark:text-gray-200">
+                <span>Theme</span>
+                <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
+              </div>
+              <div className="border-t border-gray-200 dark:border-gray-700 my-1"></div>
               <button
                 onClick={() => {
                   onLogout();
