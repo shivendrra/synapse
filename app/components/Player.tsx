@@ -57,6 +57,12 @@ const Player: React.FC<PlayerProps> = ({
   useEffect(() => {
     if (!isYtApiReady || !playerContainerRef.current) return;
 
+    // To prevent React's "removeChild" error, we let the YouTube API
+    // replace a child element that we manually create, instead of the ref container itself.
+    const playerHostDiv = document.createElement('div');
+    playerContainerRef.current.appendChild(playerHostDiv);
+
+
     const onPlayerReady = (event: any) => {
         event.target.setVolume(volume * 100);
         event.target.playVideo();
@@ -73,7 +79,7 @@ const Player: React.FC<PlayerProps> = ({
         }
     };
     
-    const player = new (window as any).YT.Player(playerContainerRef.current, {
+    const player = new (window as any).YT.Player(playerHostDiv, {
         videoId: track.videoId,
         playerVars: { autoplay: 1, controls: 0, origin: window.location.origin },
         events: { onReady: onPlayerReady, onStateChange: onPlayerStateChange },
@@ -85,8 +91,12 @@ const Player: React.FC<PlayerProps> = ({
             player.destroy();
         }
         playerRef.current = null;
+        if (playerContainerRef.current) {
+            // Clean up container manually to be safe
+            playerContainerRef.current.innerHTML = '';
+        }
     };
-  }, [isYtApiReady, track.videoId]); // Re-create player only when videoId changes
+  }, [isYtApiReady, track.videoId, volume, setIsPlaying, onNext]);
 
   // 2. Play/Pause Control
   useEffect(() => {
