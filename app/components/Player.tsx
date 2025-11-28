@@ -34,7 +34,10 @@ const Player: React.FC<PlayerProps> = ({
   const playerContainerRef = useRef<HTMLDivElement>(null); // The div that will contain the iframe
   const [progress, setProgress] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
-  const [volume, setVolume] = useState(0.75);
+  const [volume, setVolume] = useState(() => {
+    const savedVolume = localStorage.getItem('playerVolume');
+    return savedVolume ? parseFloat(savedVolume) : 0.75;
+  });
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
   const isLiked = likedTracks.some(t => t.videoId === track.videoId);
@@ -51,31 +54,36 @@ const Player: React.FC<PlayerProps> = ({
     return () => window.removeEventListener('resize', checkIsMobile);
   }, []);
   
-  // --- PLAYER LIFECYCLE AND CONTROL EFFECTS ---
+  // Refs for callbacks to prevent re-running the main effect
+  const onNextRef = useRef(onNext);
+  useEffect(() => { onNextRef.current = onNext; }, [onNext]);
+
+  const setIsPlayingRef = useRef(setIsPlaying);
+  useEffect(() => { setIsPlayingRef.current = setIsPlaying; }, [setIsPlaying]);
 
   // 1. Player Creation & Destruction
   useEffect(() => {
     if (!isYtApiReady || !playerContainerRef.current) return;
 
-    // To prevent React's "removeChild" error, we let the YouTube API
-    // replace a child element that we manually create, instead of the ref container itself.
     const playerHostDiv = document.createElement('div');
     playerContainerRef.current.appendChild(playerHostDiv);
 
-
     const onPlayerReady = (event: any) => {
         event.target.setVolume(volume * 100);
-        event.target.playVideo();
+        if (isPlaying) {
+            event.target.playVideo();
+        }
     };
 
     const onPlayerStateChange = (event: any) => {
         const state = event.data;
-        if (state === (window as any).YT.PlayerState.PLAYING) {
-            setIsPlaying(true);
-        } else if (state === (window as any).YT.PlayerState.PAUSED) {
-            setIsPlaying(false);
-        } else if (state === (window as any).YT.PlayerState.ENDED) {
-            onNext();
+        const YT = (window as any).YT;
+        if (state === YT.PlayerState.PLAYING) {
+            setIsPlayingRef.current(true);
+        } else if (state === YT.PlayerState.PAUSED) {
+            setIsPlayingRef.current(false);
+        } else if (state === YT.PlayerState.ENDED) {
+            onNextRef.current();
         }
     };
     
@@ -92,17 +100,21 @@ const Player: React.FC<PlayerProps> = ({
         }
         playerRef.current = null;
         if (playerContainerRef.current) {
-            // Clean up container manually to be safe
             playerContainerRef.current.innerHTML = '';
         }
     };
-  }, [isYtApiReady, track.videoId, volume, setIsPlaying, onNext]);
+  }, [isYtApiReady, track.videoId]);
 
   // 2. Play/Pause Control
   useEffect(() => {
-    if (playerRef.current && typeof playerRef.current.playVideo === 'function') {
-        if(isPlaying) playerRef.current.playVideo();
-        else playerRef.current.pauseVideo();
+    if (playerRef.current?.getPlayerState) {
+        const playerState = playerRef.current.getPlayerState();
+        const YT = (window as any).YT;
+        if (isPlaying && playerState !== YT.PlayerState.PLAYING) {
+            playerRef.current.playVideo();
+        } else if (!isPlaying && playerState === YT.PlayerState.PLAYING) {
+            playerRef.current.pauseVideo();
+        }
     }
   }, [isPlaying]);
   
@@ -110,12 +122,13 @@ const Player: React.FC<PlayerProps> = ({
   useEffect(() => {
     if (playerRef.current?.setVolume) {
         playerRef.current.setVolume(volume * 100);
+        localStorage.setItem('playerVolume', String(volume));
     }
   }, [volume]);
 
   // 4. Audio-Only Quality Control
   useEffect(() => {
-    if (playerRef.current && typeof playerRef.current.setPlaybackQuality === 'function' && isPlaying) {
+    if (playerRef.current?.setPlaybackQuality && isPlaying) {
         const quality = isAudioOnly ? 'small' : 'default';
         playerRef.current.setPlaybackQuality(quality);
     }
@@ -124,14 +137,14 @@ const Player: React.FC<PlayerProps> = ({
   // 5. Progress Bar Update
   useEffect(() => {
     const interval = setInterval(() => {
-        if (playerRef.current && typeof playerRef.current.getCurrentTime === 'function' && isPlaying) {
+        if (playerRef.current?.getCurrentTime && isPlaying) {
             const time = playerRef.current.getCurrentTime();
             if (time !== null) {
               setCurrentTime(time);
               setProgress(track.duration > 0 ? (time / track.duration) * 100 : 0);
             }
         }
-    }, 1000);
+    }, 500);
     return () => clearInterval(interval);
   }, [isPlaying, track.duration]);
 
@@ -155,17 +168,21 @@ const Player: React.FC<PlayerProps> = ({
         } else {
             // Hide it off-screen
              Object.assign(playerWrapper.style, {
-                position: 'absolute', top: '-9999px', left: '-9999px',
+                position: 'fixed', top: '-9999px', left: '-9999px',
                 width: '1px', height: '1px',
                 opacity: '0', visibility: 'hidden', pointerEvents: 'none',
             });
         }
     };
     
-    updatePosition();
+    // Use a timeout to ensure the DOM has settled, especially during maximization animation
+    const timeoutId = setTimeout(updatePosition, 50);
     window.addEventListener('resize', updatePosition);
 
-    return () => window.removeEventListener('resize', updatePosition);
+    return () => {
+      clearTimeout(timeoutId);
+      window.removeEventListener('resize', updatePosition);
+    }
   }, [isAudioOnly, isMaximized, isMobile]);
 
 
@@ -184,9 +201,11 @@ const Player: React.FC<PlayerProps> = ({
   const handleProgressSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newProgress = parseFloat(e.target.value);
     const newTime = (newProgress / 100) * track.duration;
-    setProgress(newProgress);
-    setCurrentTime(newTime);
-    if (playerRef.current?.seekTo) playerRef.current.seekTo(newTime, true);
+    if (playerRef.current?.seekTo) {
+      playerRef.current.seekTo(newTime, true);
+      setCurrentTime(newTime); // Optimistic update
+      setProgress(newProgress);
+    }
   };
   
   const handleTouchStart = (e: React.TouchEvent) => { touchStartY.current = e.targetTouches[0].clientY; };
@@ -320,7 +339,7 @@ const Player: React.FC<PlayerProps> = ({
 
   return (
     <>
-      <div ref={playerContainerRef} />
+      <div ref={playerContainerRef} style={{ position: 'fixed', top: -9999, left: -9999, width: 1, height: 1 }} />
       {playerUi()}
     </>
   );

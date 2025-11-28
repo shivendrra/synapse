@@ -11,50 +11,50 @@ interface ProfileProps {
 }
 
 const Profile: React.FC<ProfileProps> = ({ username, currentUser, onSelectPlaylist, navigate }) => {
-    const [profileUser, setProfileUser] = useState<User | null>(null);
-    const [userPlaylists, setUserPlaylists] = useState<Playlist[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+  const [profileUser, setProfileUser] = useState<User | null>(null);
+  const [userPlaylists, setUserPlaylists] = useState<Playlist[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-    const isOwnProfile = currentUser?.username === profileUser?.username;
+  const isOwnProfile = currentUser?.username === profileUser?.username;
 
-    useEffect(() => {
-      const fetchUserData = async () => {
-        setLoading(true);
-        setError(null);
-        setProfileUser(null);
-        setUserPlaylists([]);
+  useEffect(() => {
+    const fetchUserData = async () => {
+      setLoading(true);
+      setError(null);
+      setProfileUser(null);
+      setUserPlaylists([]);
 
-        try {
-          const user = await getUserByUsername(username);
-          if (user) {
-            setProfileUser(user);
-            const playlists = await getPlaylists(user.uid);
-            setUserPlaylists(playlists);
-          } else {
-            setError("User not found.");
-          }
-        } catch (err: any) {
-          console.error(err);
-          setError(`Failed to load profile data. ${err.message}`);
-        } finally {
-          setLoading(false);
+      try {
+        const user = await getUserByUsername(username);
+        if (user) {
+          setProfileUser(user);
+          const playlists = await getPlaylists(user.uid);
+          setUserPlaylists(playlists);
+        } else {
+          setError("User not found.");
         }
-      };
-      fetchUserData();
-    }, [username]);
-    
-    if (loading) {
-        return <div className="text-center p-10">Loading profile...</div>;
-    }
-    
-    if (error) {
-        return <div className="text-center p-10 text-red-500">{error}</div>;
-    }
+      } catch (err: any) {
+        console.error(err);
+        setError(`Failed to load profile data. ${err.message}`);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUserData();
+  }, [username]);
 
-    if (!profileUser) {
-        return <div className="text-center p-10">This profile could not be found.</div>;
-    }
+  if (loading) {
+    return <div className="text-center p-10">Loading profile...</div>;
+  }
+
+  if (error) {
+    return <div className="text-center p-10 text-red-500">{error}</div>;
+  }
+
+  if (!profileUser) {
+    return <div className="text-center p-10">This profile could not be found.</div>;
+  }
 
   return (
     <div className="space-y-8">
@@ -66,9 +66,9 @@ const Profile: React.FC<ProfileProps> = ({ username, currentUser, onSelectPlayli
           <p className="text-md text-gray-500 dark:text-gray-400">@{profileUser.username}</p>
         </div>
         {isOwnProfile && (
-            <button onClick={() => navigate('/settings')} className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-gray-200 dark:bg-gray-800 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-700">
-                Account Settings
-            </button>
+          <button onClick={() => navigate('/settings')} className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-gray-200 dark:bg-gray-800 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-700">
+            Account Settings
+          </button>
         )}
       </div>
 
@@ -78,13 +78,13 @@ const Profile: React.FC<ProfileProps> = ({ username, currentUser, onSelectPlayli
         {userPlaylists.length > 0 ? (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {userPlaylists.map(playlist => (
-              <button 
-                key={playlist.id} 
+              <button
+                key={playlist.id}
                 onClick={() => onSelectPlaylist(playlist.id)}
                 className="p-4 rounded-lg text-left bg-gray-200 dark:bg-gray-900/50 hover:bg-gray-300 dark:hover:bg-gray-800 transition-all duration-200 transform hover:-translate-y-1"
               >
-                  <h3 className="font-bold truncate">{playlist.name}</h3>
-                  <p className="text-sm opacity-80">{playlist.trackCount} {playlist.trackCount === 1 ? 'track' : 'tracks'}</p>
+                <h3 className="font-bold truncate">{playlist.name}</h3>
+                <p className="text-sm opacity-80">{playlist.trackCount} {playlist.trackCount === 1 ? 'track' : 'tracks'}</p>
               </button>
             ))}
           </div>
@@ -92,7 +92,7 @@ const Profile: React.FC<ProfileProps> = ({ username, currentUser, onSelectPlayli
           <p className="text-gray-500 dark:text-gray-400">This user hasn't created any public playlists yet.</p>
         )}
       </div>
-      
+
     </div>
   );
 };
