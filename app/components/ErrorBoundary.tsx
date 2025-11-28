@@ -1,5 +1,3 @@
-
-
 import React, { ErrorInfo, ReactNode } from 'react';
 
 interface Props {
@@ -11,12 +9,9 @@ interface State {
 }
 
 class ErrorBoundary extends React.Component<Props, State> {
-  // Fix: The previous constructor-based state initialization was causing TypeScript errors.
-  // Switched to the more modern and standard class property syntax for state initialization.
   state: State = { hasError: false };
 
   static getDerivedStateFromError(_: Error): State {
-    // Update state so the next render will show the fallback UI.
     return { hasError: true };
   }
 
